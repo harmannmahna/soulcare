@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     jwt_expire_hours: int = 72
     admin_token: str = "soulcare-admin-demo"
     gemini_api_key: str = ""
-    gemini_models: str = "gemini-2.0-flash,gemini-1.5-flash,gemini-2.0-flash-lite"
+    # Retired 1.5/2.0 flash IDs 404 on current Gemini API — keep these current.
+    gemini_models: str = "gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-flash-latest"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     port: int = 8000
     rate_limit_per_min: int = 30
@@ -48,7 +49,9 @@ class Settings(BaseSettings):
 
     @property
     def use_mock_ai(self) -> bool:
-        return self.demo_mode or not self.gemini_api_key
+        # Live Gemini whenever a key is present. DEMO_MODE must not force MockAI —
+        # that left production stuck on repeating template replies even with a key.
+        return not bool((self.gemini_api_key or "").strip())
 
 
 @lru_cache

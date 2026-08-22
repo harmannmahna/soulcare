@@ -47,7 +47,7 @@ Admin header: `X-Admin-Token: soulcare-admin-demo`
 | --- | --- |
 | API | FastAPI, Motor/PyMongo, JWT, in-memory rate limit |
 | Integrations | **Swytchcode kernel** (`swytchcode exec`) for Slack, Telegram, Resend, Weaviate, Firecrawl, YouTube, Google Calendar, Cloudinary |
-| AI | Gemini with model failover, **MockAI** when `DEMO_MODE=true` or no key |
+| AI | Gemini with model failover whenever `GEMINI_API_KEY` is set; **MockAI** only if the key is missing |
 | Risk ML | sklearn TF-IDF + LogReg runtime; optional Qwen2.5-0.5B / DistilBERT LoRA adapter |
 | Matching | Swytchcode Weaviate GraphQL, local TF-IDF fallback |
 | Alerts | Swytchcode Slack / Telegram / Resend + `/ws/admin` |
@@ -111,8 +111,9 @@ See `backend/.env.example`. Never commit secrets.
 
 | Variable | Purpose |
 | --- | --- |
-| `DEMO_MODE` | Forces MockAI (default `true`) |
-| `GEMINI_API_KEY` | Live Gemini; unused in demo mode |
+| `DEMO_MODE` | Demo UX flags (does **not** disable Gemini) |
+| `GEMINI_API_KEY` | Live Gemini chat; required for real replies |
+| `GEMINI_MODELS` | Comma-separated model failover list |
 | `MONGODB_URI` | Optional; app falls back to memory |
 | `JWT_SECRET` | Sign user/guest tokens |
 | `ADMIN_TOKEN` | Protects `/api/v1/admin/*` and the admin socket |
