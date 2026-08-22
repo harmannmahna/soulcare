@@ -19,6 +19,7 @@ class SignupBody(BaseModel):
     password: str = Field(min_length=6)
     name: str = Field(min_length=1, max_length=80)
     language: str = "en"
+    role: str = "user"
 
 
 class LoginBody(BaseModel):
@@ -70,6 +71,9 @@ async def signup(body: SignupBody):
     users = store.collection("users")
     if await users.find_one({"email": body.email.lower()}):
         raise HTTPException(status_code=409, detail="An account with that email already exists.")
+    role = (body.role or "user").strip().lower()
+    if role not in {"user", "therapist", "b2b"}:
+        role = "user"
     user = {
         "id": _uid("usr"),
         "email": body.email.lower(),
@@ -77,21 +81,38 @@ async def signup(body: SignupBody):
         "password_hash": hash_password(body.password),
         "guest": False,
         "language": body.language,
+        "role": role,
         "bedtime": "23:00",
         "focus_hours": "10:00-13:00",
-        "consent": False,
+        "consent": role in {"therapist", "b2b"},
         "created_at": datetime.now(timezone.utc).isoformat(),
         "saved_resources": [],
-        "gender": None,
-        "age": None,
-        "weight": None,
-        "height": None,
-        "details_completed": False,
+        "gender": "other" if role != "user" else None,
+        "age": 30 if role != "user" else None,
+        "weight": 60 if role != "user" else None,
+        "height": 165 if role != "user" else None,
+        "details_completed": role in {"therapist", "b2b"},
         "focus_points": 0,
         "room_items": [],
         "friends": [],
     }
     await users.insert_one(user)
+    if role == "therapist":
+        await store.collection("partners").insert_one(
+            {
+                "id": f"ptr_{user['id'][-8:]}",
+                "user_id": user["id"],
+                "role": "therapist",
+                "name": user["name"],
+                "email": user["email"],
+                "city": "",
+                "specialty": "",
+                "notes": "Signed up as therapist",
+                "platform_fee_pct": 15,
+                "status": "pending",
+                "created_at": user["created_at"],
+            }
+        )
     return {"token": create_token(user["id"], guest=False), "user": public_user(user)}
 
 

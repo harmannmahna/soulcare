@@ -29,3 +29,15 @@ services:
         sync: false
       - key: RATE_LIMIT_PER_MIN
         value: "30"
+      - key: SWYTCHCODE_DEMO
+        value: "true"
+      - key: SWYTCHCODE_BIN
+        sync: false
+      - key: SLACK_BOT_TOKEN
+        sync: false
+      - key: SLACK_CHANNEL_ID
+        sync: false
+      - key: WEAVIATE_URL
+        sync: false
+      - key: WEAVIATE_API_KEY
+        sync: false

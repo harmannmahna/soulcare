@@ -2,41 +2,55 @@
 
 A safety-first holistic health platform: mental support, physical/lifestyle tracking, and crisis escalation in one app.
 
-Every user message — text or transcribed voice — is **risk-classified on the server before any AI reply**. Red-tier (self-harm / crisis) language **never reaches an LLM**. Classification is a **hybrid**: a fine-tuned classifier plus a keyword/phrase rail. If **either** flags red, the turn is red. The user sees a fixed safety script, India’s emergency numbers (**112**, **Tele-MANAS 14416**), a partner NGO is notified, and admins get a live WebSocket alert.
+Every user message — text or transcribed voice — is **risk-classified on the server before any AI reply**. Red-tier (self-harm / crisis) language **never reaches an LLM**. Classification is a **hybrid**: a fine-tuned classifier plus a keyword/phrase rail. If **either** flags red, the turn is red. The user sees a fixed safety script, India’s emergency numbers (**112**, **Tele-MANAS 14416**), a partner NGO is notified **through Swytchcode**, and admins get a live WebSocket alert.
+
+## Three demo desks (three laptops)
+
+Same password: **`Demo@123`**. Open `/login` and click a card — or type the email.
+
+| Role | Email | Home after login |
+| --- | --- | --- |
+| User / member | `demo@soulcare.app` | `/dashboard` |
+| Therapist partner | `therapist@soulcare.app` | `/partner` (15% fee, slots, bookings) |
+| B2B / college / NGO | `b2b@soulcare.app` | `/b2b-demo` (aggregates only, no names) |
+
+`/signup` has the same three roles. Therapist and B2B skip the member details form.
+
+Admin header: `X-Admin-Token: soulcare-admin-demo`
 
 ## What’s real vs demo
 
 **Fully real**
-- Green / yellow / red risk triage (English + Hinglish) — hybrid **sklearn TF-IDF + logistic regression** artifact with a keyword **OR-red** safety rail (Qwen2.5-0.5B LoRA training script included for Colab)
-- Guest + JWT auth, consent gate
-- Therapist directory with **embedding similarity ranking** (Weaviate when `WEAVIATE_URL` is set, else local TF-IDF cosine) plus tag-filter fallback
-- Booking IDs, partner notifications, **Google Calendar** template URL on confirm
+- Green / yellow / red risk triage (English + Hinglish) — hybrid **sklearn TF-IDF + logistic regression** artifact with a keyword **OR-red** safety rail. Qwen2.5-0.5B LoRA (or DistilBERT LoRA) training path is documented for Colab.
+- Guest + JWT auth, consent gate, **role-based dashboards**
+- Therapist directory ranked through **Swytchcode Weaviate GraphQL** when live, else local TF-IDF cosine, else tags
+- Booking IDs, partner notifications, **Google Calendar** via Swytchcode `calendar.event.create` plus a template URL
 - Resources, daily check-ins, custom habits / streaks / habit score
 - Admin session monitor + `/ws/admin` red alerts with model confidence and NGO-notified badges
-- Red-tier **NGO notify** (Slack webhook, Telegram, or Resend; otherwise logged to admin `ngo_inbox`)
+- Red-tier **NGO notify through Swytchcode** (Slack `chat.postMessage`, Telegram, Resend; else `ngo_inbox`)
 - Chat **session list + New chat** (summaries only — no long-term raw transcripts)
 - Period tracker calendar, cycle prediction, optional symptom tags (female profiles)
 - Recurring check-in popups (timer + inactivity + post-yellow)
-- Pharmacy finder with realistic city listings + distance sort when geolocation is allowed
-- User / Admin / B2B dashboards as separate routes; therapist/chemist partner desk
+- Pharmacy finder (static catalog + Swytchcode Firecrawl search when live)
+- User / therapist / B2B dashboards as separate routes
 
 **Demo / mocked**
-- Prescription metadata (not a medical record store)
+- Prescription metadata (Swytchcode Cloudinary is invoked; not a medical record store)
 - Counsellor takeover (UI + mocked queue)
 - Community moderation (keyword-only)
 - Calorie logging (lookup table, not photo vision)
 - B2B `/b2b-demo` numbers (aggregate sample, not live campus data)
-- Firecrawl / YouTube Data API / Cloudinary only when those keys are set
 
 ## Stack
 
 | Layer | Tech |
 | --- | --- |
 | API | FastAPI, Motor/PyMongo, JWT, in-memory rate limit |
+| Integrations | **Swytchcode kernel** (`swytchcode exec`) for Slack, Telegram, Resend, Weaviate, Firecrawl, YouTube, Google Calendar, Cloudinary |
 | AI | Gemini with model failover, **MockAI** when `DEMO_MODE=true` or no key |
-| Risk ML | Qwen2.5-0.5B LoRA (Colab) **or** sklearn TF-IDF + LogReg runtime artifact |
-| Matching | Weaviate near-text, local TF-IDF fallback |
-| Alerts | Slack / Telegram / Resend + `/ws/admin` |
+| Risk ML | sklearn TF-IDF + LogReg runtime; optional Qwen2.5-0.5B / DistilBERT LoRA adapter |
+| Matching | Swytchcode Weaviate GraphQL, local TF-IDF fallback |
+| Alerts | Swytchcode Slack / Telegram / Resend + `/ws/admin` |
 | Web | React + Vite + Tailwind, Framer Motion, GSAP, React Three Fiber |
 | Data | MongoDB, with an in-memory fallback if Mongo is down |
 | Deploy | Render (`render.yaml`) + Vercel (`frontend/vercel.json`) |
@@ -44,7 +58,7 @@ Every user message — text or transcribed voice — is **risk-classified on the
 ## Quick start
 
 ```bash
-# API (works without Mongo — uses in-memory seed data)
+# API (Python 3.9+; 3.10+ preferred. 3.9 needs eval_type_backport, already in requirements.txt)
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
@@ -59,14 +73,17 @@ npm install
 npm run dev
 ```
 
+Windows + Swytchcode: **`docs/swytchcode-setup.md`**. Login is not enough — you must `git checkout cursor/swytchcode-roles-qwen-d271` so `.swytchcode/tooling.json` exists, then run `bootstrap` **from that folder** (not `C:\WINDOWS\System32`, and not the placeholder `C:\path\to\soulcare`). On the Lenovo clone that is `C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare`.
+
+Chat / therapist-match / which keys go in which `.env`: **`docs/env-chat-qwen.md`**. Qwen is the optional risk classifier, not the chatbot. Swytchcode is Slack/Weaviate/etc., not Gemini.
+
+LoRA training: follow **`docs/qwen-lora.md`** (Colab T4, no paid API; optional free `HF_TOKEN`).
+
 Optional local Mongo:
 
 ```bash
 docker compose up mongo
 ```
-
-Demo account: `demo@soulcare.app` / `Demo@123`  
-Admin header: `X-Admin-Token: soulcare-admin-demo`
 
 ## Safety pipeline
 
@@ -74,8 +91,8 @@ Admin header: `X-Admin-Token: soulcare-admin-demo`
 
 1. Classify the utterance with **keywords and the ML model**. Keyword red always wins; the model cannot downgrade a crisis phrase.
 2. Persist **only** session + risk metadata (tier, rule, action, model confidence, NGO notify fields, timestamp). Raw chat is not stored long-term.
-3. **Red:** return the fixed script (names the partner NGO), broadcast `/ws/admin`, notify Slack/Telegram/email, **do not call Gemini**.
-4. **Yellow:** companion reply + ranked therapists (vector similarity + match reason). A gentler check-in popup may follow.
+3. **Red:** return the fixed script (names the partner NGO), broadcast `/ws/admin`, notify via **Swytchcode**, **do not call Gemini**.
+4. **Yellow:** companion reply + ranked therapists (Swytchcode Weaviate or local TF-IDF + match reason). A gentler check-in popup may follow.
 5. **Green:** companion reply only.
 
 Prompt injection cannot bypass the keyword rail: that matcher does not consult an LLM.
@@ -83,6 +100,10 @@ Prompt injection cannot bypass the keyword rail: that matcher does not consult a
 Metrics: `GET /api/v1/model_metrics` and `docs/model-metrics.md`.
 
 NGO scope: `docs/ngo-integration.md`.
+
+Swytchcode: `docs/swytchcode-setup.md`.
+
+Qwen / DistilBERT LoRA: `docs/qwen-lora.md`.
 
 ## Environment
 
@@ -96,12 +117,16 @@ See `backend/.env.example`. Never commit secrets.
 | `JWT_SECRET` | Sign user/guest tokens |
 | `ADMIN_TOKEN` | Protects `/api/v1/admin/*` and the admin socket |
 | `CORS_ORIGINS` | Comma-separated frontend origins |
-| `RISK_MODEL_PATH` | Optional override for `backend/ml/artifacts/risk_clf.joblib` |
-| `WEAVIATE_URL` | Vector therapist search; local embeddings if unset |
-| `SLACK_WEBHOOK_URL` / `TELEGRAM_*` / `RESEND_API_KEY` | Red-tier NGO channels |
-| `YOUTUBE_API_KEY` | Optional live wellness video search |
-| `FIRECRAWL_API_KEY` | Optional pharmacy crawl (static catalog is the default) |
-| `CLOUDINARY_URL` | Optional image hosting |
+| `RISK_MODEL_PATH` | sklearn `.joblib` **or** LoRA adapter **directory** |
+| `SWYTCHCODE_DEMO` | `true` (default) adds `--demo` to every `swytchcode exec` |
+| `SWYTCHCODE_BIN` | Override path to the CLI |
+| `WEAVIATE_URL` | Live Weaviate; local embeddings if unset / demo |
+| `SLACK_BOT_TOKEN` / `SLACK_CHANNEL_ID` | Red-tier NGO via Swytchcode Slack bot |
+| `TELEGRAM_*` / `RESEND_API_KEY` | Other NGO channels via Swytchcode |
+| `YOUTUBE_API_KEY` | Wellness video search via Swytchcode |
+| `FIRECRAWL_API_KEY` | Pharmacy crawl via Swytchcode |
+| `CLOUDINARY_URL` | Prescription upload via Swytchcode |
+| `GOOGLE_CALENDAR_TOKEN` | Booking event insert via Swytchcode |
 
 Frontend: `VITE_API_URL` for the Render origin. Local Vite proxies `/api` and `/ws`.
 

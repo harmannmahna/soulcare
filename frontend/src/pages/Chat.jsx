@@ -16,7 +16,7 @@ function fmtWhen(iso) {
 }
 
 export default function Chat() {
-  const { messages, risk, matches, busy, error, send, sessions, refreshSessions, newChat, openSession, sessionId, historyNote } =
+  const { messages, risk, matches, busy, error, send, sessions, refreshSessions, newChat, openSession, sessionId, historyNote, aiBackend } =
     useChat();
   const [text, setText] = useState("");
 
@@ -73,6 +73,13 @@ export default function Chat() {
               If things stay light, we talk. If they get serious, we suggest a therapist. If they are critical, we stop the
               AI, alert a partner NGO, and show helplines.
             </p>
+            {aiBackend === "mock" && (
+              <p className="mt-2 text-xs text-ink/45">
+                Demo companion is on (no Gemini key). Replies follow what you typed — for a full LLM, set{" "}
+                <code>GEMINI_API_KEY</code> and <code>DEMO_MODE=false</code> in <code>backend/.env</code>, then restart
+                uvicorn.
+              </p>
+            )}
           </div>
           <BreathingOrb active={busy} risk={risk.tier} className="h-24 w-24" />
         </div>
@@ -92,10 +99,29 @@ export default function Chat() {
         )}
         <div className="mt-5 max-h-[46vh] space-y-3 overflow-y-auto pr-1">
           {messages.length === 0 && !historyNote && (
-            <p className="text-sm text-ink/55">
-              Try a green check-in, yellow exam stress, or (for judges) a red phrase like “I want to kill myself” to see
-              the hard safety stop and NGO alert.
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm text-ink/55">
+                Use the <strong>User</strong> login (<code>demo@soulcare.app</code>). Replies work without Gemini
+                (MockAI). Therapist cards appear only on <strong>yellow</strong> — a green “hi” will not recommend
+                anyone.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ["Green", "I want to start meditating after work"],
+                  ["Yellow · match", "JEE exam stress is crushing me"],
+                  ["Red · stop AI", "I want to kill myself"],
+                ].map(([label, sample]) => (
+                  <button
+                    key={label}
+                    type="button"
+                    className="rounded-full bg-sand px-3 py-1 text-xs text-moss"
+                    onClick={() => setText(sample)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
           {messages.map((m, i) => (
             <motion.div

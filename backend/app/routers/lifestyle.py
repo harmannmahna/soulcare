@@ -294,45 +294,36 @@ WELLNESS_VIDEOS = [
 
 @router.get("/wellness/videos")
 async def wellness_videos():
-    """Curated YouTube embeds. Live search is optional when YOUTUBE_API_KEY is set."""
-    from app.config import get_settings
+    """YouTube via Swytchcode, plus curated embeds so the page never goes empty."""
+    from app.services.swytchcode_exec import exec_tool
 
     rows = list(WELLNESS_VIDEOS)
-    key = get_settings().youtube_api_key
-    if key:
-        try:
-            import httpx
-
-            params = {
-                "part": "snippet",
-                "q": "guided breathing exercise anxiety",
-                "type": "video",
-                "maxResults": 3,
-                "key": key,
-                "safeSearch": "strict",
+    swy = await exec_tool(
+        "youtube_search",
+        params={"part": ["snippet"], "q": "guided breathing exercise anxiety", "type": "video", "maxResults": 3},
+    )
+    result = swy.get("result") or {}
+    items = []
+    blob = result.get("result") or result.get("data") or result
+    if isinstance(blob, dict):
+        items = blob.get("items") or []
+    for item in items:
+        vid = ((item.get("id") or {}) if isinstance(item, dict) else {}).get("videoId")
+        snippet = (item.get("snippet") or {}) if isinstance(item, dict) else {}
+        if not vid:
+            continue
+        rows.append(
+            {
+                "id": f"yt_{vid}",
+                "title": snippet.get("title") or "Wellness video",
+                "topic": "youtube",
+                "youtube_id": vid,
+                "embed": f"https://www.youtube.com/embed/{vid}",
+                "why": "Swytchcode YouTube search",
+                "source": "swytchcode:youtube.search.list",
             }
-            async with httpx.AsyncClient(timeout=6) as client:
-                res = await client.get("https://www.googleapis.com/youtube/v3/search", params=params)
-            data = res.json()
-            for item in data.get("items") or []:
-                vid = (item.get("id") or {}).get("videoId")
-                snippet = item.get("snippet") or {}
-                if not vid:
-                    continue
-                rows.append(
-                    {
-                        "id": f"yt_{vid}",
-                        "title": snippet.get("title") or "Wellness video",
-                        "topic": "youtube",
-                        "youtube_id": vid,
-                        "embed": f"https://www.youtube.com/embed/{vid}",
-                        "why": "Live YouTube search result.",
-                        "source": "youtube_api",
-                    }
-                )
-        except Exception:  # noqa: BLE001
-            pass
-    return {"videos": rows, "live": bool(key)}
+        )
+    return {"videos": rows, "live": bool(swy.get("ok") and not swy.get("demo")), "via": "swytchcode"}
 
 
 @router.get("/partners/info")

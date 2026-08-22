@@ -53,4 +53,5 @@ def public_user(user: dict) -> dict:
         "room_items": user.get("room_items") or [],
         "avatar": user.get("avatar"),
         "friends": user.get("friends") or [],
+        "role": user.get("role") or "user",
     }

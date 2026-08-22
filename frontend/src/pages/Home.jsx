@@ -43,7 +43,25 @@ export default function Home() {
               <Button variant="ghost">Browse resources</Button>
             </Link>
           </div>
-          <p className="mt-6 text-sm text-moss/70">Demo login: demo@soulcare.app / Demo@123</p>
+          <p className="mt-6 text-sm text-moss/70">
+            Three desks, one password <strong>Demo@123</strong> — pick a role on{" "}
+            <Link className="text-sage underline" to="/login">
+              Sign in
+            </Link>
+            .
+          </p>
+          <div className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
+            {[
+              ["User laptop", "demo@soulcare.app"],
+              ["Therapist laptop", "therapist@soulcare.app"],
+              ["B2B laptop", "b2b@soulcare.app"],
+            ].map(([title, email]) => (
+              <Link key={email} to="/login" className="rounded-2xl bg-sand px-3 py-2">
+                <p className="font-semibold">{title}</p>
+                <p className="truncate text-xs text-ink/50">{email}</p>
+              </Link>
+            ))}
+          </div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}

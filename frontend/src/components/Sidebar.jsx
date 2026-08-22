@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { genderLabel, initials } from "../lib/flow";
+import { genderLabel, initials, roleOf } from "../lib/flow";
 import ProfileEditForm from "./ProfileEditForm";
 
 const LINKS = [
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/chat", label: "Talk now" },
-  { to: "/therapists", label: "Find a therapist" },
-  { to: "/help", label: "Help nearby" },
-  { to: "/wellness", label: "Explore wellness" },
-  { to: "/pharmacy", label: "Pharmacy" },
-  { to: "/focus", label: "Focus time" },
-  { to: "/phone-habit", label: "Phone habit" },
-  { to: "/habits", label: "Habits" },
-  { to: "/community", label: "Community" },
-  { to: "/admin", label: "Admin ops" },
-  { to: "/b2b-demo", label: "B2B reports" },
-  { to: "/surveillance", label: "Campus insight" },
-  { to: "/partner", label: "Partner desk" },
-  { to: "/settings", label: "Settings" },
+  { to: "/dashboard", label: "Dashboard", roles: ["user"] },
+  { to: "/chat", label: "Talk now", roles: ["user"] },
+  { to: "/therapists", label: "Find a therapist", roles: ["user"] },
+  { to: "/help", label: "Help nearby", roles: ["user"] },
+  { to: "/wellness", label: "Explore wellness", roles: ["user"] },
+  { to: "/pharmacy", label: "Pharmacy", roles: ["user"] },
+  { to: "/focus", label: "Focus time", roles: ["user"] },
+  { to: "/phone-habit", label: "Phone habit", roles: ["user"] },
+  { to: "/habits", label: "Habits", roles: ["user"] },
+  { to: "/community", label: "Community", roles: ["user"] },
+  { to: "/admin", label: "Admin ops", roles: ["user", "b2b"] },
+  { to: "/b2b-demo", label: "B2B reports", roles: ["b2b"] },
+  { to: "/surveillance", label: "Campus insight", roles: ["b2b"] },
+  { to: "/partner", label: "Partner desk", roles: ["therapist"] },
+  { to: "/settings", label: "Settings", roles: ["user", "therapist", "b2b"] },
 ];
 
 export default function Sidebar({ user }) {
@@ -28,6 +28,8 @@ export default function Sidebar({ user }) {
   const { logout } = useAuth();
   const [editing, setEditing] = useState(false);
   const female = String(user?.gender || "").toLowerCase() === "female";
+  const role = roleOf(user);
+  const links = LINKS.filter((l) => !l.roles || l.roles.includes(role));
 
   return (
     <aside className="sticky top-0 hidden h-[calc(100vh-40px)] w-72 shrink-0 flex-col border-r border-moss/10 bg-foam/80 px-5 py-6 backdrop-blur md:flex">
@@ -70,8 +72,8 @@ export default function Sidebar({ user }) {
       </div>
 
       <nav className="mt-5 flex-1 space-y-0.5 overflow-y-auto text-sm">
-        {LINKS.filter((l) => l.to !== "/habits" || true)
-          .concat(female ? [{ to: "/period", label: "Period tracker" }] : [])
+        {links
+          .concat(female && role === "user" ? [{ to: "/period", label: "Period tracker" }] : [])
           .map((l) => {
             const active = loc.pathname === l.to || loc.pathname.startsWith(`${l.to}/`);
             return (

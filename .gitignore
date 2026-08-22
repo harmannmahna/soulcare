@@ -38,3 +38,8 @@ mongo-data/
 # Coverage
 .coverage
 htmlcov/
+
+# Swytchcode lockfiles (keep tooling.json + wrekenfiles)
+.swytchcode/*.lock
+.swytchcode/integrations/*.lock
+.swytchcode/tooling.json.lock

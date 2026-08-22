@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     youtube_api_key: str = ""
     cloudinary_url: str = ""
     firecrawl_api_key: str = ""
+    slack_bot_token: str = ""
+    slack_channel_id: str = ""
+    google_calendar_token: str = ""
+    swytchcode_bin: str = ""
+    swytchcode_demo: bool = True
 
     @property
     def cors_origin_list(self) -> list[str]:

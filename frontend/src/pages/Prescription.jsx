@@ -15,7 +15,10 @@ export default function Prescription() {
   return (
     <Card className="mx-auto max-w-lg">
       <h1 className="font-display text-3xl">Prescription upload</h1>
-      <p className="mt-2 text-sm text-rose/80">Demo scope only — metadata, not a medical record store.</p>
+      <p className="mt-2 text-sm text-rose/80">
+        Demo scope only — metadata, not a medical record store. File names go through Swytchcode Cloudinary
+        (`cloudinary.upload.create`); no clinical image is stored.
+      </p>
       <form className="mt-5 space-y-3" onSubmit={submit}>
         <Input label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         <Input label="Doctor" value={form.doctor} onChange={(e) => setForm({ ...form, doctor: e.target.value })} />
