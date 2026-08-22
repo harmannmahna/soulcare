@@ -4,7 +4,7 @@ Qwen is **not** the chatbot. Swytchcode is **not** the chatbot.
 
 | What you see | What actually runs | Env file |
 | --- | --- | --- |
-| Chat replies (green / yellow) | **Gemini** if `GEMINI_API_KEY` is set and `DEMO_MODE=false`, else **MockAI** (always works) | `backend/.env` |
+| Chat replies (green / yellow) | **Gemini** whenever `GEMINI_API_KEY` is set (current flash models), else **MockAI** | `backend/.env` |
 | Therapist cards after a message | Only when risk is **yellow**. Ranked via **Swytchcode Weaviate**, else local TF-IDF | `backend/.env` (`WEAVIATE_*` optional) |
 | Crisis stop + 112 / 14416 | Keyword + sklearn (or Qwen LoRA if you trained it) | `RISK_MODEL_PATH` only if LoRA folder exists |
 | Slack / pharmacy / YouTube / calendar | **Swytchcode CLI** (`swytchcode exec`) | `backend/.env` + `SWYTCHCODE_DEMO` |
@@ -41,12 +41,11 @@ Copy from `.env.example` if the file is missing. Restart uvicorn after every cha
 
 ### Chatbot (Gemini vs MockAI)
 
-There is **no markdown file of chatbot lines**. The repeating “breathe / drink water” reply was MockAI’s old single template in `backend/app/services/ai.py`. It now follows greetings and your last message (hello → how are you, “I’m fine” → what’s on your mind).
+There is **no markdown file of chatbot lines**. The repeating “breathe / drink water” reply was MockAI’s old single template in `backend/app/services/ai.py`, and was also triggered when `DEMO_MODE=true` forced MockAI even with a key, or when the model IDs were retired (1.5/2.0 flash → 404 → MockAI fallback).
 
-Without a Gemini key, that companion still runs:
+Without a Gemini key, the companion still runs on MockAI:
 
 ```
-DEMO_MODE=true
 GEMINI_API_KEY=
 ```
 
@@ -54,10 +53,13 @@ For a real open-ended LLM conversation:
 
 ```
 DEMO_MODE=false
-GEMINI_API_KEY=AIza...your-google-ai-studio-key
+GEMINI_API_KEY=AIza...or AQ....your-google-ai-studio-key
+GEMINI_MODELS=gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-flash-latest
 ```
 
-Get a key: [Google AI Studio](https://aistudio.google.com/apikey). Restart uvicorn. `GET /health` should show `"ai": "gemini"`. This is **not** a Swytchcode key and **not** Qwen.
+Get a key: [Google AI Studio](https://aistudio.google.com/apikey). Restart uvicorn. `GET /health` should show `"ai": "gemini"` and `"gemini_key_present": true`. This is **not** a Swytchcode key and **not** Qwen.
+
+`DEMO_MODE` no longer disables Gemini — only a missing `GEMINI_API_KEY` does.
 
 ### Swytchcode (already in the code)
 

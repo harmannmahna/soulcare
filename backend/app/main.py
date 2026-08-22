@@ -47,12 +47,15 @@ async def rate_limit_middleware(request, call_next):
 
 @app.get("/health")
 async def health():
+    ai = "mock" if settings.use_mock_ai else "gemini"
     return {
         "ok": True,
         "service": "soulcare",
         "mongo_ready": store.mongo_ready,
         "demo_mode": settings.demo_mode,
-        "ai": "mock" if settings.use_mock_ai else "gemini",
+        "ai": ai,
+        "gemini_key_present": bool((settings.gemini_api_key or "").strip()),
+        "gemini_models": settings.gemini_model_list if ai == "gemini" else [],
     }
 
 
