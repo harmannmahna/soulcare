@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime, timezone
 
 from app.services.alerts import hub
-from app.services.ai import get_ai_provider
+from app.services.ai import get_ai_provider, provider_label
 from app.services.ngo_notify import notify_red, safety_copy
 from app.services.risk_triage import RiskTier, classify_risk, public_risk_payload
 from app.services.therapist_matching import rank_therapists
@@ -148,6 +148,7 @@ async def handle_turn(
             "risk": public,
             "reply": reply,
             "llm_used": False,
+            "ai_backend": "safety_script",
             "therapists": [],
             "event_id": event["id"],
         }
@@ -203,6 +204,7 @@ async def handle_turn(
         "risk": public,
         "reply": reply,
         "llm_used": True,
+        "ai_backend": provider_label(),
         "therapists": therapists,
         "event_id": event["id"],
     }

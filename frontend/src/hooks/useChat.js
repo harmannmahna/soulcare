@@ -10,6 +10,7 @@ export function useChat() {
   const [error, setError] = useState("");
   const [sessions, setSessions] = useState([]);
   const [historyNote, setHistoryNote] = useState(null);
+  const [aiBackend, setAiBackend] = useState("");
 
   async function refreshSessions() {
     try {
@@ -37,6 +38,7 @@ export function useChat() {
     setRisk({ tier: "green" });
     setMatches([]);
     setHistoryNote(null);
+    setAiBackend("");
     setError("");
     refreshSessions();
     return session.id;
@@ -69,6 +71,7 @@ export function useChat() {
       setSessionId(data.session_id);
       setRisk(data.risk);
       setMatches(data.therapists || []);
+      if (data.ai_backend) setAiBackend(data.ai_backend);
       setMessages((m) => [...m, { role: "assistant", text: data.reply, risk: data.risk }]);
       if (data.risk?.tier === "yellow") {
         sessionStorage.setItem("sc_last_problem", text);
@@ -101,6 +104,7 @@ export function useChat() {
     newChat,
     openSession,
     historyNote,
+    aiBackend,
   };
 }
 

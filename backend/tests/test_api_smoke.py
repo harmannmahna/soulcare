@@ -23,6 +23,7 @@ def test_health_and_chat_pipeline():
         assert green.status_code == 200
         assert green.json()["risk"]["tier"] == "green"
         assert green.json()["llm_used"] is True
+        assert "habit" in green.json()["reply"].lower() or "meditat" in green.json()["reply"].lower() or "walk" in green.json()["reply"].lower()
 
         yellow = client.post(
             "/api/v1/chat/messages",

@@ -39,23 +39,25 @@ Path: `C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\backend\.env`
 
 Copy from `.env.example` if the file is missing. Restart uvicorn after every change.
 
-### Chatbot (optional Gemini)
+### Chatbot (Gemini vs MockAI)
 
-Without a Gemini key, chat **still works** (MockAI). You only need Gemini for a more “real” LLM tone.
+There is **no markdown file of chatbot lines**. The repeating “breathe / drink water” reply was MockAI’s old single template in `backend/app/services/ai.py`. It now follows greetings and your last message (hello → how are you, “I’m fine” → what’s on your mind).
+
+Without a Gemini key, that companion still runs:
 
 ```
 DEMO_MODE=true
 GEMINI_API_KEY=
 ```
 
-Live Gemini:
+For a real open-ended LLM conversation:
 
 ```
 DEMO_MODE=false
 GEMINI_API_KEY=AIza...your-google-ai-studio-key
 ```
 
-Get a key: [Google AI Studio](https://aistudio.google.com/apikey). Free tier is enough. This is **not** a Swytchcode key and **not** Qwen.
+Get a key: [Google AI Studio](https://aistudio.google.com/apikey). Restart uvicorn. `GET /health` should show `"ai": "gemini"`. This is **not** a Swytchcode key and **not** Qwen.
 
 ### Swytchcode (already in the code)
 

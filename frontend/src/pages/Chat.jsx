@@ -16,7 +16,7 @@ function fmtWhen(iso) {
 }
 
 export default function Chat() {
-  const { messages, risk, matches, busy, error, send, sessions, refreshSessions, newChat, openSession, sessionId, historyNote } =
+  const { messages, risk, matches, busy, error, send, sessions, refreshSessions, newChat, openSession, sessionId, historyNote, aiBackend } =
     useChat();
   const [text, setText] = useState("");
 
@@ -73,6 +73,13 @@ export default function Chat() {
               If things stay light, we talk. If they get serious, we suggest a therapist. If they are critical, we stop the
               AI, alert a partner NGO, and show helplines.
             </p>
+            {aiBackend === "mock" && (
+              <p className="mt-2 text-xs text-ink/45">
+                Demo companion is on (no Gemini key). Replies follow what you typed — for a full LLM, set{" "}
+                <code>GEMINI_API_KEY</code> and <code>DEMO_MODE=false</code> in <code>backend/.env</code>, then restart
+                uvicorn.
+              </p>
+            )}
           </div>
           <BreathingOrb active={busy} risk={risk.tier} className="h-24 w-24" />
         </div>
