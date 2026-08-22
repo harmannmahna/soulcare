@@ -73,7 +73,7 @@ npm install
 npm run dev
 ```
 
-Windows + Swytchcode: follow **`docs/swytchcode-setup.md`** (`swytchcode login`, `bootstrap`, `auth connect`, then keys in `backend/.env`).
+Windows + Swytchcode: **`docs/swytchcode-setup.md`**. Login is not enough — you must `git checkout cursor/swytchcode-roles-qwen-d271` so `.swytchcode/tooling.json` exists, then run `bootstrap` **from that folder** (not `C:\WINDOWS\System32`, and not the placeholder `C:\path\to\soulcare`). On the Lenovo clone that is `C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare`.
 
 LoRA training: follow **`docs/qwen-lora.md`** (Colab T4, no paid API; optional free `HF_TOKEN`).
 
