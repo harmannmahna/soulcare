@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from app.config import get_settings
 from app.deps import require_user
 from app.services.avatar_turn import run_avatar_turn
-from app.services.did_avatar import presenter_url
 from app.services.pipeline import ensure_session
 
 router = APIRouter(prefix="/avatar", tags=["avatar"])
@@ -14,11 +13,7 @@ router = APIRouter(prefix="/avatar", tags=["avatar"])
 @router.get("/config")
 async def avatar_config(user: dict = Depends(require_user)):
     settings = get_settings()
-    return {
-        "presenter_url": presenter_url(),
-        "hume_configured": bool(settings.hume_api_key),
-        "did_configured": bool(settings.d_id_api_key),
-    }
+    return {"hume_configured": bool(settings.hume_api_key)}
 
 
 @router.post("/session")
@@ -32,7 +27,7 @@ async def start_session(user: dict = Depends(require_user)):
         consent=True,
     )
     session.pop("_id", None)
-    return {"session": session, "presenter_url": presenter_url()}
+    return {"session": session}
 
 
 @router.post("/turn")

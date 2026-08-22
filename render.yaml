@@ -45,7 +45,3 @@ services:
         sync: false
       - key: HUME_SECRET_KEY
         sync: false
-      - key: D_ID_API_KEY
-        sync: false
-      - key: D_ID_PRESENTER_URL
-        sync: false
