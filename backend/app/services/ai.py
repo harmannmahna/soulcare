@@ -36,6 +36,15 @@ How you work:
 - Never repeat your previous reply. Vary wording every turn.
 """
 
+VOICE_PREAMBLE = """VOICE CALL MODE (spoken aloud by TTS):
+- Write only speakable sentences. No markdown, bullets, emoji, or stage directions.
+- Prefer 2–3 short sentences (about 40–70 words). One question max.
+- First reflect the situation they described and how their voice sounds (if tone notes are given).
+- Then respond to that specific situation — not a generic “take a breath / drink water” script.
+- If tone and words disagree (calm words, distressed tone), gently name the tension and invite one honest line.
+- Stay with the thread: exams, sleep, family, work, loneliness — use their details.
+"""
+
 
 def provider_label() -> str:
     return "mock" if get_settings().use_mock_ai else "gemini"
@@ -162,6 +171,155 @@ def _task_nudge(extra_context: str, hinglish: bool) -> str:
     return f" You had '{title}' due today — how did that go?"
 
 
+def _spoken_situation_reply(
+    user_text: str,
+    *,
+    yellow: bool,
+    hinglish: bool,
+    extra_context: str,
+    history: list[dict] | None,
+) -> str | None:
+    """When MockAI is used on voice, answer from situation notes + transcript."""
+    blob = (extra_context or "").lower()
+    if "voice-call situation" not in blob and "likely situation" not in blob:
+        return None
+
+    snippet = " ".join((user_text or "").split())[:70]
+    preview = f"“{snippet}”" if snippet else "what you shared"
+    tone_gap = "words sound composed but the voice carries distress" in blob
+    voice_hot = "voice sounds strained" in blob or "vocal risk read: yellow" in blob or "vocal risk read: red" in blob
+
+    if "exam" in blob or "academic" in blob or "study" in blob:
+        if hinglish:
+            base = (
+                f"Exam wala pressure asl mein bhaari lag raha hai — tumne {preview} kaha. "
+                "Syllabus nahi, agla ek chhota tukda kaun sa hai jo aaj khatam kar sakte ho?"
+            )
+        else:
+            base = (
+                f"Exam pressure is sitting on you — you said {preview}. "
+                "Forget the whole syllabus for a minute: what’s the next small chunk you could finish today?"
+            )
+    elif "sleep" in blob:
+        if hinglish:
+            base = (
+                f"Neend kharab hone se sab tight lagta hai — {preview}. "
+                "Raat mein dimaag late band hota hai, ya subah thakaan pehle se hai?"
+            )
+        else:
+            base = (
+                f"Broken sleep makes everything louder — {preview}. "
+                "Is your mind staying on late, or are you waking already tired?"
+            )
+    elif "work" in blob or "burnout" in blob:
+        if hinglish:
+            base = (
+                f"Kaam ka bojh saaf sunai de raha hai — {preview}. "
+                "Hours zyada hain, log, ya woh Sunday-night wali ghabrahat?"
+            )
+        else:
+            base = (
+                f"Work stress is coming through clearly — {preview}. "
+                "Is it the hours, the people, or that Sunday-night dread?"
+            )
+    elif "family" in blob:
+        if hinglish:
+            base = (
+                f"Ghar wali tension dil pe baith jaati hai — {preview}. "
+                "Abhi sabse zyada kya chubh raha hai — expectation, ladai, ya akelapan ghar mein?"
+            )
+        else:
+            base = (
+                f"Family stress lands in the body fast — {preview}. "
+                "What is biting hardest right now — expectations, conflict, or feeling alone at home?"
+            )
+    elif "loneliness" in blob or "lonely" in blob:
+        if hinglish:
+            base = (
+                f"Akelapan bhi ek real dard hai — {preview}. "
+                "Aaj kis pal mein yeh sabse zyada mehsoos hua?"
+            )
+        else:
+            base = (
+                f"Loneliness is a real weight — {preview}. "
+                "When did it hit hardest today?"
+            )
+    elif "grief" in blob or "loss" in blob:
+        if hinglish:
+            base = (
+                f"Yeh gum halka nahi hota — {preview}. "
+                "Abhi sirf sunne ki zarurat hai, ya kisi yaad ke baare mein bolna hai?"
+            )
+        else:
+            base = (
+                f"Grief doesn’t ask for tidy answers — {preview}. "
+                "Do you need quiet company right now, or to name one memory out loud?"
+            )
+    elif "anxiety" in blob or "anxious" in blob:
+        if hinglish:
+            base = (
+                f"Anxiety body mein bhi chalti hai — {preview}. "
+                "Abhi sabse tez kaun sa khayal ghoom raha hai?"
+            )
+        else:
+            base = (
+                f"Anxiety shows up in the body too — {preview}. "
+                "Which thought is looping the loudest right now?"
+            )
+    elif "depression" in blob or "low mood" in blob or "heaviness" in blob:
+        if hinglish:
+            base = (
+                f"Yeh wazan asl hai — {preview}. "
+                "Aaj kaun sa pal thoda bhaari tha, ek seedhi si line mein?"
+            )
+        else:
+            base = (
+                f"That heaviness is real — {preview}. "
+                "What part of today felt heaviest, in one honest line?"
+            )
+    elif tone_gap:
+        if hinglish:
+            base = (
+                f"Alfaz theek lag rahe hain, lekin awaaz mein tension sunai de rahi hai — {preview}. "
+                "Andar kya chal raha hai, ek seedhi si baat?"
+            )
+        else:
+            base = (
+                f"Your words sound composed, but your voice carries strain — {preview}. "
+                "What’s sitting underneath, in one honest line?"
+            )
+    elif voice_hot:
+        if hinglish:
+            base = (
+                f"Awaaz mein strain sunai de raha hai — {preview}. "
+                "Pehle yeh feel acknowledge karte hain: abhi kya sabse tight hai?"
+            )
+        else:
+            base = (
+                f"I’m hearing strain in your voice — {preview}. "
+                "Before fixes: what feels tightest in this moment?"
+            )
+    else:
+        return None
+
+    if yellow:
+        base += _yellow_tail(hinglish=hinglish)
+    turns = len([h for h in (history or []) if h.get("role") == "user"])
+    if turns == 0:
+        base = base.rstrip() + _memory_nudge(extra_context, hinglish)
+    return base
+
+
+def _strip_spoken(text: str) -> str:
+    """TTS-safe cleanup: drop markdown/bullets that sound broken aloud."""
+    cleaned = (text or "").strip()
+    cleaned = re.sub(r"[#*_`]+", "", cleaned)
+    cleaned = re.sub(r"^\s*[-•]\s+", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r"\n{2,}", " ", cleaned)
+    cleaned = re.sub(r"\s{2,}", " ", cleaned)
+    return cleaned.strip()
+
+
 def _extract_gemini_text(data: dict[str, Any]) -> str:
     """Pull assistant text from a generateContent payload (multi-part safe)."""
     candidates = data.get("candidates") or []
@@ -177,6 +335,43 @@ def _extract_gemini_text(data: dict[str, Any]) -> str:
     return text
 
 
+def looks_hinglish(text: str) -> bool:
+    """Heuristic: Devanagari script or several common Hinglish tokens."""
+    raw = text or ""
+    if any("\u0900" <= ch <= "\u097f" for ch in raw):
+        return True
+    tokens = set(re.findall(r"[a-z']+", raw.lower()))
+    markers = {
+        "hai",
+        "hoon",
+        "hain",
+        "nahi",
+        "nahin",
+        "yaar",
+        "bahut",
+        "kyun",
+        "kya",
+        "mera",
+        "meri",
+        "tum",
+        "acha",
+        "accha",
+        "theek",
+        "padhai",
+        "tension",
+        "dil",
+        "bas",
+        "abhi",
+        "mat",
+        "raha",
+        "rahi",
+        "kaise",
+        "kaisa",
+        "bohot",
+    }
+    return len(tokens & markers) >= 2
+
+
 class AIProvider:
     async def generate(
         self,
@@ -187,6 +382,7 @@ class AIProvider:
         history: list[dict] | None = None,
         extra_context: str = "",
         character: dict | None = None,
+        spoken: bool = False,
     ) -> str:
         raise NotImplementedError
 
@@ -201,7 +397,18 @@ class MockAI(AIProvider):
         history: list[dict] | None = None,
         extra_context: str = "",
         character: dict | None = None,
+        spoken: bool = False,
     ) -> str:
+        if spoken:
+            situational = _spoken_situation_reply(
+                user_text,
+                yellow=yellow,
+                hinglish=hinglish,
+                extra_context=extra_context,
+                history=history,
+            )
+            if situational:
+                return _strip_spoken(situational)
         reply = _mock_reply(user_text, yellow=yellow, hinglish=hinglish, history=history)
         turns = len([h for h in (history or []) if h.get("role") == "user"])
         if character and turns == 0 and _intent(user_text, history) == "greeting":
@@ -212,7 +419,7 @@ class MockAI(AIProvider):
             reply = reply.rstrip() + _memory_nudge(extra_context, hinglish)
         if turns > 0 and turns % 3 == 1:
             reply = reply.rstrip() + _task_nudge(extra_context, hinglish)
-        return reply
+        return _strip_spoken(reply) if spoken else reply
 
 
 class GeminiAI(AIProvider):
@@ -229,6 +436,7 @@ class GeminiAI(AIProvider):
         history: list[dict] | None = None,
         extra_context: str = "",
         character: dict | None = None,
+        spoken: bool = False,
     ) -> str:
         tone = "Reply in warm Hinglish." if hinglish else "Reply in clear, gentle English."
         risk = (
@@ -254,8 +462,9 @@ class GeminiAI(AIProvider):
             contents.append({"role": role, "parts": [{"text": str(turn.get("text") or "")[:800]}]})
         contents.append({"role": "user", "parts": [{"text": user_text[:4000]}]})
 
+        voice_block = VOICE_PREAMBLE if spoken else ""
         system = (
-            f"{SYSTEM_PREAMBLE}\n{tone}\n{risk}\n{persona}\n"
+            f"{SYSTEM_PREAMBLE}\n{voice_block}\n{tone}\n{risk}\n{persona}\n"
             f"Thread so far:\n{history_block}\n"
             f"{context}"
         ).strip()
@@ -272,9 +481,9 @@ class GeminiAI(AIProvider):
                             "systemInstruction": {"parts": [{"text": system}]},
                             "contents": contents,
                             "generationConfig": {
-                                "temperature": 0.85,
+                                "temperature": 0.7 if spoken else 0.85,
                                 "topP": 0.95,
-                                "maxOutputTokens": 512,
+                                "maxOutputTokens": 280 if spoken else 512,
                             },
                             "safetySettings": [
                                 {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
@@ -288,13 +497,23 @@ class GeminiAI(AIProvider):
                         raise RuntimeError(f"{model} HTTP {response.status_code}: {response.text[:240]}")
                     text = _extract_gemini_text(response.json())
                     logger.info("Gemini reply via %s (%d chars)", model, len(text))
-                    return text
+                    return _strip_spoken(text) if spoken else text
                 except Exception as exc:  # noqa: BLE001
                     logger.warning("Gemini model %s failed: %s", model, exc)
                     last_error = exc
                     continue
         logger.error("All Gemini models failed (%s); using MockAI", last_error)
-        return _mock_reply(user_text, yellow=yellow, hinglish=hinglish, history=history)
+        fallback = _spoken_situation_reply(
+            user_text,
+            yellow=yellow,
+            hinglish=hinglish,
+            extra_context=extra_context,
+            history=history,
+        )
+        if spoken and fallback:
+            return _strip_spoken(fallback)
+        reply = _mock_reply(user_text, yellow=yellow, hinglish=hinglish, history=history)
+        return _strip_spoken(reply) if spoken else reply
 
 
 def get_ai_provider() -> AIProvider:
