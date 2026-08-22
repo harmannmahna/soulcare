@@ -213,10 +213,12 @@ Then restart uvicorn.
 
 ## 6. Run the API
 
+This folder is **Python / FastAPI**. Do not run an old Node `nodemon server.js` — there is no `server.js`. If `backend/package.json` still says `nodemon`, delete it (or `git pull`) so `npm run dev` only starts uvicorn.
+
 ```powershell
 Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\backend
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
 if (-not (Test-Path .env)) { copy .env.example .env }
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
