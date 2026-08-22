@@ -11,6 +11,9 @@ export function useChat() {
   const [sessions, setSessions] = useState([]);
   const [historyNote, setHistoryNote] = useState(null);
   const [aiBackend, setAiBackend] = useState("");
+  const [actions, setActions] = useState([]);
+  const [openTasks, setOpenTasks] = useState([]);
+  const [ended, setEnded] = useState(null);
 
   async function refreshSessions() {
     try {
@@ -22,17 +25,24 @@ export function useChat() {
     }
   }
 
-  async function ensureSession(channel = "chat") {
+  async function ensureSession(channel = "chat", characterId) {
     if (sessionId) return sessionId;
-    const session = await api("/api/v1/chat/sessions", { method: "POST", body: { channel } });
+    const session = await api("/api/v1/chat/sessions", {
+      method: "POST",
+      body: { channel, character_id: characterId },
+    });
     setSessionId(session.id);
     setHistoryNote(null);
+    setEnded(null);
     refreshSessions();
     return session.id;
   }
 
-  async function newChat(channel = "chat") {
-    const session = await api("/api/v1/chat/sessions", { method: "POST", body: { channel } });
+  async function newChat(channel = "chat", characterId) {
+    const session = await api("/api/v1/chat/sessions", {
+      method: "POST",
+      body: { channel, character_id: characterId },
+    });
     setSessionId(session.id);
     setMessages([]);
     setRisk({ tier: "green" });
@@ -40,6 +50,8 @@ export function useChat() {
     setHistoryNote(null);
     setAiBackend("");
     setError("");
+    setActions([]);
+    setEnded(null);
     refreshSessions();
     return session.id;
   }
@@ -50,28 +62,39 @@ export function useChat() {
     setMatches([]);
     setRisk({ tier: row.last_tier || row.peak_tier || "green" });
     setHistoryNote({
-      started_at: row.started_at,
+      started_at: row.started_at || row.created_at,
       peak_tier: row.peak_tier || row.last_tier,
       last_tier: row.last_tier,
       summary: row.summary,
       last_companion_preview: row.last_companion_preview,
       turn_count: row.turn_count,
     });
+    setEnded(null);
   }
 
-  async function send(text, channel = "chat") {
+  async function send(text, channel = "chat", extras = {}) {
     setBusy(true);
     setError("");
     const optimistic = { role: "user", text };
     setMessages((m) => [...m, optimistic]);
     try {
-      const sid = await ensureSession(channel);
+      const sid = await ensureSession(channel, extras.character_id);
       const path = channel === "call" ? "/api/v1/call/turn" : "/api/v1/chat/messages";
-      const data = await api(path, { method: "POST", body: { text, session_id: sid } });
+      const data = await api(path, {
+        method: "POST",
+        body: {
+          text,
+          session_id: sid,
+          character_id: extras.character_id,
+          vocal_features: extras.vocal_features || undefined,
+        },
+      });
       setSessionId(data.session_id);
       setRisk(data.risk);
       setMatches(data.therapists || []);
       if (data.ai_backend) setAiBackend(data.ai_backend);
+      setActions(data.actions || []);
+      if (data.open_tasks) setOpenTasks(data.open_tasks);
       setMessages((m) => [...m, { role: "assistant", text: data.reply, risk: data.risk }]);
       if (data.risk?.tier === "yellow") {
         sessionStorage.setItem("sc_last_problem", text);
@@ -90,6 +113,26 @@ export function useChat() {
     }
   }
 
+  async function closeIdle(reason = "idle") {
+    if (!sessionId) return null;
+    try {
+      const data = await api("/api/v1/companion/close", {
+        method: "POST",
+        body: { session_id: sessionId, reason },
+      });
+      setEnded(data);
+      setSessionId(null);
+      refreshSessions();
+      return data;
+    } catch {
+      setEnded({
+        goodbye: "I'll let you go for now. Take care of yourself today.",
+        quote: "You do not have to solve everything before you put the phone down.",
+      });
+      return null;
+    }
+  }
+
   return {
     sessionId,
     messages,
@@ -105,6 +148,12 @@ export function useChat() {
     openSession,
     historyNote,
     aiBackend,
+    actions,
+    openTasks,
+    setOpenTasks,
+    ended,
+    setEnded,
+    closeIdle,
   };
 }
 

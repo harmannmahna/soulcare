@@ -1,10 +1,17 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 
-function PulseOrb({ active, risk }) {
+function PulseOrb({ active, risk, tone }) {
   const mesh = useRef();
   const glow = useRef();
-  const color = risk === "red" ? "#B55252" : risk === "yellow" ? "#C4922A" : "#5A9E7E";
+  const color =
+    risk === "red"
+      ? "#B55252"
+      : risk === "yellow"
+        ? "#C4922A"
+        : tone === "blue"
+          ? "#2F6FED"
+          : "#5A9E7E";
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const speed = active ? 2.6 : 1.15;
@@ -28,11 +35,11 @@ function PulseOrb({ active, risk }) {
   );
 }
 
-export function BreathingOrb({ active = false, risk = "green", className = "h-56" }) {
+export function BreathingOrb({ active = false, risk = "green", tone = "sage", className = "h-56" }) {
   return (
     <div className={`relative ${className}`}>
       <Canvas camera={{ position: [0, 0, 3.2], fov: 45 }}>
-        <PulseOrb active={active} risk={risk} />
+        <PulseOrb active={active} risk={risk} tone={tone} />
       </Canvas>
     </div>
   );

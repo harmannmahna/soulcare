@@ -73,3 +73,9 @@ def test_health_and_chat_pipeline():
         assert b2b.json()["scope"] == "aggregate_only"
         sessions = client.get("/api/v1/chat/sessions", headers=headers)
         assert sessions.status_code == 200
+        chars = client.get("/api/v1/companion/characters")
+        assert chars.status_code == 200
+        assert len(chars.json()["characters"]) >= 6
+        ctx = client.get("/api/v1/companion/context", headers=headers_demo)
+        assert ctx.status_code == 200
+        assert ctx.json()["character"]["id"]

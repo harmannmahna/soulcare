@@ -493,6 +493,7 @@ def _demo_user() -> dict:
         "friends": ["quiet-mango", "soft-neem"],
         "avatar": None,
         "role": "user",
+        "selected_character_id": "aisha",
     }
 
 
@@ -661,7 +662,48 @@ def _habits(user_id: str) -> list[dict]:
             "active": True,
             "log": grid([1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1]),
         },
+        {
+            "id": "hab_gate_mock",
+            "user_id": user_id,
+            "name": "finish GATE mock test",
+            "kind": "start",
+            "color": "#2F6FED",
+            "created_at": _dt(days=-3).isoformat(),
+            "active": True,
+            "log": [],
+        },
     ]
+
+
+async def _ensure_companion_seed() -> None:
+    if not await store.collection("conversation_summaries").find_one({"id": "sum_demo_exam"}):
+        await store.collection("conversation_summaries").insert_one(
+            {
+                "id": "sum_demo_exam",
+                "user_id": "usr_demo",
+                "session_id": "ses_demo_past",
+                "date": (NOW.date() - timedelta(days=4)).isoformat(),
+                "summary": "Session covered exam stress across 4 turns (peak yellow). Suggested therapists. No raw transcript kept.",
+                "peak_tier": "yellow",
+                "character_id": "aisha",
+                "reason": "close",
+                "created_at": _dt(days=-4).isoformat(),
+            }
+        )
+    if not await store.collection("conversation_summaries").find_one({"id": "sum_demo_sleep"}):
+        await store.collection("conversation_summaries").insert_one(
+            {
+                "id": "sum_demo_sleep",
+                "user_id": "usr_demo",
+                "session_id": "ses_demo_sleep",
+                "date": (NOW.date() - timedelta(days=11)).isoformat(),
+                "summary": "Session covered sleep across 3 turns (peak green). No raw transcript kept.",
+                "peak_tier": "green",
+                "character_id": "kabir",
+                "reason": "close",
+                "created_at": _dt(days=-11).isoformat(),
+            }
+        )
 
 
 async def seed_if_needed() -> None:
@@ -670,6 +712,12 @@ async def seed_if_needed() -> None:
     if existing:
         patch = {}
         demo = _demo_user()
+        if not existing.get("selected_character_id"):
+            patch["selected_character_id"] = "aisha"
+        if not await store.collection("habits").find_one({"id": "hab_gate_mock", "user_id": "usr_demo"}):
+            gate = next((h for h in _habits("usr_demo") if h["id"] == "hab_gate_mock"), None)
+            if gate:
+                await store.collection("habits").insert_one(gate)
         for key in ("gender", "age", "weight", "height", "details_completed", "focus_points", "room_items", "friends"):
             if existing.get(key) in (None, "", [], False) and key != "focus_points":
                 patch[key] = demo[key]
@@ -709,6 +757,7 @@ async def seed_if_needed() -> None:
         if extra_med:
             await store.collection("medicines").insert_many(extra_med)
         await _ensure_role_accounts()
+        await _ensure_companion_seed()
         return
 
     await users.insert_one(_demo_user())
@@ -825,3 +874,4 @@ async def seed_if_needed() -> None:
             ],
         }
     )
+    await _ensure_companion_seed()

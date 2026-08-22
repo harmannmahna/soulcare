@@ -131,14 +131,67 @@ def _mock_reply(user_text: str, *, yellow: bool, hinglish: bool, history: list[d
     return base
 
 
+def _memory_nudge(extra_context: str, hinglish: bool) -> str:
+    blob = extra_context or ""
+    if "Last time:" not in blob:
+        return ""
+    last = blob.split("Last time:", 1)[-1].split("\n", 1)[0].strip().rstrip(".")
+    if not last:
+        return ""
+    if hinglish:
+        return f" Last time we touched on {last[:90]} — uske baad kaisa raha?"
+    return f" Last time we talked about {last[:90]} — how has that been since?"
+
+
+def _task_nudge(extra_context: str, hinglish: bool) -> str:
+    blob = extra_context or ""
+    marker = "ask about '"
+    if marker not in blob:
+        return ""
+    title = blob.split(marker, 1)[-1].split("'", 1)[0].strip()
+    if not title:
+        return ""
+    if hinglish:
+        return f" Aaj '{title}' due tha — kaisa gaya?"
+    return f" You had '{title}' due today — how did that go?"
+
+
 class AIProvider:
-    async def generate(self, user_text: str, *, yellow: bool, hinglish: bool, history: list[dict] | None = None) -> str:
+    async def generate(
+        self,
+        user_text: str,
+        *,
+        yellow: bool,
+        hinglish: bool,
+        history: list[dict] | None = None,
+        extra_context: str = "",
+        character: dict | None = None,
+    ) -> str:
         raise NotImplementedError
 
 
 class MockAI(AIProvider):
-    async def generate(self, user_text: str, *, yellow: bool, hinglish: bool, history: list[dict] | None = None) -> str:
-        return _mock_reply(user_text, yellow=yellow, hinglish=hinglish, history=history)
+    async def generate(
+        self,
+        user_text: str,
+        *,
+        yellow: bool,
+        hinglish: bool,
+        history: list[dict] | None = None,
+        extra_context: str = "",
+        character: dict | None = None,
+    ) -> str:
+        reply = _mock_reply(user_text, yellow=yellow, hinglish=hinglish, history=history)
+        turns = len([h for h in (history or []) if h.get("role") == "user"])
+        if character and turns == 0 and _intent(user_text, history) == "greeting":
+            greet = character.get("greeting")
+            if greet:
+                reply = greet
+        if turns == 0:
+            reply = reply.rstrip() + _memory_nudge(extra_context, hinglish)
+        if turns > 0 and turns % 3 == 1:
+            reply = reply.rstrip() + _task_nudge(extra_context, hinglish)
+        return reply
 
 
 class GeminiAI(AIProvider):
@@ -146,9 +199,25 @@ class GeminiAI(AIProvider):
         self.api_key = api_key
         self.models = models
 
-    async def generate(self, user_text: str, *, yellow: bool, hinglish: bool, history: list[dict] | None = None) -> str:
+    async def generate(
+        self,
+        user_text: str,
+        *,
+        yellow: bool,
+        hinglish: bool,
+        history: list[dict] | None = None,
+        extra_context: str = "",
+        character: dict | None = None,
+    ) -> str:
         tone = "Reply in warm Hinglish." if hinglish else "Reply in clear, gentle English."
         risk = "Risk context: yellow — keep supportive and mention human help lightly." if yellow else "Risk context: green."
+        persona = ""
+        if character:
+            persona = (
+                f"Speak as {character.get('name')}, {character.get('voiceStyle')}. "
+                "Keep the same calm therapeutic tone; only accent and pacing change."
+            )
+        context = (extra_context or "").strip()
         contents: list[dict[str, Any]] = []
         for turn in (history or [])[-6:]:
             role = "user" if turn.get("role") == "user" else "model"
@@ -167,7 +236,7 @@ class GeminiAI(AIProvider):
                         params={"key": self.api_key},
                         json={
                             "systemInstruction": {
-                                "parts": [{"text": f"{SYSTEM_PREAMBLE}\n{tone}\n{risk}"}]
+                                "parts": [{"text": f"{SYSTEM_PREAMBLE}\n{tone}\n{risk}\n{persona}\n{context}"}]
                             },
                             "contents": contents,
                             "generationConfig": {

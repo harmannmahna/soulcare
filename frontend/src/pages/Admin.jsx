@@ -10,7 +10,7 @@ function conf(e) {
 }
 
 export default function Admin() {
-  const { sessions, events, alerts, load } = useAdmin();
+  const { sessions, events, alerts, agentActions, load } = useAdmin();
   const [token, setTok] = useState(getAdminToken());
 
   useEffect(() => {
@@ -66,6 +66,24 @@ export default function Admin() {
               <Badge tone={s.last_tier}>{s.last_tier}</Badge>
             </Link>
           ))}
+        </div>
+      </Card>
+      <Card>
+        <h2 className="font-display text-2xl">Companion agent actions</h2>
+        <p className="mt-1 text-xs text-ink/50">Tools the companion ran on a user&apos;s behalf. Inspectable on purpose.</p>
+        <div className="mt-3 space-y-2 text-sm">
+          {(agentActions || []).slice(0, 12).map((a) => (
+            <div key={a.id} className="rounded-2xl bg-sand px-3 py-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge tone={a.ok ? "green" : "red"}>{a.tool}</Badge>
+                <span className="text-xs text-ink/50">{a.created_at}</span>
+              </div>
+              <p className="mt-1 text-xs text-ink/70">user {a.user_id} · session {a.session_id || "—"}</p>
+            </div>
+          ))}
+          {(!agentActions || agentActions.length === 0) && (
+            <p className="text-sm text-ink/50">No agentic actions yet.</p>
+          )}
         </div>
       </Card>
       <Card>

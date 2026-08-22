@@ -5,14 +5,17 @@ export function useAdmin() {
   const [sessions, setSessions] = useState([]);
   const [events, setEvents] = useState([]);
   const [alerts, setAlerts] = useState([]);
+  const [agentActions, setAgentActions] = useState([]);
 
   const load = useCallback(async () => {
-    const [s, e] = await Promise.all([
+    const [s, e, a] = await Promise.all([
       api("/api/v1/admin/sessions", { admin: true }),
       api("/api/v1/admin/events", { admin: true }),
+      api("/api/v1/admin/agent-actions", { admin: true }).catch(() => []),
     ]);
     setSessions(s);
     setEvents(e);
+    setAgentActions(a);
   }, []);
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export function useAdmin() {
     return api(`/api/v1/admin/sessions/${id}`, { admin: true });
   }
 
-  return { sessions, events, alerts, load, takeover, session };
+  return { sessions, events, alerts, agentActions, load, takeover, session };
 }
 
 export function useCatalog() {

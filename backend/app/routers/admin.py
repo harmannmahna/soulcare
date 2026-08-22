@@ -66,6 +66,12 @@ async def ngo_inbox(_: str = Depends(require_admin)):
     return [_clean(r) for r in rows]
 
 
+@router.get("/agent-actions")
+async def agent_actions(_: str = Depends(require_admin), limit: int = 80):
+    rows = await store.collection("agent_actions").find({}, sort=[("created_at", -1)], limit=limit)
+    return [_clean(r) for r in rows]
+
+
 @router.get("/pages")
 async def pages_map():
     rows = await store.collection("pages").find({})
