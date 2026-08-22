@@ -67,7 +67,7 @@ export default function App() {
         <Route path="/faq" element={<FAQ />} />
       </Route>
       <Route element={<AppShell />}>
-        <Route path="/chat" element={<Gate needConsent needDetails><Chat /></Gate>} />
+        <Route path="/chat" element={<Gate needConsent needDetails roles={["user"]}><Chat /></Gate>} />
         <Route path="/call" element={<Gate needConsent needDetails><Call /></Gate>} />
         <Route path="/therapists" element={<Gate needDetails><Therapists /></Gate>} />
         <Route path="/therapists/:id" element={<Gate needDetails><TherapistDetail /></Gate>} />

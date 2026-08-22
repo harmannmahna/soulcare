@@ -92,10 +92,29 @@ export default function Chat() {
         )}
         <div className="mt-5 max-h-[46vh] space-y-3 overflow-y-auto pr-1">
           {messages.length === 0 && !historyNote && (
-            <p className="text-sm text-ink/55">
-              Try a green check-in, yellow exam stress, or (for judges) a red phrase like “I want to kill myself” to see
-              the hard safety stop and NGO alert.
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm text-ink/55">
+                Use the <strong>User</strong> login (<code>demo@soulcare.app</code>). Replies work without Gemini
+                (MockAI). Therapist cards appear only on <strong>yellow</strong> — a green “hi” will not recommend
+                anyone.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ["Green", "I want to start meditating after work"],
+                  ["Yellow · match", "JEE exam stress is crushing me"],
+                  ["Red · stop AI", "I want to kill myself"],
+                ].map(([label, sample]) => (
+                  <button
+                    key={label}
+                    type="button"
+                    className="rounded-full bg-sand px-3 py-1 text-xs text-moss"
+                    onClick={() => setText(sample)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
           {messages.map((m, i) => (
             <motion.div

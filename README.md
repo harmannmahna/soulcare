@@ -75,6 +75,8 @@ npm run dev
 
 Windows + Swytchcode: **`docs/swytchcode-setup.md`**. Login is not enough — you must `git checkout cursor/swytchcode-roles-qwen-d271` so `.swytchcode/tooling.json` exists, then run `bootstrap` **from that folder** (not `C:\WINDOWS\System32`, and not the placeholder `C:\path\to\soulcare`). On the Lenovo clone that is `C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare`.
 
+Chat / therapist-match / which keys go in which `.env`: **`docs/env-chat-qwen.md`**. Qwen is the optional risk classifier, not the chatbot. Swytchcode is Slack/Weaviate/etc., not Gemini.
+
 LoRA training: follow **`docs/qwen-lora.md`** (Colab T4, no paid API; optional free `HF_TOKEN`).
 
 Optional local Mongo:
