@@ -1,0 +1,1 @@
+export { usePages } from "./useAdmin";

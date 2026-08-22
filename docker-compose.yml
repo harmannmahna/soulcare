@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DEMO_MODE: "true"
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB: soulcare
+      JWT_SECRET: local-dev-jwt-secret-change-me
+      ADMIN_TOKEN: soulcare-admin-demo
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      PORT: "8000"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
