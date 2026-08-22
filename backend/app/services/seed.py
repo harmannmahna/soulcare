@@ -259,11 +259,18 @@ HELP_ITEMS = [
 ]
 
 MEDICINES = [
-    {"id": "med_dolo", "name": "Dolo 650", "use": "Fever / pain (OTC demo)", "form": "tablet", "price_inr": 32},
-    {"id": "med_crocin", "name": "Crocin Advance", "use": "Headache / fever (OTC demo)", "form": "tablet", "price_inr": 38},
-    {"id": "med_ors", "name": "Electral ORS", "use": "Dehydration", "form": "sachet", "price_inr": 24},
-    {"id": "med_vitd", "name": "Vitamin D3 60K", "use": "Supplement (demo)", "form": "capsule", "price_inr": 90},
-    {"id": "med_melatonin", "name": "Melatonin 3mg", "use": "Sleep support (demo — not medical advice)", "form": "tablet", "price_inr": 145},
+    {"id": "med_dolo", "name": "Dolo 650", "use": "Fever / pain (OTC)", "form": "tablet", "price_inr": 32, "salt": "Paracetamol 650mg"},
+    {"id": "med_crocin", "name": "Crocin Advance", "use": "Headache / fever (OTC)", "form": "tablet", "price_inr": 38, "salt": "Paracetamol 500mg"},
+    {"id": "med_ors", "name": "Electral ORS", "use": "Dehydration", "form": "sachet", "price_inr": 24, "salt": "WHO ORS"},
+    {"id": "med_vitd", "name": "Vitamin D3 60K", "use": "Supplement", "form": "capsule", "price_inr": 90, "salt": "Cholecalciferol"},
+    {"id": "med_melatonin", "name": "Melatonin 3mg", "use": "Sleep support (not medical advice)", "form": "tablet", "price_inr": 145, "salt": "Melatonin"},
+    {"id": "med_cetirizine", "name": "Cetirizine 10mg", "use": "Allergy / hay fever (OTC)", "form": "tablet", "price_inr": 18, "salt": "Cetirizine"},
+    {"id": "med_ibuprofen", "name": "Brufen 400", "use": "Pain / inflammation (OTC)", "form": "tablet", "price_inr": 22, "salt": "Ibuprofen"},
+    {"id": "med_omeprazole", "name": "Omez 20", "use": "Acidity (OTC demo)", "form": "capsule", "price_inr": 58, "salt": "Omeprazole"},
+    {"id": "med_iron", "name": "Autrin", "use": "Iron supplement", "form": "capsule", "price_inr": 120, "salt": "Ferrous fumarate"},
+    {"id": "med_calcium", "name": "Shelcal 500", "use": "Calcium + D3", "form": "tablet", "price_inr": 110, "salt": "Calcium carbonate"},
+    {"id": "med_zinc", "name": "Zinconia 50", "use": "Zinc supplement", "form": "tablet", "price_inr": 65, "salt": "Zinc sulphate"},
+    {"id": "med_ors_plus", "name": "ORSL Plus", "use": "Electrolytes + energy", "form": "bottle", "price_inr": 40, "salt": "Dextrose electrolytes"},
 ]
 
 PHARMACIES = [
@@ -277,7 +284,8 @@ PHARMACIES = [
         "phone": "080-4000-1111",
         "lat": 12.9352,
         "lng": 77.6245,
-        "products": ["med_dolo", "med_ors", "med_crocin"],
+        "products": ["med_dolo", "med_ors", "med_crocin", "med_cetirizine"],
+        "source": "curated_static",
     },
     {
         "id": "ph_medplus_andheri",
@@ -289,7 +297,8 @@ PHARMACIES = [
         "phone": "022-6700-2211",
         "lat": 19.1360,
         "lng": 72.8296,
-        "products": ["med_crocin", "med_vitd"],
+        "products": ["med_crocin", "med_vitd", "med_omeprazole"],
+        "source": "curated_static",
     },
     {
         "id": "ph_wellness_cp",
@@ -301,7 +310,8 @@ PHARMACIES = [
         "phone": "011-4300-9090",
         "lat": 28.6315,
         "lng": 77.2167,
-        "products": ["med_dolo", "med_melatonin", "med_ors"],
+        "products": ["med_dolo", "med_melatonin", "med_ors", "med_ibuprofen"],
+        "source": "curated_static",
     },
     {
         "id": "ph_apollo_indiranagar",
@@ -313,7 +323,8 @@ PHARMACIES = [
         "phone": "080-4000-2222",
         "lat": 12.9784,
         "lng": 77.6408,
-        "products": ["med_dolo", "med_vitd", "med_melatonin"],
+        "products": ["med_dolo", "med_vitd", "med_melatonin", "med_calcium"],
+        "source": "curated_static",
     },
     {
         "id": "ph_medplus_hsr",
@@ -325,7 +336,86 @@ PHARMACIES = [
         "phone": "080-4111-8899",
         "lat": 12.9121,
         "lng": 77.6446,
-        "products": ["med_ors", "med_crocin", "med_dolo"],
+        "products": ["med_ors", "med_crocin", "med_dolo", "med_zinc"],
+        "source": "curated_static",
+    },
+    {
+        "id": "ph_apollo_whitefield",
+        "name": "Apollo Pharmacy — Whitefield",
+        "chain": "Apollo",
+        "city": "Bengaluru",
+        "area": "ITPL Main Road",
+        "open": "7:30 – 23:30",
+        "phone": "080-4000-3344",
+        "lat": 12.9698,
+        "lng": 77.7499,
+        "products": ["med_dolo", "med_ibuprofen", "med_omeprazole", "med_ors_plus"],
+        "source": "curated_static",
+    },
+    {
+        "id": "ph_netmeds_jayanagar",
+        "name": "Netmeds Store — Jayanagar",
+        "chain": "Netmeds",
+        "city": "Bengaluru",
+        "area": "4th Block",
+        "open": "9:00 – 21:30",
+        "phone": "080-4112-1000",
+        "lat": 12.9250,
+        "lng": 77.5938,
+        "products": ["med_cetirizine", "med_iron", "med_vitd", "med_crocin"],
+        "source": "curated_static",
+    },
+    {
+        "id": "ph_apollo_bandra",
+        "name": "Apollo Pharmacy — Bandra West",
+        "chain": "Apollo",
+        "city": "Mumbai",
+        "area": "Linking Road",
+        "open": "8:00 – 23:00",
+        "phone": "022-2640-1188",
+        "lat": 19.0596,
+        "lng": 72.8295,
+        "products": ["med_dolo", "med_melatonin", "med_calcium", "med_ors"],
+        "source": "curated_static",
+    },
+    {
+        "id": "ph_wellness_powai",
+        "name": "Wellness Forever — Powai",
+        "chain": "Wellness Forever",
+        "city": "Mumbai",
+        "area": "Hiranandani",
+        "open": "8:00 – 23:00",
+        "phone": "022-2570-4411",
+        "lat": 19.1176,
+        "lng": 72.9060,
+        "products": ["med_ibuprofen", "med_omeprazole", "med_zinc", "med_crocin"],
+        "source": "curated_static",
+    },
+    {
+        "id": "ph_medplus_kothrud",
+        "name": "MedPlus — Kothrud",
+        "chain": "MedPlus",
+        "city": "Pune",
+        "area": "Paud Road",
+        "open": "8:00 – 22:00",
+        "phone": "020-2543-2299",
+        "lat": 18.5074,
+        "lng": 73.8077,
+        "products": ["med_dolo", "med_ors_plus", "med_iron", "med_vitd"],
+        "source": "curated_static",
+    },
+    {
+        "id": "ph_apollo_banjara",
+        "name": "Apollo Pharmacy — Banjara Hills",
+        "chain": "Apollo",
+        "city": "Hyderabad",
+        "area": "Road No. 12",
+        "open": "8:00 – 23:00",
+        "phone": "040-2335-4411",
+        "lat": 17.4126,
+        "lng": 78.4482,
+        "products": ["med_crocin", "med_cetirizine", "med_calcium", "med_melatonin"],
+        "source": "curated_static",
     },
 ]
 
@@ -372,6 +462,10 @@ PAGES = [
     {"path": "/community", "name": "Community", "auth": False},
     {"path": "/admin", "name": "Admin", "auth": "admin"},
     {"path": "/admin/sessions/:id", "name": "Admin session", "auth": "admin"},
+    {"path": "/b2b-demo", "name": "B2B dashboard", "auth": True},
+    {"path": "/partner", "name": "Partner desk", "auth": True},
+    {"path": "/period", "name": "Period tracker", "auth": True},
+    {"path": "/wellness", "name": "Explore wellness", "auth": True},
 ]
 
 
@@ -518,6 +612,18 @@ async def seed_if_needed() -> None:
                     extra_slots.extend(_slots_for(t["id"]))
                 if extra_slots:
                     await store.collection("slots").insert_many(extra_slots)
+        extra_ph = []
+        for row in PHARMACIES:
+            if not await store.collection("pharmacies").find_one({"id": row["id"]}):
+                extra_ph.append(row)
+        if extra_ph:
+            await store.collection("pharmacies").insert_many(extra_ph)
+        extra_med = []
+        for row in MEDICINES:
+            if not await store.collection("medicines").find_one({"id": row["id"]}):
+                extra_med.append(row)
+        if extra_med:
+            await store.collection("medicines").insert_many(extra_med)
         return
 
     await users.insert_one(_demo_user())
@@ -558,6 +664,9 @@ async def seed_if_needed() -> None:
             "active": True,
             "taken_over": False,
             "consent": True,
+            "peak_tier": "green",
+            "summary": "Check-in · general",
+            "last_companion_preview": "Glad you are here. We can keep this light.",
         }
     )
     await store.collection("risk_events").insert_many(

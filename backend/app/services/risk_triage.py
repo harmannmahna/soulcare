@@ -394,6 +394,10 @@ class RiskResult:
     tags: list[str] = field(default_factory=list)
     safety_message: str | None = None
     helplines: list[dict] = field(default_factory=list)
+    model_label: str | None = None
+    model_confidence: float | None = None
+    model_probs: dict | None = None
+    sources: list[str] = field(default_factory=list)
 
     @property
     def allow_llm(self) -> bool:
@@ -405,8 +409,8 @@ def _normalize(text: str) -> str:
     return collapsed
 
 
-def classify_risk(text: str) -> RiskResult:
-    """Classify a single user utterance. Pure function — no I/O, no LLM."""
+def classify_keywords(text: str) -> RiskResult:
+    """Phrase matcher — kept as a hard safety rail beside the ML model."""
     source = _normalize(text)
     if not source:
         return RiskResult(
@@ -416,6 +420,7 @@ def classify_risk(text: str) -> RiskResult:
             matched_phrase=None,
             action="companion_reply",
             tags=PROBLEM_TO_TAGS[ProblemType.GENERAL],
+            sources=["keyword"],
         )
 
     red = _RED_PATTERN.search(source)
@@ -429,6 +434,7 @@ def classify_risk(text: str) -> RiskResult:
             tags=[],
             safety_message=RED_SAFETY_MESSAGE,
             helplines=list(INDIA_HELPLINES),
+            sources=["keyword"],
         )
 
     for problem, pattern, rule in _YELLOW_RULES:
@@ -441,6 +447,7 @@ def classify_risk(text: str) -> RiskResult:
                 matched_phrase=hit.group(0),
                 action="companion_plus_therapist_match",
                 tags=list(PROBLEM_TO_TAGS[problem]),
+                sources=["keyword"],
             )
 
     return RiskResult(
@@ -450,6 +457,73 @@ def classify_risk(text: str) -> RiskResult:
         matched_phrase=None,
         action="companion_reply",
         tags=PROBLEM_TO_TAGS[ProblemType.GENERAL],
+        sources=["keyword"],
+    )
+
+
+def classify_risk(text: str) -> RiskResult:
+    """Hybrid classifier: keyword rail OR ML. Keyword red always wins."""
+    keyword = classify_keywords(text)
+    model = None
+    try:
+        from app.config import get_settings
+        from app.services.ml_classifier import predict_proba
+
+        path = get_settings().risk_model_path or None
+        model = predict_proba(text, path)
+    except Exception:  # noqa: BLE001 — triage must never crash the chat path
+        model = None
+
+    model_label = (model or {}).get("label")
+    sources = list(keyword.sources or ["keyword"])
+    if model:
+        sources.append("model")
+
+    keyword_red = keyword.tier == RiskTier.RED
+    model_red = model_label == "red"
+    if keyword_red or model_red:
+        return RiskResult(
+            tier=RiskTier.RED,
+            problem_type=ProblemType.DEPRESSION,
+            triggered_rule=keyword.triggered_rule or "ml_crisis",
+            matched_phrase=keyword.matched_phrase,
+            action="emergency_escalation",
+            tags=[],
+            safety_message=RED_SAFETY_MESSAGE,
+            helplines=list(INDIA_HELPLINES),
+            model_label=model_label,
+            model_confidence=(model or {}).get("confidence"),
+            model_probs=(model or {}).get("probs"),
+            sources=sources,
+        )
+
+    keyword_yellow = keyword.tier == RiskTier.YELLOW
+    model_yellow = model_label == "yellow"
+    if keyword_yellow or model_yellow:
+        return RiskResult(
+            tier=RiskTier.YELLOW,
+            problem_type=keyword.problem_type if keyword_yellow else ProblemType.GENERAL,
+            triggered_rule=keyword.triggered_rule or "ml_distress",
+            matched_phrase=keyword.matched_phrase,
+            action="companion_plus_therapist_match",
+            tags=list(keyword.tags or PROBLEM_TO_TAGS[ProblemType.GENERAL]),
+            model_label=model_label,
+            model_confidence=(model or {}).get("confidence"),
+            model_probs=(model or {}).get("probs"),
+            sources=sources,
+        )
+
+    return RiskResult(
+        tier=RiskTier.GREEN,
+        problem_type=ProblemType.GENERAL,
+        triggered_rule=None,
+        matched_phrase=None,
+        action="companion_reply",
+        tags=PROBLEM_TO_TAGS[ProblemType.GENERAL],
+        model_label=model_label,
+        model_confidence=(model or {}).get("confidence"),
+        model_probs=(model or {}).get("probs"),
+        sources=sources,
     )
 
 
@@ -461,6 +535,10 @@ def public_risk_payload(result: RiskResult) -> dict:
         "triggered_rule": result.triggered_rule,
         "action": result.action,
         "tags": result.tags,
+        "model_label": result.model_label,
+        "model_confidence": result.model_confidence,
+        "model_probs": result.model_probs,
+        "sources": result.sources,
     }
     if result.tier == RiskTier.RED:
         payload["safety_message"] = result.safety_message

@@ -9,6 +9,7 @@ from app.config import get_settings
 from app.rate_limit import enforce_rate_limit
 from app.routers import admin, auth, care, catalog, chat, journey, lifestyle
 from app.routers.admin import admin_socket
+from app.services.ml_classifier import load_metrics
 from app.services.seed import seed_if_needed
 from app.store import store
 
@@ -65,6 +66,11 @@ async def root():
         "docs": "/docs",
         "api": "/api/v1",
     }
+
+
+@app.get("/api/v1/model_metrics")
+async def model_metrics():
+    return load_metrics()
 
 
 @app.get("/api/v1/pages")

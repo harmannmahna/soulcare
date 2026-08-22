@@ -39,6 +39,7 @@ import PeriodTracker from "./pages/PeriodTracker";
 import PhoneHabit from "./pages/PhoneHabit";
 import Surveillance from "./pages/Surveillance";
 import Partner from "./pages/Partner";
+import B2BDemo from "./pages/B2BDemo";
 
 function Gate({ children, needConsent = false, needDetails = false }) {
   const { user, loading } = useAuth();
@@ -91,6 +92,7 @@ export default function App() {
         <Route path="/period" element={<Gate needDetails><PeriodTracker /></Gate>} />
         <Route path="/phone-habit" element={<Gate needDetails><PhoneHabit /></Gate>} />
         <Route path="/surveillance" element={<Gate needDetails><Surveillance /></Gate>} />
+        <Route path="/b2b-demo" element={<Gate needDetails><B2BDemo /></Gate>} />
         <Route path="/partner" element={<Gate needDetails><Partner /></Gate>} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/sessions/:id" element={<AdminSession />} />

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import uuid
 from datetime import date, datetime, timezone
 
@@ -207,31 +206,133 @@ async def buy_room_item(body: RoomBuyBody, user: dict = Depends(require_user)):
     return {"ok": True, "item": item, "points": points - item["cost"], "room_items": owned}
 
 
+B2B_SNAPSHOT = {
+    "static": True,
+    "updated": "2026-08-22",
+    "scope": "aggregate_only",
+    "partner_note": "Institutional view. No names, session IDs, or chat text. Sample numbers for the demo week.",
+    "totals": {
+        "colleges": 12,
+        "students_on_app": 4820,
+        "students_depressed_flag": 614,
+        "depressed_pct": 12.7,
+        "yellow_risk_alerts": 318,
+        "yellow_pct": 6.6,
+        "red_escalations": 41,
+        "red_pct": 0.9,
+        "weekly_checkins": 2104,
+        "weekly_active_users": 1964,
+        "engagement_pct": 40.7,
+        "avg_sessions_per_user": 2.4,
+        "habit_completions": 3188,
+        "therapist_bookings": 86,
+        "ngo_notifications": 41,
+    },
+    "this_week": {
+        "label": "17–22 Aug 2026",
+        "flagged_yellow_pct": 6.6,
+        "flagged_red_pct": 0.9,
+        "checkin_rate_pct": 43.6,
+        "talk_now_starts": 890,
+        "resource_opens": 1240,
+    },
+    "colleges": [
+        {"name": "National Institute of Technology — Demo", "students": 640, "depressed_pct": 14.2, "yellow_pct": 7.1, "app_pct": 38, "engagement_pct": 44},
+        {"name": "City Medical College", "students": 410, "depressed_pct": 11.0, "yellow_pct": 5.4, "app_pct": 44, "engagement_pct": 51},
+        {"name": "Valley School of Design", "students": 280, "depressed_pct": 9.8, "yellow_pct": 4.9, "app_pct": 51, "engagement_pct": 58},
+        {"name": "Harbour Arts University", "students": 355, "depressed_pct": 13.5, "yellow_pct": 8.2, "app_pct": 29, "engagement_pct": 33},
+    ],
+}
+
+
 @router.get("/surveillance")
 async def surveillance():
     """Static B2B college wellness snapshot — demo numbers only."""
-    return {
-        "static": True,
-        "updated": "2026-08-01",
-        "partner_note": "SoulCare college dashboards are B2B. Figures below are illustrative.",
-        "totals": {
-            "colleges": 12,
-            "students_on_app": 4820,
-            "students_depressed_flag": 614,
-            "depressed_pct": 12.7,
-            "yellow_risk_alerts": 318,
-            "yellow_pct": 6.6,
-            "red_escalations": 41,
-            "red_pct": 0.9,
-            "weekly_checkins": 2104,
-        },
-        "colleges": [
-            {"name": "National Institute of Technology — Demo", "students": 640, "depressed_pct": 14.2, "yellow_pct": 7.1, "app_pct": 38},
-            {"name": "City Medical College", "students": 410, "depressed_pct": 11.0, "yellow_pct": 5.4, "app_pct": 44},
-            {"name": "Valley School of Design", "students": 280, "depressed_pct": 9.8, "yellow_pct": 4.9, "app_pct": 51},
-            {"name": "Harbour Arts University", "students": 355, "depressed_pct": 13.5, "yellow_pct": 8.2, "app_pct": 29},
-        ],
-    }
+    return B2B_SNAPSHOT
+
+
+@router.get("/b2b/snapshot")
+async def b2b_snapshot():
+    return B2B_SNAPSHOT
+
+
+WELLNESS_VIDEOS = [
+    {
+        "id": "yt_box",
+        "title": "Box breathing (4-4-4-4)",
+        "topic": "breathing",
+        "youtube_id": "tEmt1Znux58",
+        "embed": "https://www.youtube.com/embed/tEmt1Znux58",
+        "why": "Guided square breath for a racing mind.",
+    },
+    {
+        "id": "yt_478",
+        "title": "4-7-8 breathing for sleep",
+        "topic": "sleep",
+        "youtube_id": "YRPh_GaiL8s",
+        "embed": "https://www.youtube.com/embed/YRPh_GaiL8s",
+        "why": "Night wind-down when thoughts will not quiet.",
+    },
+    {
+        "id": "yt_walk",
+        "title": "Ten-minute mindful walk",
+        "topic": "movement",
+        "youtube_id": "3sEeVJEXTfY",
+        "embed": "https://www.youtube.com/embed/3sEeVJEXTfY",
+        "why": "Low-bar movement that still counts as care.",
+    },
+    {
+        "id": "yt_nidra",
+        "title": "Yoga nidra rest",
+        "topic": "rest",
+        "youtube_id": "M0u9GST_j3s",
+        "embed": "https://www.youtube.com/embed/M0u9GST_j3s",
+        "why": "Lying-down practice for nights when sleep will not come.",
+    },
+]
+
+
+@router.get("/wellness/videos")
+async def wellness_videos():
+    """Curated YouTube embeds. Live search is optional when YOUTUBE_API_KEY is set."""
+    from app.config import get_settings
+
+    rows = list(WELLNESS_VIDEOS)
+    key = get_settings().youtube_api_key
+    if key:
+        try:
+            import httpx
+
+            params = {
+                "part": "snippet",
+                "q": "guided breathing exercise anxiety",
+                "type": "video",
+                "maxResults": 3,
+                "key": key,
+                "safeSearch": "strict",
+            }
+            async with httpx.AsyncClient(timeout=6) as client:
+                res = await client.get("https://www.googleapis.com/youtube/v3/search", params=params)
+            data = res.json()
+            for item in data.get("items") or []:
+                vid = (item.get("id") or {}).get("videoId")
+                snippet = item.get("snippet") or {}
+                if not vid:
+                    continue
+                rows.append(
+                    {
+                        "id": f"yt_{vid}",
+                        "title": snippet.get("title") or "Wellness video",
+                        "topic": "youtube",
+                        "youtube_id": vid,
+                        "embed": f"https://www.youtube.com/embed/{vid}",
+                        "why": "Live YouTube search result.",
+                        "source": "youtube_api",
+                    }
+                )
+        except Exception:  # noqa: BLE001
+            pass
+    return {"videos": rows, "live": bool(key)}
 
 
 @router.get("/partners/info")
@@ -249,6 +350,9 @@ async def partner_info():
 
 @router.post("/partners")
 async def apply_partner(body: PartnerBody, user: dict = Depends(require_user)):
+    existing = await store.collection("partners").find_one({"user_id": user["id"]})
+    if existing:
+        return _clean(existing)
     fee = 15 if body.role == "therapist" else 10
     doc = {
         "id": f"ptr_{uuid.uuid4().hex[:10]}",
@@ -265,6 +369,91 @@ async def apply_partner(body: PartnerBody, user: dict = Depends(require_user)):
     }
     await store.collection("partners").insert_one(doc)
     return _clean(doc)
+
+
+@router.get("/partners/me")
+async def my_partner(user: dict = Depends(require_user)):
+    row = await store.collection("partners").find_one({"user_id": user["id"]})
+    if not row:
+        return {"partner": None}
+    bookings = await store.collection("bookings").find({"therapist_id": row.get("linked_therapist_id") or row["id"]})
+    # also match by name
+    extra = await store.collection("bookings").find({})
+    mine = [b for b in extra if b.get("therapist_name") == row.get("name") or b.get("therapist_id") == row.get("linked_therapist_id")]
+    notifs = await store.collection("partner_notifs").find(
+        {"therapist_id": row.get("linked_therapist_id") or row["id"]},
+        sort=[("created_at", -1)],
+        limit=20,
+    )
+    slots = await store.collection("slots").find({"therapist_id": row.get("linked_therapist_id") or row["id"]})
+    return {
+        "partner": _clean(row),
+        "bookings": [_clean(b) for b in mine or bookings],
+        "notifications": [_clean(n) for n in notifs],
+        "slots": [_clean(s) for s in slots],
+    }
+
+
+class PartnerAgreeBody(BaseModel):
+    agreed: bool = True
+
+
+@router.post("/partners/agree")
+async def partner_agree(body: PartnerAgreeBody, user: dict = Depends(require_user)):
+    row = await store.collection("partners").find_one({"user_id": user["id"]})
+    if not row:
+        raise HTTPException(status_code=404, detail="Apply as a partner first.")
+    patch = {
+        "status": "active" if body.agreed else "pending",
+        "agreement_at": datetime.now(timezone.utc).isoformat(),
+        "agreement": body.agreed,
+    }
+    if body.agreed and row.get("role") == "therapist" and not row.get("linked_therapist_id"):
+        tid = f"th_ptr_{row['id'][-8:]}"
+        await store.collection("therapists").insert_one(
+            {
+                "id": tid,
+                "name": row.get("name"),
+                "title": "Partner therapist",
+                "city": row.get("city") or "India",
+                "languages": ["English", "Hindi"],
+                "tags": [t.strip() for t in (row.get("specialty") or "general").split(",") if t.strip()] or ["general"],
+                "rating": 5.0,
+                "reviews": 0,
+                "price_inr": 1500,
+                "years": 1,
+                "bio": row.get("notes") or f"{row.get('name')} joined SoulCare as a partner therapist.",
+                "approach": "Listed via partner agreement.",
+                "photo_hue": 160,
+                "partner_id": row["id"],
+            }
+        )
+        patch["linked_therapist_id"] = tid
+    await store.collection("partners").update_one({"id": row["id"]}, {"$set": patch})
+    row.update(patch)
+    return _clean(row)
+
+
+class PartnerSlotBody(BaseModel):
+    label: str
+    starts_at: str | None = None
+
+
+@router.post("/partners/slots")
+async def partner_slot(body: PartnerSlotBody, user: dict = Depends(require_user)):
+    row = await store.collection("partners").find_one({"user_id": user["id"]})
+    if not row:
+        raise HTTPException(status_code=404, detail="Apply as a partner first.")
+    tid = row.get("linked_therapist_id") or row["id"]
+    slot = {
+        "id": f"{tid}_slot_{uuid.uuid4().hex[:6]}",
+        "therapist_id": tid,
+        "label": body.label,
+        "starts_at": body.starts_at or datetime.now(timezone.utc).isoformat(),
+        "taken": False,
+    }
+    await store.collection("slots").insert_one(slot)
+    return _clean(slot)
 
 
 @router.post("/phone/pickup")
@@ -337,12 +526,5 @@ async def list_friends(user: dict = Depends(require_user)):
     return {"friends": user.get("friends") or []}
 
 
-def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
-    r = 6371
-    p1, p2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dl = math.radians(lng2 - lng1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
-    return 2 * r * math.asin(math.sqrt(a))
 
 

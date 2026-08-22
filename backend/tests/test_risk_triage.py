@@ -52,3 +52,27 @@ def test_red_beats_yellow_if_both_present():
 
 def test_empty_is_green():
     assert classify_risk("   ").tier == RiskTier.GREEN
+
+
+def test_keyword_red_wins_over_model_green(monkeypatch):
+    """Safety rail: a confident green model must never downgrade keyword red."""
+
+    def fake_predict(text, path=None):
+        return {"label": "green", "confidence": 0.99, "probs": {"green": 0.99, "yellow": 0.01, "red": 0.0}}
+
+    monkeypatch.setattr("app.services.ml_classifier.predict_proba", fake_predict)
+    result = classify_risk("I want to kill myself tonight")
+    assert result.tier == RiskTier.RED
+    assert result.allow_llm is False
+    assert "keyword" in result.sources
+
+
+def test_model_red_escalates_when_keywords_miss(monkeypatch):
+    def fake_predict(text, path=None):
+        return {"label": "red", "confidence": 0.91, "probs": {"green": 0.02, "yellow": 0.07, "red": 0.91}}
+
+    monkeypatch.setattr("app.services.ml_classifier.predict_proba", fake_predict)
+    result = classify_risk("I already wrote the note and the pills are ready")
+    assert result.tier == RiskTier.RED
+    assert result.model_label == "red"
+    assert result.model_confidence == 0.91

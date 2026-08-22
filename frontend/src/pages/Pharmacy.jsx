@@ -9,19 +9,30 @@ export default function Pharmacy() {
   const [chain, setChain] = useState("all");
   const [sort, setSort] = useState("distance");
   const [coords, setCoords] = useState(null);
+  const [geoNote, setGeoNote] = useState("Asking for location…");
 
   useEffect(() => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      setGeoNote("Location is unavailable in this browser. Showing the list unsorted by distance.");
+      setCoords(false);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
-      (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => setCoords(null),
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGeoNote("Sorted by distance from your location.");
+      },
+      () => {
+        setCoords(false);
+        setGeoNote("Location permission off — list is not distance-sorted. Enable location to rank nearby stores.");
+      },
       { timeout: 4000 },
     );
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams({ sort });
-    if (coords) {
+    if (coords && coords.lat) {
       params.set("lat", coords.lat);
       params.set("lng", coords.lng);
     }
@@ -35,7 +46,11 @@ export default function Pharmacy() {
   return (
     <div>
       <h1 className="font-display text-4xl">Pharmacy finder</h1>
-      <p className="mt-1 text-sm text-ink/55">Sort by distance or medical store. Open a store to see which medicines are listed.</p>
+      <p className="mt-1 text-sm text-ink/55">
+        Curated listings for Bengaluru, Mumbai, Delhi, Pune, and Hyderabad with real medicine names and MRP-style prices.
+        Not a live crawl unless Firecrawl is configured.
+      </p>
+      <p className="mt-2 text-xs text-sage">{geoNote}</p>
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <Input placeholder="Search store or city…" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5 text-sm" value={chain} onChange={(e) => setChain(e.target.value)}>
@@ -61,7 +76,9 @@ export default function Pharmacy() {
                 </p>
                 {p.chain && <Badge>{p.chain}</Badge>}
               </div>
-              <p className="text-sm font-semibold text-sage">{p.distance_km ?? "—"} km</p>
+              <p className="text-sm font-semibold text-sage">
+                {p.distance_km != null ? `${p.distance_km} km` : "—"}
+              </p>
             </Card>
           </Link>
         ))}

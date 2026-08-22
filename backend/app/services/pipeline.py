@@ -14,7 +14,9 @@ from datetime import datetime, timezone
 
 from app.services.alerts import hub
 from app.services.ai import get_ai_provider
+from app.services.ngo_notify import notify_red, safety_copy
 from app.services.risk_triage import RiskTier, classify_risk, public_risk_payload
+from app.services.therapist_matching import rank_therapists
 from app.store import store
 
 # In-process only — used for short conversational context, not long-term storage.
@@ -37,20 +39,8 @@ def wants_hinglish(text: str, language_pref: str | None) -> bool:
     return sum(1 for m in markers if m in lowered) >= 2
 
 
-async def match_therapists(tags: list[str], limit: int = 3) -> list[dict]:
-    therapists = await store.collection("therapists").find({})
-    scored: list[tuple[int, dict]] = []
-    tagset = {t.lower() for t in tags}
-    for t in therapists:
-        overlap = len(tagset.intersection({x.lower() for x in t.get("tags", [])}))
-        if overlap:
-            scored.append((overlap, t))
-    scored.sort(key=lambda pair: (-pair[0], -float(pair[1].get("rating") or 0)))
-    picked = [item for _, item in scored[:limit]]
-    if not picked:
-        therapists.sort(key=lambda row: -float(row.get("rating") or 0))
-        picked = therapists[:limit]
-    return [{k: v for k, v in row.items() if k != "_id"} for row in picked]
+async def match_therapists(tags: list[str], limit: int = 3, query: str = "") -> list[dict]:
+    return await rank_therapists(query=query, tags=tags, limit=limit)
 
 
 async def ensure_session(
@@ -77,7 +67,9 @@ async def ensure_session(
         "turn_count": 0,
         "active": True,
         "taken_over": False,
-        "consent": consent,
+        "peak_tier": "green",
+        "summary": "New session",
+        "last_companion_preview": None,
     }
     await sessions.insert_one(doc)
     return doc
@@ -98,25 +90,39 @@ async def handle_turn(
         "triggered_rule": result.triggered_rule,
         "action": result.action,
         "problem_type": result.problem_type.value,
+        "model_label": result.model_label,
+        "model_confidence": result.model_confidence,
+        "model_probs": result.model_probs,
+        "sources": result.sources,
         "created_at": _now(),
     }
-    await store.collection("risk_events").insert_one(event)
-    await store.collection("sessions").update_one(
-        {"id": session["id"]},
-        {
-            "$set": {
-                "last_tier": result.tier.value,
-                "last_action": result.action,
-                "last_event_at": event["created_at"],
-            },
-            "$inc": {"turn_count": 1},
-        },
-    )
-
     public = public_risk_payload(result)
     history = _SESSION_MEMORY.setdefault(session["id"], [])
 
     if result.tier == RiskTier.RED:
+        ngo = await notify_red(
+            session_id=session["id"],
+            user_id=session.get("user_id"),
+            event_id=event["id"],
+            triggered_rule=result.triggered_rule,
+        )
+        event["notifiedChannel"] = ngo["notifiedChannel"]
+        event["notifiedAt"] = ngo["notifiedAt"]
+        event["ngo_name"] = ngo["ngo_name"]
+        await store.collection("risk_events").insert_one(event)
+        await store.collection("sessions").update_one(
+            {"id": session["id"]},
+            {
+                "$set": {
+                    "last_tier": "red",
+                    "last_action": result.action,
+                    "last_event_at": event["created_at"],
+                    "peak_tier": "red",
+                    "summary": "Crisis language. LLM skipped. Partner NGO notified.",
+                },
+                "$inc": {"turn_count": 1},
+            },
+        )
         await hub.broadcast(
             {
                 "type": "red_alert",
@@ -126,9 +132,17 @@ async def handle_turn(
                 "triggered_rule": result.triggered_rule,
                 "action": result.action,
                 "created_at": event["created_at"],
+                "model_confidence": result.model_confidence,
+                "notifiedChannel": ngo["notifiedChannel"],
+                "notifiedAt": ngo["notifiedAt"],
+                "ngo_name": ngo["ngo_name"],
             }
         )
-        reply = result.safety_message
+        reply = safety_copy(ngo["ngo_name"])
+        public["safety_message"] = reply
+        public["notifiedChannel"] = ngo["notifiedChannel"]
+        public["notifiedAt"] = ngo["notifiedAt"]
+        public["ngo_name"] = ngo["ngo_name"]
         return {
             "session_id": session["id"],
             "risk": public,
@@ -137,6 +151,25 @@ async def handle_turn(
             "therapists": [],
             "event_id": event["id"],
         }
+
+    await store.collection("risk_events").insert_one(event)
+    peak = session.get("peak_tier") or "green"
+    order = {"green": 0, "yellow": 1, "red": 2}
+    if order.get(result.tier.value, 0) > order.get(peak, 0):
+        peak = result.tier.value
+    await store.collection("sessions").update_one(
+        {"id": session["id"]},
+        {
+            "$set": {
+                "last_tier": result.tier.value,
+                "last_action": result.action,
+                "last_event_at": event["created_at"],
+                "peak_tier": peak,
+                "summary": f"{result.tier.value} · {result.problem_type.value}",
+            },
+            "$inc": {"turn_count": 1},
+        },
+    )
 
     hinglish = wants_hinglish(text, language_pref)
     provider = get_ai_provider()
@@ -153,7 +186,17 @@ async def handle_turn(
 
     therapists = []
     if result.tier == RiskTier.YELLOW:
-        therapists = await match_therapists(result.tags)
+        therapists = await match_therapists(result.tags, query=text)
+        public["checkin_after"] = True
+    await store.collection("sessions").update_one(
+        {"id": session["id"]},
+        {
+            "$set": {
+                "last_companion_preview": reply[:240],
+                "last_problem": result.problem_type.value,
+            }
+        },
+    )
 
     return {
         "session_id": session["id"],

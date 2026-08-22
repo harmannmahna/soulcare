@@ -19,6 +19,27 @@ class MessageBody(BaseModel):
     session_id: str | None = None
 
 
+@router.get("/chat/sessions")
+async def list_sessions(user: dict = Depends(require_user)):
+    rows = await store.collection("sessions").find({"user_id": user["id"]}, sort=[("started_at", -1)], limit=40)
+    out = []
+    for row in rows:
+        row.pop("_id", None)
+        out.append(
+            {
+                "id": row.get("id"),
+                "channel": row.get("channel"),
+                "started_at": row.get("started_at"),
+                "last_tier": row.get("last_tier"),
+                "peak_tier": row.get("peak_tier") or row.get("last_tier"),
+                "turn_count": row.get("turn_count"),
+                "summary": row.get("summary"),
+                "last_companion_preview": row.get("last_companion_preview"),
+            }
+        )
+    return out
+
+
 @router.post("/chat/sessions")
 async def create_session(body: SessionBody, user: dict = Depends(require_user)):
     if not user.get("consent"):

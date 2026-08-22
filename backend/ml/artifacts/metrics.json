@@ -1,0 +1,90 @@
+{
+  "backend": "sklearn_tfidf_logreg",
+  "notes": "Runtime artifact trained on the verified English+Hinglish set. Qwen2.5-0.5B LoRA (train_qwen_lora.py) can replace this file when a GPU adapter is exported.",
+  "n_examples": 282,
+  "n_train": 211,
+  "n_test": 71,
+  "labels": [
+    "green",
+    "yellow",
+    "red"
+  ],
+  "precision": {
+    "green": 0.714,
+    "yellow": 0.76,
+    "red": 0.778
+  },
+  "recall": {
+    "green": 0.8,
+    "yellow": 0.731,
+    "red": 0.7
+  },
+  "f1": {
+    "green": 0.755,
+    "yellow": 0.745,
+    "red": 0.737
+  },
+  "support": {
+    "green": 25,
+    "yellow": 26,
+    "red": 20
+  },
+  "confusion_matrix": {
+    "order": [
+      "green",
+      "yellow",
+      "red"
+    ],
+    "matrix": [
+      [
+        20,
+        3,
+        2
+      ],
+      [
+        5,
+        19,
+        2
+      ],
+      [
+        3,
+        3,
+        14
+      ]
+    ]
+  },
+  "classification_report": {
+    "green": {
+      "precision": 0.7142857142857143,
+      "recall": 0.8,
+      "f1-score": 0.7547169811320755,
+      "support": 25.0
+    },
+    "yellow": {
+      "precision": 0.76,
+      "recall": 0.7307692307692307,
+      "f1-score": 0.7450980392156863,
+      "support": 26.0
+    },
+    "red": {
+      "precision": 0.7777777777777778,
+      "recall": 0.7,
+      "f1-score": 0.7368421052631579,
+      "support": 20.0
+    },
+    "accuracy": 0.7464788732394366,
+    "macro avg": {
+      "precision": 0.7506878306878306,
+      "recall": 0.7435897435897436,
+      "f1-score": 0.7455523752036398,
+      "support": 71.0
+    },
+    "weighted avg": {
+      "precision": 0.7489112452492734,
+      "recall": 0.7464788732394366,
+      "f1-score": 0.7461593753968012,
+      "support": 71.0
+    }
+  },
+  "macro_f1": 0.746
+}

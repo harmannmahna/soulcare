@@ -57,9 +57,7 @@ async def pharmacies(
     q: str | None = None,
     sort: str = "distance",
 ):
-    # Demo default: Koramangala, Bengaluru — used when the browser has no GPS.
-    origin_lat = lat if lat is not None else 12.9352
-    origin_lng = lng if lng is not None else 77.6245
+    geo_used = lat is not None and lng is not None
     rows = await store.collection("pharmacies").find({})
     out = []
     needle = (q or store or "").lower()
@@ -69,12 +67,17 @@ async def pharmacies(
             blob = f"{item.get('name','')} {item.get('chain','')} {item.get('city','')} {item.get('area','')}".lower()
             if needle not in blob:
                 continue
-        item["distance_km"] = _km(origin_lat, origin_lng, float(item.get("lat") or origin_lat), float(item.get("lng") or origin_lng))
+        item["source"] = item.get("source") or "curated_static"
+        if geo_used:
+            item["distance_km"] = _km(lat, lng, float(item.get("lat") or lat), float(item.get("lng") or lng))
+        else:
+            item["distance_km"] = None
+        item["geo_used"] = geo_used
         out.append(item)
-    if sort == "name":
+    if geo_used and sort == "distance":
+        out.sort(key=lambda r: r.get("distance_km") if r.get("distance_km") is not None else 999)
+    elif sort == "name":
         out.sort(key=lambda r: r.get("name") or "")
-    else:
-        out.sort(key=lambda r: r.get("distance_km") or 999)
     return out
 
 

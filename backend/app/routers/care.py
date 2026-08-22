@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -47,9 +48,9 @@ async def list_therapists(tag: str | None = None, q: str | None = None):
 
 
 @router.get("/therapists/match")
-async def therapist_match(tags: str):
+async def therapist_match(tags: str = "", q: str = ""):
     tag_list = [t.strip() for t in tags.split(",") if t.strip()]
-    return await match_therapists(tag_list)
+    return await match_therapists(tag_list, query=q)
 
 
 @router.get("/therapists/{therapist_id}")
@@ -79,10 +80,45 @@ async def create_booking(body: BookingBody, user: dict = Depends(require_user)):
         "label": slot.get("label"),
         "status": "confirmed",
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "client_name": user.get("name") or "SoulCare member",
+        "client_email": user.get("email"),
     }
     await store.collection("bookings").insert_one(booking)
     await store.collection("slots").update_one({"id": slot["id"]}, {"$set": {"taken": True}})
-    return _clean(booking)
+    await store.collection("partner_notifs").insert_one(
+        {
+            "id": f"ntf_{uuid.uuid4().hex[:10]}",
+            "therapist_id": therapist["id"],
+            "booking_id": booking["id"],
+            "body": f"New booking from {booking['client_name']} · {booking.get('label')}",
+            "created_at": booking["created_at"],
+            "read": False,
+        }
+    )
+    out = _clean(booking)
+    out["calendar_url"] = _gcal_url(booking, therapist)
+    return out
+
+
+def _gcal_url(booking: dict, therapist: dict) -> str:
+    title = quote(f"SoulCare · {therapist.get('name') or 'Session'}")
+    details = quote(f"Booking {booking.get('id')} with {therapist.get('name')}")
+    raw = booking.get("starts_at") or ""
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        start = dt.strftime("%Y%m%dT%H%M%SZ")
+        end = (dt + timedelta(hours=1)).strftime("%Y%m%dT%H%M%SZ")
+        dates = f"{start}/{end}"
+    except Exception:  # noqa: BLE001
+        compact = raw.replace("-", "").replace(":", "")[:15]
+        dates = f"{compact}/{compact}" if compact else ""
+    return f"https://calendar.google.com/calendar/render?action=TEMPLATE&text={title}&details={details}&dates={dates}"
+
+
+@router.get("/bookings")
+async def list_bookings(user: dict = Depends(require_user)):
+    rows = await store.collection("bookings").find({"user_id": user["id"]}, sort=[("created_at", -1)], limit=40)
+    return [_clean(r) for r in rows]
 
 
 @router.get("/bookings/{booking_id}")
@@ -90,7 +126,10 @@ async def get_booking(booking_id: str, user: dict = Depends(require_user)):
     row = await store.collection("bookings").find_one({"id": booking_id, "user_id": user["id"]})
     if not row:
         raise HTTPException(status_code=404, detail="Booking not found")
-    return _clean(row)
+    therapist = await store.collection("therapists").find_one({"id": row.get("therapist_id")})
+    out = _clean(row)
+    out["calendar_url"] = _gcal_url(row, therapist or {})
+    return out
 
 
 @router.get("/resources")
@@ -136,3 +175,10 @@ async def saved_resources(user: dict = Depends(require_user)):
 async def help_directory():
     rows = await store.collection("help").find({})
     return [_clean(r) for r in rows]
+
+
+@router.get("/ngo-partner")
+async def ngo_partner():
+    from app.services.ngo_notify import PARTNER_NGO
+
+    return PARTNER_NGO

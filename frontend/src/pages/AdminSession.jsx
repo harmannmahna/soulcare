@@ -16,15 +16,31 @@ export default function AdminSession() {
   if (!row) return null;
   return (
     <Card>
+      <p className="text-xs uppercase tracking-[0.2em] text-sage">Admin</p>
       <h1 className="font-display text-3xl">Session {row.id}</h1>
       <p className="mt-2 text-sm text-ink/60">
-        User {row.user_id} · {row.channel} · turns {row.turn_count}
+        User {row.user_id} · {row.channel} · turns {row.turn_count} · peak {row.peak_tier || row.last_tier}
       </p>
       <div className="mt-4 space-y-2">
         {row.events?.map((e) => (
-          <p key={e.id} className="text-sm">
-            <Badge tone={e.tier}>{e.tier}</Badge> {e.action} · {e.triggered_rule || "—"} · {e.created_at}
-          </p>
+          <div key={e.id} className="rounded-2xl bg-sand px-3 py-2 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone={e.tier}>{e.tier}</Badge>
+              <span>
+                {e.action} · {e.triggered_rule || "—"}
+              </span>
+              {e.model_confidence != null && (
+                <Badge>
+                  model {Math.round(Number(e.model_confidence) * 100)}% ({e.model_label || "—"})
+                </Badge>
+              )}
+              {e.notifiedChannel && <Badge tone="green">NGO Notified ✓ · {e.notifiedChannel}</Badge>}
+            </div>
+            <p className="mt-1 text-xs text-ink/45">
+              {e.created_at}
+              {e.notifiedAt ? ` · notified ${e.notifiedAt}` : ""}
+            </p>
+          </div>
         ))}
       </div>
       <Button

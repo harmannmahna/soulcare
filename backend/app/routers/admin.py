@@ -60,6 +60,12 @@ async def risk_events(_: str = Depends(require_admin), tier: str | None = None):
     return [_clean(r) for r in rows]
 
 
+@router.get("/ngo-inbox")
+async def ngo_inbox(_: str = Depends(require_admin)):
+    rows = await store.collection("ngo_inbox").find({}, sort=[("notified_at", -1)], limit=40)
+    return [_clean(r) for r in rows]
+
+
 @router.get("/pages")
 async def pages_map():
     rows = await store.collection("pages").find({})

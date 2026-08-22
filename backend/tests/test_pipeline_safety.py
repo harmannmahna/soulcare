@@ -38,6 +38,10 @@ async def test_red_turn_skips_llm_and_logs_metadata_only(monkeypatch):
     assert stored["tier"] == "red"
     assert stored["triggered_rule"] == "crisis_self_harm"
     assert stored["action"] == "emergency_escalation"
+    assert stored.get("notifiedChannel")
+    assert stored.get("notifiedAt")
+    assert "notifiedChannel" in result["risk"]
+    assert "iCALL" in result["reply"] or "NGO" in result["reply"]
 
 
 @pytest.mark.asyncio

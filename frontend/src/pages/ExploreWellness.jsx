@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { api } from "../api/client";
 import { Card } from "../components/ui";
 
 const TILES = [
@@ -23,6 +25,12 @@ const TILES = [
 ];
 
 export default function ExploreWellness() {
+  const [videos, setVideos] = useState([]);
+  useEffect(() => {
+    api("/api/v1/wellness/videos")
+      .then((d) => setVideos(d.videos || []))
+      .catch(() => setVideos([]));
+  }, []);
   return (
     <div>
       <h1 className="font-display text-4xl">Explore wellness</h1>
@@ -38,6 +46,29 @@ export default function ExploreWellness() {
           </Link>
         ))}
       </div>
+      {videos.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-display text-2xl">Guided videos</h2>
+          <p className="text-sm text-ink/55">Real YouTube embeds for breathing and movement.</p>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            {videos.slice(0, 4).map((v) => (
+              <Card key={v.id}>
+                <p className="font-semibold">{v.title}</p>
+                <p className="mt-1 text-xs text-ink/55">{v.why}</p>
+                <div className="mt-3 aspect-video overflow-hidden rounded-2xl bg-mist">
+                  <iframe
+                    title={v.title}
+                    src={v.embed}
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

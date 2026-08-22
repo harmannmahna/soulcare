@@ -55,9 +55,20 @@ def test_health_and_chat_pipeline():
         assert len(therapists.json()) >= 6
 
         headers_demo = {"Authorization": f"Bearer {login.json()['token']}"}
+        original = client.get("/api/v1/auth/me", headers=headers_demo)
+        prev_weight = original.json().get("weight") or 58
+        prev_height = original.json().get("height") or 164
         me = client.patch("/api/v1/auth/me", headers=headers_demo, json={"weight": 59.5, "height": 164})
         assert me.status_code == 200
         assert me.json()["weight"] == 59.5
+        client.patch("/api/v1/auth/me", headers=headers_demo, json={"weight": prev_weight, "height": prev_height})
         dash = client.get("/api/v1/surveillance")
         assert dash.status_code == 200
         assert dash.json()["static"] is True
+        metrics = client.get("/api/v1/model_metrics")
+        assert metrics.status_code == 200
+        b2b = client.get("/api/v1/b2b/snapshot")
+        assert b2b.status_code == 200
+        assert b2b.json()["scope"] == "aggregate_only"
+        sessions = client.get("/api/v1/chat/sessions", headers=headers)
+        assert sessions.status_code == 200

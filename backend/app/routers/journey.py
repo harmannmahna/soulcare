@@ -43,6 +43,7 @@ class CycleBody(BaseModel):
     cycle_length: int = 28
     period_length: int = 5
     days: list[str] | None = None
+    symptoms: dict[str, dict] | None = None
 
 
 class CommunityBody(BaseModel):
@@ -275,6 +276,21 @@ async def list_food(user: dict = Depends(require_user)):
     return [_clean(r) for r in rows]
 
 
+def _cycle_prediction(days: list[str], fallback: int = 28) -> dict:
+    starts = []
+    prev = None
+    for d in sorted(days):
+        cur = date.fromisoformat(d)
+        if prev is None or (cur - prev).days > 2:
+            starts.append(cur)
+        prev = cur
+    gaps = [(b - a).days for a, b in zip(starts, starts[1:]) if 18 <= (b - a).days <= 45]
+    avg = int(round(sum(gaps[-3:]) / len(gaps[-3:]))) if gaps else fallback
+    last = starts[-1] if starts else None
+    nxt = (last + timedelta(days=avg)).isoformat() if last else None
+    return {"predicted_length": avg, "next_start": nxt, "cycles_seen": len(starts)}
+
+
 @router.get("/period")
 async def get_period(user: dict = Depends(require_user)):
     row = await store.collection("cycles").find_one({"user_id": user["id"]})
@@ -282,8 +298,10 @@ async def get_period(user: dict = Depends(require_user)):
         return {"tracked": False, "days": [], "cycle_length": 28, "period_length": 5}
     start_raw = row.get("last_start")
     length = int(row.get("cycle_length") or 28)
-    payload = {"tracked": True, **_clean(row), "days": row.get("days") or []}
-    if start_raw:
+    payload = {"tracked": True, **_clean(row), "days": row.get("days") or [], "symptoms": row.get("symptoms") or {}}
+    pred = _cycle_prediction(payload["days"], length)
+    payload.update(pred)
+    if start_raw and not payload.get("next_start"):
         start = date.fromisoformat(start_raw)
         payload["next_start"] = (start + timedelta(days=length)).isoformat()
         payload["day_in_cycle"] = (date.today() - start).days + 1
@@ -305,6 +323,7 @@ async def upsert_period(body: CycleBody, user: dict = Depends(require_user)):
         "cycle_length": body.cycle_length,
         "period_length": body.period_length,
         "days": days,
+        "symptoms": body.symptoms if body.symptoms is not None else existing.get("symptoms") or {},
     }
     if existing:
         await store.collection("cycles").update_one({"user_id": user["id"]}, {"$set": doc})

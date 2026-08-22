@@ -14,13 +14,19 @@ export default function BookingConfirm() {
         <br />
         {row.label}
       </p>
-      <div className="mt-6 flex justify-center gap-3">
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Link to="/dashboard">
           <Button>Dashboard</Button>
         </Link>
-        <Link to="/journey">
-          <Button variant="outline">Journey</Button>
-        </Link>
+        {row.calendar_url ? (
+          <a href={row.calendar_url} target="_blank" rel="noreferrer">
+            <Button variant="outline">Add to Google Calendar</Button>
+          </a>
+        ) : (
+          <Link to="/journey">
+            <Button variant="outline">Journey</Button>
+          </Link>
+        )}
       </div>
     </Card>
   );

@@ -19,6 +19,17 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     port: int = 8000
     rate_limit_per_min: int = 30
+    risk_model_path: str = ""
+    weaviate_url: str = ""
+    weaviate_api_key: str = ""
+    slack_webhook_url: str = ""
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+    resend_api_key: str = ""
+    ngo_alert_email: str = ""
+    youtube_api_key: str = ""
+    cloudinary_url: str = ""
+    firecrawl_api_key: str = ""
 
     @property
     def cors_origin_list(self) -> list[str]:

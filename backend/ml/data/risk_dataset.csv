@@ -1,0 +1,283 @@
+text,label,lang,verified,source
+"I want to start meditating after work today",green,en,true,hand_verified
+"Had a good walk this morning",green,en,true,hand_verified
+"Can you remind me to drink water",green,en,true,hand_verified
+"Looking for a breathing exercise",green,en,true,hand_verified
+"I slept seven hours last night",green,en,true,hand_verified
+"Feeling okay, just checking in",green,en,true,hand_verified
+"How does the habit tracker work",green,en,true,hand_verified
+"I cooked dal and rice for lunch",green,en,true,hand_verified
+"Want to book a focus session",green,en,true,hand_verified
+"The weather is nice today",green,en,true,hand_verified
+"Aaj walk pe gaya tha, accha laga",green,en,true,hand_verified
+"Meditation try karna hai kal se",green,hinglish,true,hand_verified
+"Paani piya, ab kaam pe jaata hoon",green,hinglish,true,hand_verified
+"Chai ke saath journal likha",green,hinglish,true,hand_verified
+"Friends ke saath dinner tha",green,en,true,hand_verified
+"Gym ke baad fresh feel ho raha hai",green,hinglish,true,hand_verified
+"I finished my assignment and feel proud",green,en,true,hand_verified
+"Need a yoga video for tight shoulders",green,en,true,hand_verified
+"Can we talk about sleep hygiene",green,en,true,hand_verified
+"I'm curious about box breathing",green,en,true,hand_verified
+"Today was an ordinary Tuesday",green,en,true,hand_verified
+"Thanks for listening yesterday",green,en,true,hand_verified
+"I want to log my breakfast calories",green,en,true,hand_verified
+"Searching for a pharmacy nearby",green,en,true,hand_verified
+"How do I add a new habit",green,en,true,hand_verified
+"Mera din theek tha, thoda busy",green,en,true,hand_verified
+"Neend acchi aayi raat ko",green,en,true,hand_verified
+"Mummy ne khana bheja, khush hoon",green,hinglish,true,hand_verified
+"Weekend pe badminton khela",green,en,true,hand_verified
+"I am grateful for a slow morning",green,en,true,hand_verified
+"Please show me nearby wellness centres",green,en,true,hand_verified
+"I like this app's colour theme",green,en,true,hand_verified
+"Can I change my profile height",green,en,true,hand_verified
+"Just opened the dashboard",green,en,true,hand_verified
+"Hello, how are you",green,en,true,hand_verified
+"Hi SoulCare, good evening",green,en,true,hand_verified
+"Namaste, aaj mood light hai",green,hinglish,true,hand_verified
+"I completed my pomodoro",green,en,true,hand_verified
+"Decorated my focus room with a plant",green,en,true,hand_verified
+"Streak is at seven days",green,en,true,hand_verified
+"I drank two glasses of water",green,en,true,hand_verified
+"Sharing a small win in community",green,en,true,hand_verified
+"Invite a friend to the circle",green,en,true,hand_verified
+"Looking at exercise videos",green,en,true,hand_verified
+"That walk helped my shoulders",green,en,true,hand_verified
+"I ate an apple as a snack",green,en,true,hand_verified
+"Planning a quiet Sunday",green,en,true,hand_verified
+"Need the Tele-MANAS number just in case I forget",green,en,true,hand_verified
+"What is box breathing",green,en,true,hand_verified
+"Explain how consent works",green,en,true,hand_verified
+"Aaj padhai ho gayi, ab rest",green,hinglish,true,hand_verified
+"Coffee ke baad focus aaya",green,en,true,hand_verified
+"I stretched for five minutes",green,en,true,hand_verified
+"Feeling steady after lunch",green,en,true,hand_verified
+"Can I sort pharmacies by distance",green,en,true,hand_verified
+"Show therapists in Bengaluru",green,en,true,hand_verified
+"I want to read a grounding article",green,en,true,hand_verified
+"Kal subah walk karunga",green,en,true,hand_verified
+"Mood is a four out of five today",green,en,true,hand_verified
+"Logged my period on the calendar",green,en,true,hand_verified
+"Created a studying habit",green,en,true,hand_verified
+"Checked off meditation for today",green,en,true,hand_verified
+"The breathing circle is calming",green,en,true,hand_verified
+"I like talking about food and mood",green,en,true,hand_verified
+"Just saying hi",green,en,true,hand_verified
+"All good here",green,en,true,hand_verified
+"Nothing urgent, just browsing",green,en,true,hand_verified
+"Need OTC fever medicine names",green,en,true,hand_verified
+"Where is Apollo in Koramangala",green,en,true,hand_verified
+"Thanks, that helped",green,en,true,hand_verified
+"Okay I will try the 4-7-8 breath",green,en,true,hand_verified
+"Acha laga baat karke",green,en,true,hand_verified
+"Theek hoon yaar, thoda kaam hai",green,hinglish,true,hand_verified
+"I watered my indoor plant",green,en,true,hand_verified
+"Sunlight felt nice on the balcony",green,en,true,hand_verified
+"I called a friend and it was sweet",green,en,true,hand_verified
+"Made tea and sat quietly",green,en,true,hand_verified
+"I am learning Java in the evenings",green,en,true,hand_verified
+"Playlist is helping me study",green,en,true,hand_verified
+"Booked a slot, see you then",green,en,true,hand_verified
+"Dashboard looks calm today",green,en,true,hand_verified
+"I changed my bedtime to 11",green,en,true,hand_verified
+"Focus hours set for morning",green,en,true,hand_verified
+"Guest mode is fine for now",green,en,true,hand_verified
+"I accepted the consent screen",green,en,true,hand_verified
+"Can you explain yellow tier",green,en,true,hand_verified
+"What happens if I feel worse later",green,en,true,hand_verified
+"I want gentle encouragement",green,en,true,hand_verified
+"Send a hydration reminder",green,en,true,hand_verified
+"I'm here to explore wellness",green,en,true,hand_verified
+"Looking for physio for neck pain after desk work",green,en,true,hand_verified
+"Need nutrition tips that are not crash diets",green,en,true,hand_verified
+"The food gallery is useful",green,en,true,hand_verified
+"I scanned a banana photo",green,en,true,hand_verified
+"Calories look about right",green,en,true,hand_verified
+"Community thread on habits is kind",green,en,true,hand_verified
+"I added quiet-mango as a friend",green,en,true,hand_verified
+"Campus insight page is static right",green,en,true,hand_verified
+"How do partners join",green,en,true,hand_verified
+"Fifteen percent fee for therapists is clear",green,en,true,hand_verified
+"I have been so anxious I cannot sit still",yellow,en,true,hand_verified
+"Panic attack last night, heart racing",yellow,en,true,hand_verified
+"Overthinking nahi ruk raha, ghabrahat ho rahi hai",yellow,hinglish,true,hand_verified
+"Bahut tension ho rahi hai, overthinking nahi ruk raha",yellow,hinglish,true,hand_verified
+"I feel depressed and empty inside",yellow,en,true,hand_verified
+"Mann nahi lagta, udaas hoon",yellow,hinglish,true,hand_verified
+"JEE exam stress is crushing me",yellow,en,true,hand_verified
+"Boards ka pressure se I cannot sleep",yellow,en,true,hand_verified
+"NEET fail ho gaya, kya karun",yellow,en,true,hand_verified
+"My girlfriend left and I keep crying",yellow,en,true,hand_verified
+"Breakup ke baad akela feel hota hai",yellow,hinglish,true,hand_verified
+"Work is killing me, total burnout",yellow,en,true,hand_verified
+"Toxic workplace, boss shouts every day",yellow,en,true,hand_verified
+"I cannot sleep, insomnia for a week",yellow,en,true,hand_verified
+"Neend nahi aa rahi, nightmares",yellow,hinglish,true,hand_verified
+"I feel so lonely, no one cares",yellow,en,true,hand_verified
+"Koi nahi hai yaar, akelapan",yellow,hinglish,true,hand_verified
+"Grief after dad passed away last month",yellow,en,true,hand_verified
+"Unhe kho diya, funeral ke baad khali hoon",yellow,hinglish,true,hand_verified
+"Family pressure for shaadi is too much",yellow,en,true,hand_verified
+"Ghar walon se roz fight",yellow,hinglish,true,hand_verified
+"Flashbacks from trauma, I feel unsafe",yellow,en,true,hand_verified
+"I think I am having PTSD symptoms",yellow,en,true,hand_verified
+"Can't stop drinking on weeknights",yellow,en,true,hand_verified
+"Nashe chhodna hai but relapse ho gaya",yellow,hinglish,true,hand_verified
+"Coming out at home and not accepted",yellow,en,true,hand_verified
+"Gender identity pe ghar wale harsh hain",yellow,hinglish,true,hand_verified
+"College pressure and backlog, I am drowning in work",yellow,en,true,hand_verified
+"Placements ke tension se I freeze",yellow,hinglish,true,hand_verified
+"I feel hopeless about my career",yellow,en,true,hand_verified
+"What's the point of this semester",yellow,en,true,hand_verified
+"Relationship fights every night",yellow,en,true,hand_verified
+"We keep fighting and I shut down",yellow,en,true,hand_verified
+"My partner cheated on me",yellow,en,true,hand_verified
+"Divorce talks started, I am lost",yellow,en,true,hand_verified
+"Abusive father at home, I am scared",yellow,en,true,hand_verified
+"Ghar pe chillati hai mummy, I shake",yellow,hinglish,true,hand_verified
+"Laid off yesterday, job stress is huge",yellow,en,true,hand_verified
+"Burnt out, cannot open laptop",yellow,en,true,hand_verified
+"Office politics making me sick",yellow,en,true,hand_verified
+"I have no friends in this city",yellow,en,true,hand_verified
+"Nobody understands me",yellow,en,true,hand_verified
+"Akeli padh gayi hoon hostel mein",yellow,hinglish,true,hand_verified
+"Panic in the metro, can't breathe well",yellow,en,true,hand_verified
+"Dil tez dhadak raha hai, restless",yellow,hinglish,true,hand_verified
+"Worried sick about results",yellow,en,true,hand_verified
+"I feel nothing, numb all day",yellow,en,true,hand_verified
+"No motivation to get out of bed",yellow,en,true,hand_verified
+"Life feels pointless this week",yellow,en,true,hand_verified
+"Kuch feel nahi hota",yellow,hinglish,true,hand_verified
+"I keep overthinking every message I sent",yellow,en,true,hand_verified
+"Heart racing before every class",yellow,en,true,hand_verified
+"Exam ka tension se I vomited",yellow,hinglish,true,hand_verified
+"Failed my exam and I am spiralling",yellow,en,true,hand_verified
+"Assignment backlog, I cannot catch up",yellow,en,true,hand_verified
+"CGPA gir gaya, parents will shout",yellow,en,true,hand_verified
+"Padhai nahi ho rahi, freeze ho jata hoon",yellow,hinglish,true,hand_verified
+"Grief is hitting at 3am",yellow,en,true,hand_verified
+"Mourning my grandmother still",yellow,en,true,hand_verified
+"Lost my dog, I cannot stop crying",yellow,en,true,hand_verified
+"Work is killing my evenings",yellow,en,true,hand_verified
+"Naukri ka tension, sleep gone",yellow,hinglish,true,hand_verified
+"I feel worthless after the review",yellow,en,true,hand_verified
+"Empty inside after the breakup",yellow,en,true,hand_verified
+"Shaadi ke liye pressure, anxiety badh gayi",yellow,en,true,hand_verified
+"Joint family comments ruin my day",yellow,en,true,hand_verified
+"I was harassed and I still freeze",yellow,en,true,hand_verified
+"Assaulted last year, flashbacks today",yellow,en,true,hand_verified
+"Can't stop smoking when stressed",yellow,en,true,hand_verified
+"Withdrawal is making me angry",yellow,en,true,hand_verified
+"Queer and scared of family finding out",yellow,en,true,hand_verified
+"Identity stress, I don't know who I am at home",yellow,en,true,hand_verified
+"Sunday night dread is back",yellow,en,true,hand_verified
+"I dissociate in meetings",yellow,en,true,hand_verified
+"Crying in the bathroom at office",yellow,en,true,hand_verified
+"Roommate fights, I cannot study",yellow,en,true,hand_verified
+"Hostel loneliness is loud",yellow,en,true,hand_verified
+"I cancelled plans because of panic",yellow,en,true,hand_verified
+"Social anxiety before every call",yellow,en,true,hand_verified
+"I keep checking if they left me",yellow,en,true,hand_verified
+"Jealousy and rumination after the fight",yellow,en,true,hand_verified
+"I am scared I will fail again",yellow,en,true,hand_verified
+"Parents compared me to my cousin",yellow,en,true,hand_verified
+"I feel like a burden to my friends",yellow,en,true,hand_verified
+"Sleeping 3 hours, brain fog",yellow,en,true,hand_verified
+"Nightmares about the accident",yellow,en,true,hand_verified
+"I snap at people I love",yellow,en,true,hand_verified
+"I cannot enjoy anything lately",yellow,en,true,hand_verified
+"Food has no taste, low mood",yellow,en,true,hand_verified
+"I skip meals when anxious",yellow,en,true,hand_verified
+"Doomscrolling till 3am",yellow,en,true,hand_verified
+"I am exhausted but wired",yellow,en,true,hand_verified
+"Hands shake before presentations",yellow,en,true,hand_verified
+"I cried after a small Slack message",yellow,en,true,hand_verified
+"Therapist matching please, I need CBT",yellow,en,true,hand_verified
+"Need someone for grief counselling",yellow,en,true,hand_verified
+"Student counsellor chahiye urgently",yellow,en,true,hand_verified
+"Couples therapy ke baare mein poochna hai",yellow,hinglish,true,hand_verified
+"Trauma informed therapist suggest karo",yellow,en,true,hand_verified
+"I am not in danger but I am not okay",yellow,en,true,hand_verified
+"Heavy day, need to talk to a human specialist",yellow,en,true,hand_verified
+"Yellow kind of day, strained but coping",yellow,en,true,hand_verified
+"I want to kill myself",red,en,true,hand_verified
+"I want to kill myself tonight",red,en,true,hand_verified
+"I am going to kill myself",red,en,true,hand_verified
+"killing myself later",red,en,true,hand_verified
+"I want to end my life",red,en,true,hand_verified
+"ending my life today",red,en,true,hand_verified
+"I will take my own life",red,en,true,hand_verified
+"I want to take my life",red,en,true,hand_verified
+"I want to die",red,en,true,hand_verified
+"wanna die tonight",red,en,true,hand_verified
+"I don't want to live",red,en,true,hand_verified
+"I dont want to live anymore",red,en,true,hand_verified
+"I don't want to be alive",red,en,true,hand_verified
+"dont want to be alive",red,en,true,hand_verified
+"I don't want to exist",red,en,true,hand_verified
+"there is no reason to live",red,en,true,hand_verified
+"no reason to be alive",red,en,true,hand_verified
+"I would be better off dead",red,en,true,hand_verified
+"better if I was dead",red,en,true,hand_verified
+"I am suicidal",red,en,true,hand_verified
+"suicide plan tonight",red,en,true,hand_verified
+"thinking about suicide",red,en,true,hand_verified
+"I will self-harm",red,en,true,hand_verified
+"I am going to cut myself",red,en,true,hand_verified
+"cutting myself again tonight",red,en,true,hand_verified
+"I want to hurt myself",red,en,true,hand_verified
+"I will harm myself",red,en,true,hand_verified
+"I will hang myself",red,en,true,hand_verified
+"planning an overdose",red,en,true,hand_verified
+"od tonight",red,en,true,hand_verified
+"I will jump off the balcony",red,en,true,hand_verified
+"end it all tonight",red,en,true,hand_verified
+"ending it all",red,en,true,hand_verified
+"I can't go on living",red,en,true,hand_verified
+"cant go on living like this",red,en,true,hand_verified
+"I don't want to wake up",red,en,true,hand_verified
+"dont want to wake up ever",red,en,true,hand_verified
+"goodbye forever",red,en,true,hand_verified
+"this is my last message",red,en,true,hand_verified
+"Main marna chahta hoon",red,hinglish,true,hand_verified
+"Main marna chahta hoon, please help",red,hinglish,true,hand_verified
+"Mai marna chahti hoon",red,hinglish,true,hand_verified
+"marna chahta hoon",red,hinglish,true,hand_verified
+"mar jaaun kya",red,en,true,hand_verified
+"marne ka mann hai",red,hinglish,true,hand_verified
+"Mujhe jeene ki iccha nahi hai ab",red,hinglish,true,hand_verified
+"jeene ki iccha nahi hai",red,hinglish,true,hand_verified
+"jeene ka mann nahi",red,hinglish,true,hand_verified
+"jeena nahi chahta hoon",red,hinglish,true,hand_verified
+"jeene ka koi fayda nahi",red,hinglish,true,hand_verified
+"koi fayda nahi jeene ka",red,hinglish,true,hand_verified
+"khudkhushi kar lunga",red,en,true,hand_verified
+"atmhatya karne ka soch raha hoon",red,hinglish,true,hand_verified
+"khud ko maar dunga",red,en,true,hand_verified
+"apni jaan le lunga",red,en,true,hand_verified
+"jaan de dunga aaj",red,en,true,hand_verified
+"suicide kar lunga",red,en,true,hand_verified
+"khatam kar dunga khud ko",red,en,true,hand_verified
+"zinda nahi rehna",red,hinglish,true,hand_verified
+"is duniya se jaana hai",red,hinglish,true,hand_verified
+"rehne ka mann nahi zinda",red,hinglish,true,hand_verified
+"I have a plan to end it",red,en,true,hand_verified
+"I already wrote the note",red,en,true,hand_verified
+"pills are on the table",red,en,true,hand_verified
+"rope is ready",red,en,true,hand_verified
+"I will not be here tomorrow",red,en,true,hand_verified
+"please don't stop me I will do it",red,en,true,hand_verified
+"Exam stress is bad and I want to end my life",red,en,true,hand_verified
+"Breakup ke baad marna chahta hoon",red,hinglish,true,hand_verified
+"I hate myself and I want to die",red,en,true,hand_verified
+"No one would miss me if I died tonight",red,en,true,hand_verified
+"I am going to jump",red,en,true,hand_verified
+"I will drive into a wall",red,en,true,hand_verified
+"cut myself until I stop feeling",red,en,true,hand_verified
+"I want to disappear forever by dying",red,en,true,hand_verified
+"mujhe mar jana hai",red,hinglish,true,hand_verified
+"main khudkushi karne wala hoon",red,hinglish,true,hand_verified
+"aaj raat khatam",red,en,true,hand_verified
+"last goodbye from me",red,en,true,hand_verified
+"do not call me tomorrow I will be gone",red,en,true,hand_verified

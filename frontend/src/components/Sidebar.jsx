@@ -15,8 +15,10 @@ const LINKS = [
   { to: "/phone-habit", label: "Phone habit" },
   { to: "/habits", label: "Habits" },
   { to: "/community", label: "Community" },
+  { to: "/admin", label: "Admin ops" },
+  { to: "/b2b-demo", label: "B2B reports" },
   { to: "/surveillance", label: "Campus insight" },
-  { to: "/partner", label: "Join as partner" },
+  { to: "/partner", label: "Partner desk" },
   { to: "/settings", label: "Settings" },
 ];
 

@@ -8,12 +8,53 @@ export function useChat() {
   const [matches, setMatches] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [sessions, setSessions] = useState([]);
+  const [historyNote, setHistoryNote] = useState(null);
+
+  async function refreshSessions() {
+    try {
+      const rows = await api("/api/v1/chat/sessions");
+      setSessions(rows);
+      return rows;
+    } catch {
+      return [];
+    }
+  }
 
   async function ensureSession(channel = "chat") {
     if (sessionId) return sessionId;
     const session = await api("/api/v1/chat/sessions", { method: "POST", body: { channel } });
     setSessionId(session.id);
+    setHistoryNote(null);
+    refreshSessions();
     return session.id;
+  }
+
+  async function newChat(channel = "chat") {
+    const session = await api("/api/v1/chat/sessions", { method: "POST", body: { channel } });
+    setSessionId(session.id);
+    setMessages([]);
+    setRisk({ tier: "green" });
+    setMatches([]);
+    setHistoryNote(null);
+    setError("");
+    refreshSessions();
+    return session.id;
+  }
+
+  async function openSession(row) {
+    setSessionId(row.id);
+    setMessages([]);
+    setMatches([]);
+    setRisk({ tier: row.last_tier || row.peak_tier || "green" });
+    setHistoryNote({
+      started_at: row.started_at,
+      peak_tier: row.peak_tier || row.last_tier,
+      last_tier: row.last_tier,
+      summary: row.summary,
+      last_companion_preview: row.last_companion_preview,
+      turn_count: row.turn_count,
+    });
   }
 
   async function send(text, channel = "chat") {
@@ -29,6 +70,13 @@ export function useChat() {
       setRisk(data.risk);
       setMatches(data.therapists || []);
       setMessages((m) => [...m, { role: "assistant", text: data.reply, risk: data.risk }]);
+      if (data.risk?.tier === "yellow") {
+        sessionStorage.setItem("sc_last_problem", text);
+      }
+      if (data.risk?.checkin_after) {
+        window.dispatchEvent(new CustomEvent("soulcare:checkin", { detail: { reason: "yellow" } }));
+      }
+      refreshSessions();
       return data;
     } catch (err) {
       setError(err.message);
@@ -39,7 +87,21 @@ export function useChat() {
     }
   }
 
-  return { sessionId, messages, risk, matches, busy, error, send, setMessages };
+  return {
+    sessionId,
+    messages,
+    risk,
+    matches,
+    busy,
+    error,
+    send,
+    setMessages,
+    sessions,
+    refreshSessions,
+    newChat,
+    openSession,
+    historyNote,
+  };
 }
 
 export function useCall() {
