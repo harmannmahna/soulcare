@@ -45,7 +45,49 @@ swytchcode list tooling
 swytchcode doctor
 ```
 
-When `list tooling` prints Slack / Weaviate / Firecrawl / … you can connect providers (section 4). Login is already done (`harmann3883@gmail.com`); do **not** log in again unless the session expired.
+When `list tooling` prints Slack / Weaviate / Firecrawl / … the kernel is ready.
+
+`swytchcode doctor` may show **one red check** and still be fine:
+
+```
+× [endpoint:Weaviate.weaviate:production_endpoint] invalid base URL: "https://{cluster_url}/v1"
+```
+
+That template is the Weaviate bundle default until you paste a real cluster URL. SoulCare then ranks therapists with local TF-IDF. Do not run `swytchcode init` to “fix” it.
+
+Provider lines that say `not set` are also fine. Skip `auth connect` unless you have that key. The API still runs `swytchcode exec --demo`.
+
+Start the app from **this same branch** (two PowerShell windows):
+
+```powershell
+Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\backend
+.\.venv\Scripts\Activate.ps1
+if (-not $?) { python -m venv .venv; .\.venv\Scripts\Activate.ps1; pip install -r requirements.txt }
+if (-not (Test-Path .env)) { copy .env.example .env }
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+```powershell
+Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173/login`. Password `Demo@123`:
+
+- User laptop → `demo@soulcare.app` → `/dashboard`
+- Therapist laptop → `therapist@soulcare.app` → `/partner`
+- B2B laptop → `b2b@soulcare.app` → `/b2b-demo`
+
+Optional live providers (only if you have keys), still inside the repo folder:
+
+```powershell
+Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare
+swytchcode auth connect slack
+swytchcode auth status
+```
+
+Login is already done (`harmann3883@gmail.com`); do **not** log in again unless the session expired.
 
 If `git checkout` complains about local changes:
 
