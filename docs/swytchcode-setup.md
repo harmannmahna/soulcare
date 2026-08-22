@@ -57,14 +57,16 @@ That template is the Weaviate bundle default until you paste a real cluster URL.
 
 Provider lines that say `not set` are also fine. Skip `auth connect` unless you have that key. The API still runs `swytchcode exec --demo`.
 
-Start the app from **this same branch** (two PowerShell windows):
+Start the app from **this same branch** (two PowerShell windows). Create `.venv` **before** activate — the folder does not exist on a fresh clone. Prefer calling the venv’s `python.exe` so Windows ExecutionPolicy cannot block `Activate.ps1`.
+
+Wait until `pip` prints `Successfully installed …` before starting uvicorn.
 
 ```powershell
 Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\backend
-.\.venv\Scripts\Activate.ps1
-if (-not $?) { python -m venv .venv; .\.venv\Scripts\Activate.ps1; pip install -r requirements.txt }
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 if (-not (Test-Path .env)) { copy .env.example .env }
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ```powershell
@@ -210,10 +212,9 @@ Then restart uvicorn.
 ```powershell
 Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\backend
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-copy .env.example .env
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+if (-not (Test-Path .env)) { copy .env.example .env }
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Frontend (second terminal):
