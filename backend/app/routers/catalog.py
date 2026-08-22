@@ -1,0 +1,115 @@
+from __future__ import annotations
+
+import math
+import uuid
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+
+from app.deps import require_user
+from app.store import store
+
+router = APIRouter(tags=["catalog"])
+
+
+class PrescriptionBody(BaseModel):
+    title: str = Field(min_length=1, max_length=80)
+    doctor: str = ""
+    notes: str = ""
+    demo_file_name: str = "prescription.jpg"
+
+
+def _clean(doc: dict | None) -> dict | None:
+    if not doc:
+        return None
+    doc.pop("_id", None)
+    return doc
+
+
+@router.get("/medicines")
+async def medicines():
+    return [_clean(r) for r in await store.collection("medicines").find({})]
+
+
+@router.get("/medicines/{medicine_id}")
+async def medicine_detail(medicine_id: str):
+    row = await store.collection("medicines").find_one({"id": medicine_id})
+    if not row:
+        raise HTTPException(status_code=404, detail="Medicine not found")
+    return _clean(row)
+
+
+def _km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    r = 6371
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dl = math.radians(lng2 - lng1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return round(2 * r * math.asin(math.sqrt(a)), 1)
+
+
+@router.get("/pharmacy")
+async def pharmacies(
+    lat: float | None = None,
+    lng: float | None = None,
+    store: str | None = None,
+    q: str | None = None,
+    sort: str = "distance",
+):
+    # Demo default: Koramangala, Bengaluru — used when the browser has no GPS.
+    origin_lat = lat if lat is not None else 12.9352
+    origin_lng = lng if lng is not None else 77.6245
+    rows = await store.collection("pharmacies").find({})
+    out = []
+    needle = (q or store or "").lower()
+    for row in rows:
+        item = _clean(row)
+        if needle:
+            blob = f"{item.get('name','')} {item.get('chain','')} {item.get('city','')} {item.get('area','')}".lower()
+            if needle not in blob:
+                continue
+        item["distance_km"] = _km(origin_lat, origin_lng, float(item.get("lat") or origin_lat), float(item.get("lng") or origin_lng))
+        out.append(item)
+    if sort == "name":
+        out.sort(key=lambda r: r.get("name") or "")
+    else:
+        out.sort(key=lambda r: r.get("distance_km") or 999)
+    return out
+
+
+@router.get("/pharmacy/{pharmacy_id}")
+async def pharmacy_detail(pharmacy_id: str):
+    row = await store.collection("pharmacies").find_one({"id": pharmacy_id})
+    if not row:
+        raise HTTPException(status_code=404, detail="Pharmacy not found")
+    products = []
+    for mid in row.get("products") or []:
+        med = await store.collection("medicines").find_one({"id": mid})
+        if med:
+            products.append(_clean(med))
+    return {**_clean(row), "catalog": products}
+
+
+@router.post("/prescriptions")
+async def upload_prescription(body: PrescriptionBody, user: dict = Depends(require_user)):
+    doc = {
+        "id": f"rx_{uuid.uuid4().hex[:10]}",
+        "user_id": user["id"],
+        "title": body.title,
+        "doctor": body.doctor,
+        "notes": body.notes,
+        "demo_file_name": body.demo_file_name,
+        "scope": "demo",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await store.collection("prescriptions").insert_one(doc)
+    return _clean(doc)
+
+
+@router.get("/prescriptions/{rx_id}")
+async def get_prescription(rx_id: str, user: dict = Depends(require_user)):
+    row = await store.collection("prescriptions").find_one({"id": rx_id, "user_id": user["id"]})
+    if not row:
+        raise HTTPException(status_code=404, detail="Prescription not found")
+    return _clean(row)
