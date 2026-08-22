@@ -61,6 +61,10 @@ Start the app from **this same branch** (two PowerShell windows). Create `.venv`
 
 Wait until `pip` prints `Successfully installed …` before starting uvicorn.
 
+Do **not** run `python -m venv .venv` again while uvicorn is running — Windows will say `Permission denied: python.exe`. If the prompt already shows `(.venv)`, skip venv creation.
+
+Python 3.9 on this laptop needs `eval_type_backport` (already in `requirements.txt`) so FastAPI can read `bool | None` annotations. Python 3.10+ does not need a special step.
+
 ```powershell
 Set-Location C:\Users\Lenovo\OneDrive\Desktop\soulcare\soulcare\backend
 python -m venv .venv

@@ -58,7 +58,7 @@ Admin header: `X-Admin-Token: soulcare-admin-demo`
 ## Quick start
 
 ```bash
-# API (works without Mongo — uses in-memory seed data)
+# API (Python 3.9+; 3.10+ preferred. 3.9 needs eval_type_backport, already in requirements.txt)
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
