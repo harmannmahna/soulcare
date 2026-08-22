@@ -92,3 +92,73 @@ body {
     opacity: 0.85;
   }
 }
+
+/* Talk to Companion — CSS orb only. No WebGL / Three.js. */
+.companion-orb {
+  display: grid;
+  place-items: center;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+}
+
+.companion-orb__core {
+  width: 148px;
+  height: 148px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c9ddff 42%, #6fa3ff 72%, #2f6fed 100%);
+  box-shadow: 0 0 36px 12px rgba(111, 163, 255, 0.28);
+  transition: transform 80ms linear, box-shadow 80ms linear;
+}
+
+.companion-orb--idle .companion-orb__core {
+  animation: orb-idle 3.6s ease-in-out infinite;
+}
+
+.companion-orb--listening .companion-orb__core {
+  animation: orb-listen 1.15s ease-in-out infinite;
+  box-shadow: 0 0 48px 16px rgba(47, 111, 237, 0.42);
+}
+
+.companion-orb--thinking .companion-orb__core {
+  animation: orb-think 2.2s linear infinite;
+}
+
+.companion-orb--speaking .companion-orb__core {
+  animation: none;
+}
+
+@keyframes orb-idle {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes orb-listen {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes orb-think {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    filter: hue-rotate(12deg) brightness(1.08);
+    transform: rotate(180deg) scale(1.02);
+  }
+  100% {
+    filter: hue-rotate(0deg) brightness(1);
+    transform: rotate(360deg) scale(1);
+  }
+}

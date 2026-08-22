@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from app.services.alerts import hub
 from app.services.ai import get_ai_provider, provider_label
 from app.services.avatar_risk import combine_tiers, vocal_tier_from_score
-from app.services.did_avatar import create_talk, presenter_url
 from app.services.hume import analyze_audio
 from app.services.ngo_notify import notify_red, safety_copy
 from app.services.pipeline import ensure_session, match_therapists, wants_hinglish
@@ -53,7 +52,6 @@ async def run_avatar_turn(
             "ok": False,
             "error": "We couldn't hear a clear sentence. Try speaking a little longer.",
             "hume_ok": bool(hume.get("ok")),
-            "presenter_url": presenter_url(),
         }
 
     text_result = classify_risk(transcript)
@@ -149,7 +147,7 @@ async def run_avatar_turn(
                     "peak_tier": "red",
                     "last_action": effective.action,
                     "channel": "avatar",
-                    "summary": "Avatar call · crisis. LLM and D-ID skipped.",
+                    "summary": "Avatar call · crisis. LLM skipped. No spoken reply.",
                 },
                 "$inc": {"turn_count": 1},
             },
@@ -180,9 +178,7 @@ async def run_avatar_turn(
             "reply": reply,
             "llm_used": False,
             "ai_backend": "safety_script",
-            "video_url": None,
-            "video_fallback": True,
-            "presenter_url": presenter_url(),
+            "speak": False,
             "therapists": [],
             "hume_ok": bool(hume.get("ok")),
             "vocal_score": vocal_score,
@@ -227,9 +223,6 @@ async def run_avatar_turn(
         therapists = await match_therapists(effective.tags, query=transcript)
         public["checkin_after"] = True
 
-    talk = await create_talk(reply)
-    video_url = talk.get("video_url") if talk.get("ok") else None
-
     return {
         "ok": True,
         "session_id": session["id"],
@@ -237,10 +230,7 @@ async def run_avatar_turn(
         "reply": reply,
         "llm_used": True,
         "ai_backend": provider_label(),
-        "video_url": video_url,
-        "video_fallback": not bool(video_url),
-        "video_error": None if video_url else talk.get("error"),
-        "presenter_url": presenter_url(),
+        "speak": True,
         "therapists": therapists,
         "hume_ok": bool(hume.get("ok")),
         "hume_error": None if hume.get("ok") else hume.get("error"),

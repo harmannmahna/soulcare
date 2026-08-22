@@ -37,8 +37,6 @@ class Settings(BaseSettings):
     swytchcode_demo: bool = True
     hume_api_key: str = ""
     hume_secret_key: str = ""
-    d_id_api_key: str = ""
-    d_id_presenter_url: str = "https://d-id-public-bucket.s3.amazonaws.com/or-roman.jpg"
 
     @property
     def cors_origin_list(self) -> list[str]:
