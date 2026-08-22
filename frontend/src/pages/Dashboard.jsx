@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Modal } from "../components/ui";
 import ProfileEditForm from "../components/ProfileEditForm";
 import TalkNowCard from "../components/dashboard/TalkNowCard";
+import TalkCompanionCard from "../components/dashboard/TalkCompanionCard";
 import FindTherapistCard from "../components/dashboard/FindTherapistCard";
 import FindHelpNearbyCard from "../components/dashboard/FindHelpNearbyCard";
 import ExploreWellnessCard from "../components/dashboard/ExploreWellnessCard";
@@ -41,6 +42,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <TalkNowCard onClick={() => nav("/chat")} />
+        <TalkCompanionCard onClick={() => nav("/talk-companion")} />
         <FindTherapistCard onClick={() => nav("/therapists")} />
         <FindHelpNearbyCard onClick={() => nav("/help")} />
         <ExploreWellnessCard onClick={() => nav("/wellness")} />

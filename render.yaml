@@ -41,3 +41,11 @@ services:
         sync: false
       - key: WEAVIATE_API_KEY
         sync: false
+      - key: HUME_API_KEY
+        sync: false
+      - key: HUME_SECRET_KEY
+        sync: false
+      - key: D_ID_API_KEY
+        sync: false
+      - key: D_ID_PRESENTER_URL
+        sync: false
