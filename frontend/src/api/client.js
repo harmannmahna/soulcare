@@ -36,6 +36,20 @@ export async function api(path, { method = "GET", body, admin = false } = {}) {
   return data;
 }
 
+export async function apiForm(path, formData) {
+  const headers = {};
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${API}${path}`, { method: "POST", headers, body: formData });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const detail = data.detail;
+    const message = Array.isArray(detail) ? detail[0]?.msg : detail || res.statusText;
+    throw new Error(message || "Request failed");
+  }
+  return data;
+}
+
 export function wsAdminUrl() {
   const token = getAdminToken();
   if (import.meta.env.VITE_API_URL) {

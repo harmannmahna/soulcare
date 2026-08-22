@@ -9,6 +9,7 @@ import Signup from "./pages/Signup";
 import Details from "./pages/Details";
 import Chat from "./pages/Chat";
 import Call from "./pages/Call";
+import TalkCompanion from "./pages/TalkCompanion";
 import Therapists from "./pages/Therapists";
 import TherapistDetail from "./pages/TherapistDetail";
 import Booking from "./pages/Booking";
@@ -68,6 +69,7 @@ export default function App() {
       </Route>
       <Route element={<AppShell />}>
         <Route path="/chat" element={<Gate needConsent needDetails roles={["user"]}><Chat /></Gate>} />
+        <Route path="/talk-companion" element={<Gate needConsent needDetails roles={["user"]}><TalkCompanion /></Gate>} />
         <Route path="/call" element={<Gate needConsent needDetails roles={["user"]}><Call /></Gate>} />
         <Route path="/therapists" element={<Gate needDetails><Therapists /></Gate>} />
         <Route path="/therapists/:id" element={<Gate needDetails><TherapistDetail /></Gate>} />
