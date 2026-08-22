@@ -29,7 +29,7 @@ export default function Settings() {
           <label className="block text-sm">
             <span className="text-xs font-semibold uppercase tracking-wider text-moss/70">Language / tone</span>
             <select
-              className="mt-1 w-full rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5"
+              className="field mt-1"
               value={form.language}
               onChange={(e) => setForm({ ...form, language: e.target.value })}
             >

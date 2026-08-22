@@ -73,7 +73,7 @@ export default function Community() {
               <label className="mt-3 block text-sm">
                 <span className="text-xs font-semibold uppercase tracking-wider text-moss/70">Topic</span>
                 <select
-                  className="mt-1 w-full rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5"
+                  className="field mt-1"
                   value={postTopic}
                   onChange={(e) => setPostTopic(e.target.value)}
                 >

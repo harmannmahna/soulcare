@@ -9,9 +9,7 @@ function PulseOrb({ active, risk, tone }) {
       ? "#B55252"
       : risk === "yellow"
         ? "#C4922A"
-        : tone === "blue"
-          ? "#2F6FED"
-          : "#5A9E7E";
+          : "#87EDA8";
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const speed = active ? 2.6 : 1.15;

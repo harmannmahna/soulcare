@@ -297,7 +297,7 @@ export default function TalkCompanion() {
     <div className="mx-auto max-w-xl space-y-5">
       <div className="text-center">
         <p className="text-xs uppercase tracking-[0.2em] text-sage">Live companion</p>
-        <h1 className="font-display text-4xl">Talk to Companion</h1>
+        <h1 className="font-display text-4xl font-semibold">Talk to Companion</h1>
         <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
           One tap to start. Keep talking — it listens, answers, and listens again. English only. End when you want to
           stop.
@@ -318,7 +318,7 @@ export default function TalkCompanion() {
             <div
               key={`${m.role}-${i}`}
               className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm ${
-                m.role === "user" ? "ml-auto bg-moss text-foam" : "bg-mist text-ink"
+                m.role === "user" ? "ml-auto bg-moss text-sand" : "bg-mist text-ink"
               }`}
             >
               <p className="mb-0.5 text-[10px] uppercase tracking-wider opacity-70">{m.role === "user" ? "You" : "Companion"}</p>
@@ -326,7 +326,7 @@ export default function TalkCompanion() {
             </div>
           ))}
           {interim && live && (
-            <div className="ml-auto max-w-[90%] rounded-2xl bg-moss/70 px-3 py-2 text-sm text-foam">
+            <div className="ml-auto max-w-[90%] rounded-2xl bg-moss/70 px-3 py-2 text-sm text-sand">
               <p className="mb-0.5 text-[10px] uppercase tracking-wider opacity-70">You</p>
               {interim}
             </div>

@@ -153,7 +153,7 @@ export default function Chat() {
           <RiskBanner tier={risk.tier} />
         </div>
         {historyNote && messages.length === 0 && (
-          <div className="mt-4 rounded-2xl bg-white/50 p-4 text-sm">
+          <div className="mt-4 rounded-2xl bg-mist/80 p-4 text-sm">
             <p className="text-xs uppercase tracking-wider" style={{ color: "var(--accent-blue-deep)" }}>
               Saved summary
             </p>
@@ -181,7 +181,7 @@ export default function Chat() {
                   <button
                     key={label}
                     type="button"
-                    className="rounded-full bg-white/70 px-3 py-1 text-xs"
+                    className="rounded-full bg-mist px-3 py-1 text-xs"
                     style={{ color: "var(--accent-blue-deep)" }}
                     onClick={() => setText(sample)}
                   >
@@ -199,8 +199,8 @@ export default function Chat() {
               transition={{ duration: 0.45 }}
               className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
                 m.role === "user"
-                  ? "ml-auto text-white"
-                  : "bg-white/70"
+                  ? "ml-auto text-sand"
+                  : "bg-mist/80"
               }`}
               style={m.role === "user" ? { background: "var(--accent-blue)" } : { color: "var(--text-primary)" }}
             >
@@ -216,7 +216,7 @@ export default function Chat() {
         {risk.tier === "red" && (
           <div className="mt-4 space-y-2">
             {risk.ngo_name && (
-              <p className="text-sm text-rose-700">
+              <p className="text-sm text-rose">
                 High priority. We alerted {risk.ngo_name}
                 {risk.notifiedChannel ? ` via ${risk.notifiedChannel}` : ""}. Please call 112 or Tele-MANAS 14416.
               </p>
@@ -237,7 +237,7 @@ export default function Chat() {
               Matched care
             </p>
             {matches.map((t) => (
-              <Link key={t.id} to={`/therapists/${t.id}`} className="block rounded-2xl bg-white/60 p-3">
+              <Link key={t.id} to={`/therapists/${t.id}`} className="block rounded-2xl bg-mist/80 p-3">
                 <p className="font-semibold">{t.name}</p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   {(t.tags || t.specialties || []).join(" · ")}
@@ -259,18 +259,18 @@ export default function Chat() {
               lastInputRef.current = Date.now();
             }}
             placeholder="Share what’s here…"
-            className="flex-1 rounded-2xl border border-white/50 bg-white/70 px-4 py-3 text-sm outline-none"
+            className="flex-1 rounded-2xl border border-white/10 bg-mist px-4 py-3 text-sm text-ink outline-none"
             disabled={!!ended}
           />
           <button
             type="submit"
             disabled={busy || !!ended}
-            className="rounded-2xl bg-[var(--accent-blue)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
+            className="rounded-2xl bg-[var(--accent-blue)] px-5 py-3 text-sm font-semibold text-sand disabled:opacity-50"
           >
             {busy ? "…" : "Send"}
           </button>
         </form>
-        {error && <p className="mt-2 text-sm text-rose-600">{error}</p>}
+        {error && <p className="mt-2 text-sm text-rose">{error}</p>}
       </div>
     </CompanionShell>
   );

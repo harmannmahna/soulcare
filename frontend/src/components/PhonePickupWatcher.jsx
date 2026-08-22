@@ -39,7 +39,7 @@ export default function PhonePickupWatcher() {
 
   if (!note) return null;
   return (
-    <div className="fixed left-4 top-16 z-40 max-w-sm rounded-2xl bg-moss px-4 py-3 text-sm text-foam shadow-soft md:left-auto md:right-4">
+    <div className="fixed left-4 top-16 z-40 max-w-sm rounded-2xl bg-moss px-4 py-3 text-sm text-sand shadow-soft md:left-auto md:right-4">
       <p>{note}</p>
     </div>
   );

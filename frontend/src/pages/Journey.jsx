@@ -28,13 +28,13 @@ function Rings({ rings = [] }) {
             <path
               d="M18 2.5 a 15.5 15.5 0 1 1 0 31 a 15.5 15.5 0 1 1 0 -31"
               fill="none"
-              stroke="#D8E3DC"
+              stroke="#1C2421"
               strokeWidth="3.5"
             />
             <path
               d="M18 2.5 a 15.5 15.5 0 1 1 0 31 a 15.5 15.5 0 1 1 0 -31"
               fill="none"
-              stroke="#3F6F5E"
+              stroke="#87EDA8"
               strokeWidth="3.5"
               strokeDasharray={`${(r.pct / 100) * 97} 97`}
               strokeLinecap="round"

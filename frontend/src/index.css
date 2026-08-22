@@ -3,8 +3,9 @@
 @tailwind utilities;
 
 :root {
-  color: #1c2a24;
-  background: #f7f5ef;
+  color-scheme: dark;
+  color: #f2f6f3;
+  background: #0d0d0f;
 }
 
 html,
@@ -15,16 +16,16 @@ body,
 
 body {
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(63, 95, 69, 0.12), transparent 50%),
-    radial-gradient(900px 500px at 110% 10%, rgba(196, 146, 42, 0.08), transparent 45%),
-    #f7f5ef;
+    radial-gradient(1100px 560px at 8% -12%, rgba(24, 126, 82, 0.22), transparent 52%),
+    radial-gradient(900px 480px at 108% 0%, rgba(135, 237, 168, 0.1), transparent 46%),
+    #0d0d0f;
 }
 
 .grain {
   pointer-events: none;
   position: fixed;
   inset: 0;
-  opacity: 0.035;
+  opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   z-index: 1;
 }
@@ -33,21 +34,25 @@ body {
   width: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c5d2ca;
+  background: #2a3a32;
   border-radius: 99px;
 }
 
-/* Companion feature only — does not change the global sage theme */
+.field {
+  @apply w-full rounded-2xl border border-white/10 bg-mist px-4 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink/35 focus:border-sage/40 focus:ring-2 focus:ring-sage/25;
+}
+
+/* Companion feature — dark mint glass */
 .companion-root {
-  --companion-bg: linear-gradient(135deg, #eaf3ff 0%, #ffffff 50%, #dcebff 100%);
-  --glass-panel: rgba(255, 255, 255, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.35);
+  --companion-bg: linear-gradient(160deg, #121714 0%, #0d0d0f 48%, #12261c 100%);
+  --glass-panel: rgba(22, 27, 34, 0.72);
+  --glass-border: rgba(135, 237, 168, 0.16);
   --glass-blur: blur(20px);
-  --accent-blue: #2f6fed;
-  --accent-blue-light: #6fa3ff;
-  --accent-blue-deep: #1b4fc7;
-  --text-primary: #16213e;
-  --text-muted: #5c6b8a;
+  --accent-blue: #87eda8;
+  --accent-blue-light: #ddf7e3;
+  --accent-blue-deep: #187e52;
+  --text-primary: #f2f6f3;
+  --text-muted: #8b958e;
   min-height: calc(100vh - 7rem);
   margin: -0.5rem -0.25rem;
   padding: 1.25rem;
@@ -64,14 +69,14 @@ body {
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(47, 111, 237, 0.12);
+  box-shadow: 0 8px 32px rgba(135, 237, 168, 0.08);
 }
 
 .companion-orb-glow {
   position: absolute;
   inset: 18% 22%;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(111, 163, 255, 0.45), transparent 68%);
+  background: radial-gradient(circle, rgba(135, 237, 168, 0.4), transparent 68%);
   filter: blur(18px);
   animation: companion-breathe 4.2s ease-in-out infinite;
   pointer-events: none;
@@ -106,8 +111,8 @@ body {
   width: 148px;
   height: 148px;
   border-radius: 999px;
-  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c9ddff 42%, #6fa3ff 72%, #2f6fed 100%);
-  box-shadow: 0 0 36px 12px rgba(111, 163, 255, 0.28);
+  background: radial-gradient(circle at 35% 30%, #ddf7e3 0%, #87eda8 42%, #2f9e68 72%, #187e52 100%);
+  box-shadow: 0 0 36px 12px rgba(135, 237, 168, 0.28);
   transition: transform 80ms linear, box-shadow 80ms linear;
 }
 
@@ -117,7 +122,7 @@ body {
 
 .companion-orb--listening .companion-orb__core {
   animation: orb-listen 1.15s ease-in-out infinite;
-  box-shadow: 0 0 48px 16px rgba(47, 111, 237, 0.42);
+  box-shadow: 0 0 48px 16px rgba(135, 237, 168, 0.42);
 }
 
 .companion-orb--thinking .companion-orb__core {

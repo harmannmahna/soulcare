@@ -15,14 +15,14 @@ const PROMPTS = [
 ];
 
 const TINT = {
-  hydration: "ring-sky-200",
-  breath: "ring-teal-200",
-  mood: "ring-amber-200",
-  talk: "ring-moss/20",
-  body: "ring-orange-200",
-  food: "ring-lime-200",
-  encourage: "ring-violet-200",
-  rest: "ring-indigo-200",
+  hydration: "ring-sage/30",
+  breath: "ring-sage/25",
+  mood: "ring-amber/30",
+  talk: "ring-sage/30",
+  body: "ring-leaf/40",
+  food: "ring-pale/20",
+  encourage: "ring-sage/35",
+  rest: "ring-white/10",
 };
 
 function nextDelay() {
@@ -115,7 +115,7 @@ export default function CheckInPopup() {
         <div className="mt-3 flex gap-2">
           <button
             type="button"
-            className="rounded-full bg-moss px-4 py-1.5 text-xs font-semibold text-foam"
+            className="rounded-full bg-moss px-4 py-1.5 text-xs font-semibold text-sand"
             onClick={open}
           >
             {prompt.talk ? "Talk now" : "Okay"}

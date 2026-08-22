@@ -15,7 +15,7 @@ export default function CharacterSelector({ characters = [], selectedId, onSelec
             <img
               src={c.avatarUrl}
               alt=""
-              className={`rounded-full bg-white object-cover ${compact ? "h-9 w-9" : "h-14 w-14"}`}
+              className={`rounded-full bg-mist object-cover ${compact ? "h-9 w-9" : "h-14 w-14"}`}
             />
             <span className="min-w-0">
               <span className="block truncate text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
