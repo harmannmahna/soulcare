@@ -122,7 +122,7 @@ async def analyze_audio(
 
     token = await _access_token()
     headers = _headers(token)
-    models = {"models": {"prosody": {}, "language": {}}, "transcription": {"language": None}}
+    models = {"models": {"prosody": {}, "language": {}}, "transcription": {"language": "en"}}
     files = {
         "file": (filename, audio, content_type or "application/octet-stream"),
         "json": (None, json.dumps(models), "application/json"),
