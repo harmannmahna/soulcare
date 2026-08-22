@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.deps import require_user
+from app.services.characters import get_character
 from app.services.pipeline import ensure_session, handle_turn
 from app.store import store
 
@@ -12,11 +13,15 @@ router = APIRouter(tags=["chat"])
 
 class SessionBody(BaseModel):
     channel: str = "chat"
+    character_id: str | None = None
 
 
 class MessageBody(BaseModel):
     text: str = Field(min_length=1, max_length=4000)
     session_id: str | None = None
+    character_id: str | None = None
+    vocal_features: dict | None = None
+    vocal_samples: list[float] | None = None
 
 
 @router.get("/chat/sessions")
@@ -49,8 +54,10 @@ async def create_session(body: SessionBody, user: dict = Depends(require_user)):
         guest=bool(user.get("guest")),
         channel=body.channel,
         consent=True,
+        character_id=body.character_id or user.get("selected_character_id"),
     )
     session.pop("_id", None)
+    session["character"] = get_character(session.get("character_id"))
     return session
 
 
@@ -76,8 +83,17 @@ async def chat_message(body: MessageBody, user: dict = Depends(require_user)):
         channel="chat",
         consent=True,
         session_id=body.session_id,
+        character_id=body.character_id or user.get("selected_character_id"),
     )
-    return await handle_turn(session=session, text=body.text, language_pref=user.get("language"))
+    return await handle_turn(
+        session=session,
+        text=body.text,
+        language_pref=user.get("language"),
+        user=user,
+        character_id=body.character_id or user.get("selected_character_id"),
+        vocal_features=body.vocal_features,
+        vocal_samples=body.vocal_samples,
+    )
 
 
 @router.post("/call/start")
@@ -89,8 +105,10 @@ async def call_start(user: dict = Depends(require_user)):
         guest=bool(user.get("guest")),
         channel="call",
         consent=True,
+        character_id=user.get("selected_character_id"),
     )
     session.pop("_id", None)
+    session["character"] = get_character(session.get("character_id"))
     return session
 
 
@@ -104,5 +122,14 @@ async def call_turn(body: MessageBody, user: dict = Depends(require_user)):
         channel="call",
         consent=True,
         session_id=body.session_id,
+        character_id=body.character_id or user.get("selected_character_id"),
     )
-    return await handle_turn(session=session, text=body.text, language_pref=user.get("language"))
+    return await handle_turn(
+        session=session,
+        text=body.text,
+        language_pref=user.get("language"),
+        user=user,
+        character_id=body.character_id or user.get("selected_character_id"),
+        vocal_features=body.vocal_features,
+        vocal_samples=body.vocal_samples,
+    )

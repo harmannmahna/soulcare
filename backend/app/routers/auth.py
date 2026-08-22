@@ -48,6 +48,7 @@ class ProfileBody(BaseModel):
     height: float | None = Field(default=None, gt=0, le=280)
     details_completed: bool | None = None
     avatar: str | None = None
+    selected_character_id: str | None = None
 
 
 class DetailsBody(BaseModel):
@@ -95,6 +96,7 @@ async def signup(body: SignupBody):
         "focus_points": 0,
         "room_items": [],
         "friends": [],
+        "selected_character_id": "aisha",
     }
     await users.insert_one(user)
     if role == "therapist":
@@ -146,6 +148,7 @@ async def guest(body: GuestBody):
         "focus_points": 0,
         "room_items": [],
         "friends": [],
+        "selected_character_id": "aisha",
     }
     await store.collection("users").insert_one(user)
     return {"token": create_token(user["id"], guest=True), "user": public_user(user)}

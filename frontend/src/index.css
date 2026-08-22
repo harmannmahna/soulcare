@@ -36,3 +36,59 @@ body {
   background: #c5d2ca;
   border-radius: 99px;
 }
+
+/* Companion feature only — does not change the global sage theme */
+.companion-root {
+  --companion-bg: linear-gradient(135deg, #eaf3ff 0%, #ffffff 50%, #dcebff 100%);
+  --glass-panel: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-blur: blur(20px);
+  --accent-blue: #2f6fed;
+  --accent-blue-light: #6fa3ff;
+  --accent-blue-deep: #1b4fc7;
+  --text-primary: #16213e;
+  --text-muted: #5c6b8a;
+  min-height: calc(100vh - 7rem);
+  margin: -0.5rem -0.25rem;
+  padding: 1.25rem;
+  border-radius: 28px;
+  background: var(--companion-bg);
+  color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.companion-root .glass-panel {
+  background: var(--glass-panel);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(47, 111, 237, 0.12);
+}
+
+.companion-orb-glow {
+  position: absolute;
+  inset: 18% 22%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(111, 163, 255, 0.45), transparent 68%);
+  filter: blur(18px);
+  animation: companion-breathe 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.companion-orb-glow.active {
+  animation-duration: 1.8s;
+}
+
+@keyframes companion-breathe {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}

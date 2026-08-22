@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.rate_limit import enforce_rate_limit
-from app.routers import admin, auth, care, catalog, chat, journey, lifestyle
+from app.routers import admin, auth, care, catalog, chat, companion, journey, lifestyle
 from app.routers.admin import admin_socket
 from app.services.ml_classifier import load_metrics
 from app.services.seed import seed_if_needed
@@ -83,6 +83,7 @@ async def pages():
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(chat.router, prefix="/api/v1")
+app.include_router(companion.router, prefix="/api/v1")
 app.include_router(care.router, prefix="/api/v1")
 app.include_router(journey.router, prefix="/api/v1")
 app.include_router(catalog.router, prefix="/api/v1")
