@@ -6,6 +6,7 @@ export function useTalkCompanion() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [last, setLast] = useState(null);
+  const [messages, setMessages] = useState([]);
 
   async function ensureSession() {
     if (sessionId) return sessionId;
@@ -26,6 +27,11 @@ export function useTalkCompanion() {
       const data = await apiForm("/api/v1/avatar/turn", form);
       setSessionId(data.session_id);
       setLast(data);
+      const userLine = (data.transcript || transcriptHint || "").trim();
+      const next = [];
+      if (userLine) next.push({ role: "user", text: userLine });
+      if (data.reply) next.push({ role: "assistant", text: data.reply });
+      if (next.length) setMessages((m) => [...m, ...next]);
       if (data.risk?.checkin_after) {
         window.dispatchEvent(new CustomEvent("soulcare:checkin", { detail: { reason: "yellow" } }));
       }
@@ -38,5 +44,12 @@ export function useTalkCompanion() {
     }
   }
 
-  return { sessionId, busy, error, last, sendTurn };
+  function resetConversation() {
+    setMessages([]);
+    setLast(null);
+    setError("");
+    setSessionId(null);
+  }
+
+  return { sessionId, busy, error, last, messages, sendTurn, resetConversation };
 }

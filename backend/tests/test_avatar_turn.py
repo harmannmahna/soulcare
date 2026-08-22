@@ -44,6 +44,7 @@ async def test_avatar_green_returns_spoken_reply_without_video(monkeypatch):
 
     class Friendly:
         async def generate(self, *args, **kwargs):
+            assert kwargs.get("hinglish") is False
             return "A short sit after work can be enough."
 
     monkeypatch.setattr(avatar_turn, "analyze_audio", fake_hume)
@@ -60,4 +61,5 @@ async def test_avatar_green_returns_spoken_reply_without_video(monkeypatch):
     assert result["speak"] is True
     assert result.get("video_url") in (None, "")
     assert "sit" in result["reply"].lower()
+    assert result["transcript"] == "I want to start meditating after work"
     assert result["risk"]["tier"] == "green"

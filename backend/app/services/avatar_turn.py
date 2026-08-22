@@ -9,7 +9,7 @@ from app.services.ai import get_ai_provider, provider_label
 from app.services.avatar_risk import combine_tiers, vocal_tier_from_score
 from app.services.hume import analyze_audio
 from app.services.ngo_notify import notify_red, safety_copy
-from app.services.pipeline import ensure_session, match_therapists, wants_hinglish
+from app.services.pipeline import ensure_session, match_therapists
 from app.services.risk_triage import RiskTier, classify_risk, public_risk_payload
 from app.store import store
 
@@ -52,6 +52,7 @@ async def run_avatar_turn(
             "ok": False,
             "error": "We couldn't hear a clear sentence. Try speaking a little longer.",
             "hume_ok": bool(hume.get("ok")),
+            "transcript": "",
         }
 
     text_result = classify_risk(transcript)
@@ -179,6 +180,7 @@ async def run_avatar_turn(
             "llm_used": False,
             "ai_backend": "safety_script",
             "speak": False,
+            "transcript": transcript,
             "therapists": [],
             "hume_ok": bool(hume.get("ok")),
             "vocal_score": vocal_score,
@@ -206,11 +208,10 @@ async def run_avatar_turn(
     )
 
     history = _AVATAR_MEMORY.setdefault(session["id"], [])
-    hinglish = wants_hinglish(transcript, user.get("language"))
     reply = await get_ai_provider().generate(
         transcript,
         yellow=effective.tier == RiskTier.YELLOW,
-        hinglish=hinglish,
+        hinglish=False,
         history=history,
     )
     history.append({"role": "user", "text": transcript[:500]})
@@ -231,6 +232,7 @@ async def run_avatar_turn(
         "llm_used": True,
         "ai_backend": provider_label(),
         "speak": True,
+        "transcript": transcript,
         "therapists": therapists,
         "hume_ok": bool(hume.get("ok")),
         "hume_error": None if hume.get("ok") else hume.get("error"),
