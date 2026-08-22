@@ -55,7 +55,7 @@ export default function Details() {
             <span className="text-xs font-semibold uppercase tracking-wider text-moss/70">Gender</span>
             <select
               required
-              className="w-full rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5 text-sm"
+              className="field"
               value={form.gender}
               onChange={(e) => setForm({ ...form, gender: e.target.value })}
             >

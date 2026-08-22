@@ -53,7 +53,7 @@ Admin header: `X-Admin-Token: soulcare-admin-demo`
 | Alerts | Swytchcode Slack / Telegram / Resend + `/ws/admin` |
 | Web | React + Vite + Tailwind, Framer Motion, GSAP, React Three Fiber |
 | Data | MongoDB, with an in-memory fallback if Mongo is down |
-| Deploy | Render (`render.yaml`) + Vercel (`frontend/vercel.json`) |
+| Deploy | Render (`render.yaml`) + Vercel (`vercel.json` + `frontend/vercel.json`) |
 
 ## Quick start
 
@@ -139,7 +139,7 @@ cd backend && pytest
 ## Deploy
 
 - **API (Render):** Blueprint in `render.yaml`. Binds `0.0.0.0:$PORT`, health check `/health`.
-- **Web (Vercel):** Root directory `frontend`. Set `VITE_API_URL` to the Render URL.
+- **Web (Vercel):** Root directory `frontend` (or repo root — `vercel.json` builds `frontend/dist`). SPA rewrites send every path to `index.html` so reloads on `/dashboard` or `/talk-companion` do not 404. Set `VITE_API_URL` to the Render URL. Use the Vercel site, not the Render API host.
 
 ## Route map
 

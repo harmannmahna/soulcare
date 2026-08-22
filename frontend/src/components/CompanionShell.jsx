@@ -75,10 +75,10 @@ export default function CompanionShell({
                 <img
                   src={character.avatarUrl}
                   alt={character.name}
-                  className="relative z-10 h-28 w-28 rounded-full bg-white shadow-[0_0_40px_rgba(47,111,237,0.35)]"
+                  className="relative z-10 h-28 w-28 rounded-full bg-mist shadow-[0_0_40px_rgba(135,237,168,0.35)]"
                 />
               ) : (
-                <BreathingOrb active={active} risk="green" tone="blue" className="relative z-10 h-28 w-28" />
+                <BreathingOrb active={active} risk="green" tone="sage" className="relative z-10 h-28 w-28" />
               )}
               <p className="relative z-10 mt-3 text-lg font-semibold">{character?.name || "Companion"}</p>
               <p className="relative z-10 text-xs" style={{ color: "var(--text-muted)" }}>
@@ -101,7 +101,7 @@ export default function CompanionShell({
                 )}
                 <ul className="mt-3 space-y-2">
                   {tasks.map((t) => (
-                    <li key={t.id} className="rounded-2xl bg-white/50 px-3 py-2 text-sm">
+                    <li key={t.id} className="rounded-2xl bg-mist/80 px-3 py-2 text-sm">
                       {t.title || t.name}
                     </li>
                   ))}
@@ -120,7 +120,7 @@ export default function CompanionShell({
                       key={s.id || s.session_id}
                       type="button"
                       onClick={() => s.id && onOpenSession?.(s)}
-                      className={`w-full rounded-2xl bg-white/45 px-3 py-2 text-left text-sm ${
+                      className={`w-full rounded-2xl bg-mist/70 px-3 py-2 text-left text-sm ${
                         sessionId && (sessionId === s.id || sessionId === s.session_id) ? "ring-1 ring-[var(--accent-blue)]" : ""
                       }`}
                     >

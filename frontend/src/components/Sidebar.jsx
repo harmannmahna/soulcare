@@ -7,6 +7,7 @@ import ProfileEditForm from "./ProfileEditForm";
 const LINKS = [
   { to: "/dashboard", label: "Dashboard", roles: ["user"] },
   { to: "/chat", label: "Talk now", roles: ["user"] },
+  { to: "/talk-companion", label: "Talk to Companion", roles: ["user"] },
   { to: "/therapists", label: "Find a therapist", roles: ["user"] },
   { to: "/help", label: "Help nearby", roles: ["user"] },
   { to: "/wellness", label: "Explore wellness", roles: ["user"] },
@@ -32,23 +33,23 @@ export default function Sidebar({ user }) {
   const links = LINKS.filter((l) => !l.roles || l.roles.includes(role));
 
   return (
-    <aside className="sticky top-0 hidden h-[calc(100vh-40px)] w-72 shrink-0 flex-col border-r border-moss/10 bg-foam/80 px-5 py-6 backdrop-blur md:flex">
+    <aside className="sticky top-0 hidden h-[calc(100vh-40px)] w-72 shrink-0 flex-col border-r border-white/5 bg-foam/80 px-5 py-6 backdrop-blur md:flex">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-moss text-sm font-semibold text-foam">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-moss text-sm font-semibold text-sand">
           {initials(user?.name)}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-display text-xl leading-tight">{user?.name || "Friend"}</p>
+          <p className="truncate font-display text-xl font-semibold leading-tight">{user?.name || "Friend"}</p>
           <p className="truncate text-xs text-ink/50">{user?.email || "Guest space"}</p>
         </div>
       </div>
 
-      <div className="mt-5 rounded-2xl bg-sand p-4 text-sm">
+      <div className="mt-5 rounded-2xl bg-sand p-4 text-sm ring-1 ring-white/5">
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-wider text-moss/70">Profile</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-sage/80">Profile</p>
           <button
             type="button"
-            className="rounded-full p-1 text-moss hover:bg-mist"
+            className="rounded-full p-1 text-sage hover:bg-mist"
             aria-label="Edit profile"
             onClick={() => setEditing((v) => !v)}
           >
@@ -81,8 +82,8 @@ export default function Sidebar({ user }) {
                 key={l.to}
                 type="button"
                 onClick={() => nav(l.to)}
-                className={`block w-full rounded-xl px-3 py-2 text-left ${
-                  active ? "bg-mist font-semibold text-ink" : "text-moss hover:bg-sand"
+                className={`block w-full rounded-full px-3 py-2 text-left transition ${
+                  active ? "bg-moss font-semibold text-sand" : "text-ink/70 hover:bg-mist hover:text-ink"
                 }`}
               >
                 {l.label}
@@ -93,7 +94,7 @@ export default function Sidebar({ user }) {
 
       <button
         type="button"
-        className="mt-4 rounded-full border border-moss/15 px-4 py-2 text-sm text-moss hover:bg-sand"
+        className="mt-4 rounded-full border border-white/10 px-4 py-2 text-sm text-ink/80 hover:bg-mist"
         onClick={() => {
           logout();
           nav("/login");

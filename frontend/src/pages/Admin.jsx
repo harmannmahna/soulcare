@@ -40,7 +40,7 @@ export default function Admin() {
         </Button>
       </Card>
       {alerts[0] && (
-        <Card className="border border-rose/30 bg-rose-50">
+        <Card className="border border-rose/30 bg-rose/10">
           <p className="font-semibold text-rose">Live red alert</p>
           <p className="text-sm">
             Session {alerts[0].session_id} · {alerts[0].triggered_rule} · {alerts[0].created_at}

@@ -53,14 +53,14 @@ export default function Pharmacy() {
       <p className="mt-2 text-xs text-sage">{geoNote}</p>
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <Input placeholder="Search store or city…" value={q} onChange={(e) => setQ(e.target.value)} />
-        <select className="rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5 text-sm" value={chain} onChange={(e) => setChain(e.target.value)}>
+        <select className="field" value={chain} onChange={(e) => setChain(e.target.value)}>
           {chains.map((c) => (
             <option key={c} value={c}>
               {c === "all" ? "All stores" : c}
             </option>
           ))}
         </select>
-        <select className="rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5 text-sm" value={sort} onChange={(e) => setSort(e.target.value)}>
+        <select className="field" value={sort} onChange={(e) => setSort(e.target.value)}>
           <option value="distance">Sort by distance</option>
           <option value="name">Sort by name</option>
         </select>

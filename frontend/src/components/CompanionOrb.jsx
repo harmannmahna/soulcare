@@ -9,7 +9,7 @@ export default function CompanionOrb({ mode = "idle", amplitude = 0 }) {
           mode === "speaking"
             ? {
                 transform: `scale(${speakScale})`,
-                boxShadow: `0 0 ${glow}px 14px rgba(111, 163, 255, ${0.28 + amplitude * 0.35})`,
+                boxShadow: `0 0 ${glow}px 14px rgba(135, 237, 168, ${0.28 + amplitude * 0.35})`,
               }
             : undefined
         }

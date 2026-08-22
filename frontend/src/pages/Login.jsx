@@ -48,7 +48,7 @@ export default function Login() {
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-10">
-      <h1 className="font-display text-4xl">Sign in</h1>
+      <h1 className="font-display text-4xl font-semibold">Sign in</h1>
       <p className="mt-2 text-sm text-ink/60">
         Three demo desks for three laptops. Same password <strong>Demo@123</strong>. Each role opens a different home.
       </p>

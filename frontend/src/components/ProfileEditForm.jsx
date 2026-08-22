@@ -42,7 +42,7 @@ export default function ProfileEditForm({ compact = false, onSaved, onCancel }) 
       <label className="block space-y-1">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-moss/70">Gender</span>
         <select
-          className="w-full rounded-2xl border border-moss/10 bg-white/80 px-3 py-2 text-sm"
+          className="field px-3 py-2"
           value={form.gender}
           onChange={(e) => setForm({ ...form, gender: e.target.value })}
         >

@@ -19,7 +19,7 @@ export default function StartHabit() {
   const [habits, setHabits] = useState([]);
   const [score, setScore] = useState(null);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", kind: "start", color: "#4A7C6A" });
+  const [form, setForm] = useState({ name: "", kind: "start", color: "#87EDA8" });
   const now = new Date();
   const [cursor, setCursor] = useState({ y: now.getFullYear(), m: now.getMonth() });
   const cells = useMemo(() => monthDays(cursor.y, cursor.m), [cursor]);
@@ -41,7 +41,7 @@ export default function StartHabit() {
   async function create(e) {
     e.preventDefault();
     await api("/api/v1/habits", { method: "POST", body: form });
-    setForm({ name: "", kind: "start", color: "#4A7C6A" });
+    setForm({ name: "", kind: "start", color: "#87EDA8" });
     setOpen(false);
     load();
   }
@@ -123,7 +123,7 @@ export default function StartHabit() {
           <Input label="Name" placeholder="Studying, walk, no smoking…" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <label className="block text-sm">
             <span className="text-xs font-semibold uppercase tracking-wider text-moss/70">Kind</span>
-            <select className="mt-1 w-full rounded-2xl border border-moss/10 bg-white/70 px-4 py-2.5" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
+            <select className="field mt-1" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
               <option value="start">Start (a good habit)</option>
               <option value="quit">Quit (a hard habit)</option>
             </select>
