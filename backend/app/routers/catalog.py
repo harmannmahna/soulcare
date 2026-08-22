@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from app.config import get_settings
 from app.deps import require_user
 from app.store import store
 
@@ -53,21 +54,50 @@ def _km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
 async def pharmacies(
     lat: float | None = None,
     lng: float | None = None,
-    store: str | None = None,
+    chain: str | None = None,
     q: str | None = None,
     sort: str = "distance",
 ):
     geo_used = lat is not None and lng is not None
     rows = await store.collection("pharmacies").find({})
+    from app.services.swytchcode_exec import exec_tool
+
+    swy = await exec_tool(
+        "firecrawl_search",
+        body={"query": q or chain or "pharmacy Bengaluru Mumbai Apollo MedPlus", "limit": 5},
+    )
+    crawled = []
+    if swy.get("ok") and not swy.get("demo"):
+        result = swy.get("result") or {}
+        data = result.get("result") or result.get("data") or result
+        items = data.get("data") or data.get("web") or []
+        if isinstance(items, list):
+            for i, hit in enumerate(items[:5]):
+                if not isinstance(hit, dict):
+                    continue
+                crawled.append(
+                    {
+                        "id": f"ph_swy_{i}",
+                        "name": hit.get("title") or hit.get("url") or "Pharmacy listing",
+                        "chain": "Swytchcode Firecrawl",
+                        "city": "",
+                        "area": hit.get("url") or "",
+                        "open": "see listing",
+                        "source": "swytchcode:firecrawl.search.create",
+                        "lat": None,
+                        "lng": None,
+                    }
+                )
+    rows = list(rows) + crawled
     out = []
-    needle = (q or store or "").lower()
+    needle = (q or chain or "").lower()
     for row in rows:
         item = _clean(row)
         if needle:
             blob = f"{item.get('name','')} {item.get('chain','')} {item.get('city','')} {item.get('area','')}".lower()
             if needle not in blob:
                 continue
-        item["source"] = item.get("source") or "curated_static"
+        item["source"] = item.get("source") or "swytchcode:firecrawl_or_static"
         if geo_used:
             item["distance_km"] = _km(lat, lng, float(item.get("lat") or lat), float(item.get("lng") or lng))
         else:
@@ -96,6 +126,18 @@ async def pharmacy_detail(pharmacy_id: str):
 
 @router.post("/prescriptions")
 async def upload_prescription(body: PrescriptionBody, user: dict = Depends(require_user)):
+    from app.services.swytchcode_exec import exec_tool
+
+    settings = get_settings()
+    cloud = ""
+    raw = settings.cloudinary_url or ""
+    if "@" in raw:
+        cloud = raw.rsplit("@", 1)[-1].split("/")[0]
+    swy = await exec_tool(
+        "cloudinary_upload",
+        params={"cloud_name": cloud or "demo"},
+        body={"file": body.demo_file_name, "folder": "soulcare-rx", "public_id": f"rx_{user['id'][-8:]}"},
+    )
     doc = {
         "id": f"rx_{uuid.uuid4().hex[:10]}",
         "user_id": user["id"],
@@ -105,6 +147,8 @@ async def upload_prescription(body: PrescriptionBody, user: dict = Depends(requi
         "demo_file_name": body.demo_file_name,
         "scope": "demo",
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "cloudinary_via": "swytchcode:cloudinary.upload.create",
+        "cloudinary_demo": bool(swy.get("demo")),
     }
     await store.collection("prescriptions").insert_one(doc)
     return _clean(doc)

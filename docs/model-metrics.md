@@ -1,7 +1,7 @@
 # Risk classifier metrics
 
 Runtime model: **TF-IDF (1–2 grams) + logistic regression**, trained on a **hand-verified** English + Hinglish set (`backend/ml/dataset.py`).  
-Optional GPU path: **Qwen2.5-0.5B LoRA** in `backend/ml/train_qwen_lora.py` (Colab). Drop the exported adapter at `RISK_MODEL_PATH` when you have one.
+Optional GPU path: **Qwen2.5-0.5B LoRA** (`backend/ml/train_qwen_lora.py`) or DistilBERT LoRA if Qwen is too heavy. Step-by-step: `docs/qwen-lora.md`. Drop the exported adapter at `RISK_MODEL_PATH` (a directory) when you have one.
 
 Safety: these numbers are **not** used to override the keyword rail. If keywords flag **red**, the turn stays red even if the model is green.
 

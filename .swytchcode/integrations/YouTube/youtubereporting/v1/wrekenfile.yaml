@@ -1,0 +1,867 @@
+VERSION: 2.0.2
+DEFAULTS:
+  bearer_token: BEARER <ACCESS_TOKEN>
+  w_base_url: https://youtubereporting.googleapis.com
+METHODS:
+  youtubereporting.job.list:
+    SUMMARY: Lists jobs.
+    DESC: Lists jobs.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1/jobs
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - includeSystemManaged:
+          TYPE: BOOL
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - pageSize:
+          TYPE: INT
+          REQUIRED: false
+          LOCATION: query
+      - pageToken:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(ListJobsResponse)
+        RETURNVAR: youtubereporting_job_list
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.job.list
+  youtubereporting.job.create:
+    SUMMARY: Creates a job and returns it.
+    DESC: Creates a job and returns it.
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1/jobs
+      HEADERS:
+        Content-Type: application/json
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+      BODY:
+        TYPE: STRUCT(Job)
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - body:
+          TYPE: STRUCT(Job)
+          REQUIRED: false
+          LOCATION: body
+    RETURNS:
+      - RETURNTYPE: STRUCT(Job)
+        RETURNVAR: youtubereporting_job_create
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.job.create
+  youtubereporting.job.delete:
+    SUMMARY: Deletes a job.
+    DESC: Deletes a job.
+    HTTP:
+      METHOD: DELETE
+      ENDPOINT: /v1/jobs/{jobId}
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - jobId:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(Empty)
+        RETURNVAR: youtubereporting_job_delete
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.job.delete
+  youtubereporting.job.get:
+    SUMMARY: Gets a job.
+    DESC: Gets a job.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1/jobs/{jobId}
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - jobId:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(Job)
+        RETURNVAR: youtubereporting_job_get
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.job.get
+  youtubereporting.report.get:
+    SUMMARY: Lists reports created by a specific job
+    DESC: Lists reports created by a specific job. Returns NOT_FOUND if the job does not exist.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1/jobs/{jobId}/reports
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - jobId:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+      - createdAfter:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - pageSize:
+          TYPE: INT
+          REQUIRED: false
+          LOCATION: query
+      - pageToken:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - startTimeAtOrAfter:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - startTimeBefore:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(ListReportsResponse)
+        RETURNVAR: youtubereporting_report_get
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.report.get
+  youtubereporting.report.get1:
+    SUMMARY: Gets the metadata of a specific report.
+    DESC: Gets the metadata of a specific report.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1/jobs/{jobId}/reports/{reportId}
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - jobId:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+      - reportId:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(Report)
+        RETURNVAR: youtubereporting_report_get1
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.report.get1
+  youtubereporting.media.get:
+    SUMMARY: Method for media download
+    DESC: Method for media download. Download is supported on the URI `/v1/media/{+name}?alt=media`.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1/media/{+resourceName}
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - resourceName:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    RETURNS:
+      - RETURNTYPE: STRUCT(GdataMedia)
+        RETURNVAR: youtubereporting_media_get
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.media.get
+  youtubereporting.reporttype.list:
+    SUMMARY: Lists report types.
+    DESC: Lists report types.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1/reportTypes
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - includeSystemManaged:
+          TYPE: BOOL
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - pageSize:
+          TYPE: INT
+          REQUIRED: false
+          LOCATION: query
+      - pageToken:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(ListReportTypesResponse)
+        RETURNVAR: youtubereporting_reporttype_list
+        STATUS: 200
+    CANONICAL_ID: youtubereporting.reporttype.list
+STRUCTS:
+  Empty:
+    - name: value
+      TYPE: ANY
+      REQUIRED: false
+  GdataBlobstore2Info:
+    - name: blobGeneration
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: blobId
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: downloadExternalReadToken
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: downloadReadHandle
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: readToken
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: uploadFragmentListCreationInfo
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: uploadMetadataContainer
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+  GdataCompositeMedia:
+    - name: blobRef
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      DEPRECATED: true
+      comment: gdata
+    - name: blobstore2Info
+      TYPE: STRUCT(GdataBlobstore2Info)
+      REQUIRED: false
+      comment: gdata
+    - name: cosmoBinaryReference
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: crc32cHash
+      TYPE: INT
+      REQUIRED: false
+      FORMAT: uint32
+      comment: gdata
+    - name: inline
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: length
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: md5Hash
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: objectId
+      TYPE: STRUCT(GdataObjectId)
+      REQUIRED: false
+      comment: gdata
+    - name: path
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: referenceType
+      TYPE: STRING
+      REQUIRED: false
+      ENUM:
+        - PATH
+        - BLOB_REF
+        - INLINE
+        - BIGSTORE_REF
+        - COSMO_BINARY_REFERENCE
+      comment: gdata
+    - name: sha1Hash
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+  GdataContentTypeInfo:
+    - name: bestGuess
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: fromBytes
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: fromFileName
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: fromFusionId
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: fromHeader
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: fromUrlPath
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: fusionIdDetectionMetadata
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+  GdataDiffChecksumsResponse:
+    - name: checksumsLocation
+      TYPE: STRUCT(GdataCompositeMedia)
+      REQUIRED: false
+      comment: gdata
+    - name: chunkSizeBytes
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: objectLocation
+      TYPE: STRUCT(GdataCompositeMedia)
+      REQUIRED: false
+      comment: gdata
+    - name: objectSizeBytes
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: objectVersion
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+  GdataDiffDownloadResponse:
+    - name: objectLocation
+      TYPE: STRUCT(GdataCompositeMedia)
+      REQUIRED: false
+      comment: gdata
+  GdataDiffUploadRequest:
+    - name: checksumsInfo
+      TYPE: STRUCT(GdataCompositeMedia)
+      REQUIRED: false
+      comment: gdata
+    - name: objectInfo
+      TYPE: STRUCT(GdataCompositeMedia)
+      REQUIRED: false
+      comment: gdata
+    - name: objectVersion
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+  GdataDiffUploadResponse:
+    - name: objectVersion
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: originalObject
+      TYPE: STRUCT(GdataCompositeMedia)
+      REQUIRED: false
+      comment: gdata
+  GdataDiffVersionResponse:
+    - name: objectSizeBytes
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: objectVersion
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+  GdataDownloadParameters:
+    - name: allowGzipCompression
+      TYPE: BOOL
+      REQUIRED: false
+      comment: gdata
+    - name: ignoreRange
+      TYPE: BOOL
+      REQUIRED: false
+      comment: gdata
+  GdataMedia:
+    - name: algorithm
+      TYPE: STRING
+      REQUIRED: false
+      DEPRECATED: true
+      comment: gdata
+    - name: bigstoreObjectRef
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      DEPRECATED: true
+      comment: gdata
+    - name: blobRef
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      DEPRECATED: true
+      comment: gdata
+    - name: blobstore2Info
+      TYPE: STRUCT(GdataBlobstore2Info)
+      REQUIRED: false
+      comment: gdata
+    - name: compositeMedia
+      TYPE: "[]STRUCT(GdataCompositeMedia)"
+      REQUIRED: false
+      comment: gdata
+    - name: contentType
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: contentTypeInfo
+      TYPE: STRUCT(GdataContentTypeInfo)
+      REQUIRED: false
+      comment: gdata
+    - name: cosmoBinaryReference
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: crc32cHash
+      TYPE: INT
+      REQUIRED: false
+      FORMAT: uint32
+      comment: gdata
+    - name: diffChecksumsResponse
+      TYPE: STRUCT(GdataDiffChecksumsResponse)
+      REQUIRED: false
+      comment: gdata
+    - name: diffDownloadResponse
+      TYPE: STRUCT(GdataDiffDownloadResponse)
+      REQUIRED: false
+      comment: gdata
+    - name: diffUploadRequest
+      TYPE: STRUCT(GdataDiffUploadRequest)
+      REQUIRED: false
+      comment: gdata
+    - name: diffUploadResponse
+      TYPE: STRUCT(GdataDiffUploadResponse)
+      REQUIRED: false
+      comment: gdata
+    - name: diffVersionResponse
+      TYPE: STRUCT(GdataDiffVersionResponse)
+      REQUIRED: false
+      comment: gdata
+    - name: downloadParameters
+      TYPE: STRUCT(GdataDownloadParameters)
+      REQUIRED: false
+      comment: gdata
+    - name: filename
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: hash
+      TYPE: STRING
+      REQUIRED: false
+      DEPRECATED: true
+      comment: gdata
+    - name: hashVerified
+      TYPE: BOOL
+      REQUIRED: false
+      comment: gdata
+    - name: inline
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: isPotentialRetry
+      TYPE: BOOL
+      REQUIRED: false
+      comment: gdata
+    - name: length
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: md5Hash
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: mediaId
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: objectId
+      TYPE: STRUCT(GdataObjectId)
+      REQUIRED: false
+      comment: gdata
+    - name: path
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: referenceType
+      TYPE: STRING
+      REQUIRED: false
+      ENUM:
+        - PATH
+        - BLOB_REF
+        - INLINE
+        - GET_MEDIA
+        - COMPOSITE_MEDIA
+        - BIGSTORE_REF
+        - DIFF_VERSION_RESPONSE
+        - DIFF_CHECKSUMS_RESPONSE
+        - DIFF_DOWNLOAD_RESPONSE
+        - DIFF_UPLOAD_REQUEST
+        - DIFF_UPLOAD_RESPONSE
+        - COSMO_BINARY_REFERENCE
+        - ARBITRARY_BYTES
+      comment: gdata
+    - name: sha1Hash
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: sha256Hash
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: sha512Hash
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: byte
+      comment: gdata
+    - name: timestamp
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: uint64
+      comment: gdata
+    - name: token
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+  GdataObjectId:
+    - name: bucketName
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+    - name: generation
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: int64
+      comment: gdata
+    - name: objectName
+      TYPE: STRING
+      REQUIRED: false
+      comment: gdata
+  Job:
+    - name: createTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The creation date/time of the job.
+    - name: expireTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The date/time when this job will expire/expired. After a job expired, no new reports are generated.
+    - name: id
+      TYPE: STRING
+      REQUIRED: false
+      comment: The server-generated ID of the job (max. 40 characters).
+    - name: name
+      TYPE: STRING
+      REQUIRED: false
+      comment: The name of the job (max. 100 characters).
+    - name: reportTypeId
+      TYPE: STRING
+      REQUIRED: false
+      comment: The type of reports this job creates. Corresponds to the ID of a ReportType.
+    - name: systemManaged
+      TYPE: BOOL
+      REQUIRED: false
+      comment: True if this a system-managed job that cannot be modified by the user; otherwise false.
+  ListJobsResponse:
+    - name: jobs
+      TYPE: "[]STRUCT(Job)"
+      REQUIRED: false
+      comment: The list of jobs.
+    - name: nextPageToken
+      TYPE: STRING
+      REQUIRED: false
+      comment: A token to retrieve next page of results. Pass this value in the ListJobsRequest.page_token field in the subsequent call to `ListJobs` method to retrieve the next page of results.
+  ListReportTypesResponse:
+    - name: nextPageToken
+      TYPE: STRING
+      REQUIRED: false
+      comment: A token to retrieve next page of results. Pass this value in the ListReportTypesRequest.page_token field in the subsequent call to `ListReportTypes` method to retrieve the next page of results.
+    - name: reportTypes
+      TYPE: "[]STRUCT(ReportType)"
+      REQUIRED: false
+      comment: The list of report types.
+  ListReportsResponse:
+    - name: nextPageToken
+      TYPE: STRING
+      REQUIRED: false
+      comment: A token to retrieve next page of results. Pass this value in the ListReportsRequest.page_token field in the subsequent call to `ListReports` method to retrieve the next page of results.
+    - name: reports
+      TYPE: "[]STRUCT(Report)"
+      REQUIRED: false
+      comment: The list of report types.
+  Report:
+    - name: createTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The date/time when this report was created.
+    - name: downloadUrl
+      TYPE: STRING
+      REQUIRED: false
+      comment: The URL from which the report can be downloaded (max. 1000 characters).
+    - name: endTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The end of the time period that the report instance covers. The value is exclusive.
+    - name: id
+      TYPE: STRING
+      REQUIRED: false
+      comment: The server-generated ID of the report.
+    - name: jobExpireTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The date/time when the job this report belongs to will expire/expired.
+    - name: jobId
+      TYPE: STRING
+      REQUIRED: false
+      comment: The ID of the job that created this report.
+    - name: startTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The start of the time period that the report instance covers. The value is inclusive.
+  ReportType:
+    - name: deprecateTime
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The date/time when this report type was/will be deprecated.
+    - name: id
+      TYPE: STRING
+      REQUIRED: false
+      comment: The ID of the report type (max. 100 characters).
+    - name: name
+      TYPE: STRING
+      REQUIRED: false
+      comment: The name of the report type (max. 100 characters).
+    - name: systemManaged
+      TYPE: BOOL
+      REQUIRED: false
+      comment: True if this a system-managed report type; otherwise false. Reporting jobs for system-managed report types are created automatically and can thus not be used in the `CreateJob` method.

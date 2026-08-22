@@ -492,7 +492,91 @@ def _demo_user() -> dict:
         "room_items": ["plant", "lamp"],
         "friends": ["quiet-mango", "soft-neem"],
         "avatar": None,
+        "role": "user",
     }
+
+
+def _role_accounts() -> list[dict]:
+    pwd = hash_password("Demo@123")
+    therapist = {
+        "id": "usr_therapist",
+        "email": "therapist@soulcare.app",
+        "name": "Dr. Meera Joshi",
+        "password_hash": pwd,
+        "guest": False,
+        "language": "en",
+        "role": "therapist",
+        "bedtime": "23:00",
+        "focus_hours": "10:00-13:00",
+        "consent": True,
+        "consent_at": _dt(days=-12).isoformat(),
+        "created_at": _dt(days=-20).isoformat(),
+        "saved_resources": [],
+        "gender": "female",
+        "age": 34,
+        "weight": 62,
+        "height": 168,
+        "details_completed": True,
+        "focus_points": 0,
+        "room_items": [],
+        "friends": [],
+        "avatar": None,
+    }
+    b2b = {
+        "id": "usr_b2b",
+        "email": "b2b@soulcare.app",
+        "name": "Campus Wellness Office",
+        "password_hash": pwd,
+        "guest": False,
+        "language": "en",
+        "role": "b2b",
+        "bedtime": "23:00",
+        "focus_hours": "09:00-17:00",
+        "consent": True,
+        "consent_at": _dt(days=-12).isoformat(),
+        "created_at": _dt(days=-20).isoformat(),
+        "saved_resources": [],
+        "gender": "other",
+        "age": 40,
+        "weight": 70,
+        "height": 170,
+        "details_completed": True,
+        "focus_points": 0,
+        "room_items": [],
+        "friends": [],
+        "avatar": None,
+    }
+    return [therapist, b2b]
+
+
+async def _ensure_role_accounts() -> None:
+    users = store.collection("users")
+    await users.update_one({"id": "usr_demo"}, {"$set": {"role": "user"}})
+    for row in _role_accounts():
+        existing = await users.find_one({"id": row["id"]})
+        if existing:
+            await users.update_one({"id": row["id"]}, {"$set": {"role": row["role"], "details_completed": True, "consent": True}})
+            continue
+        await users.insert_one(row)
+    if not await store.collection("partners").find_one({"user_id": "usr_therapist"}):
+        await store.collection("partners").insert_one(
+            {
+                "id": "ptr_therapist",
+                "user_id": "usr_therapist",
+                "role": "therapist",
+                "name": "Dr. Meera Joshi",
+                "email": "therapist@soulcare.app",
+                "city": "Pune",
+                "specialty": "identity, anxiety",
+                "notes": "Demo partner desk",
+                "platform_fee_pct": 15,
+                "status": "active",
+                "agreement": True,
+                "agreement_at": _dt(days=-10).isoformat(),
+                "linked_therapist_id": "th_meera",
+                "created_at": _dt(days=-20).isoformat(),
+            }
+        )
 
 
 def _checkins(user_id: str) -> list[dict]:
@@ -624,9 +708,11 @@ async def seed_if_needed() -> None:
                 extra_med.append(row)
         if extra_med:
             await store.collection("medicines").insert_many(extra_med)
+        await _ensure_role_accounts()
         return
 
     await users.insert_one(_demo_user())
+    await _ensure_role_accounts()
     await store.collection("therapists").insert_many(THERAPISTS)
     slots = []
     for t in THERAPISTS:

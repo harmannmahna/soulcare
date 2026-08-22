@@ -41,13 +41,16 @@ import Surveillance from "./pages/Surveillance";
 import Partner from "./pages/Partner";
 import B2BDemo from "./pages/B2BDemo";
 
-function Gate({ children, needConsent = false, needDetails = false }) {
+function Gate({ children, needConsent = false, needDetails = false, roles }) {
   const { user, loading } = useAuth();
   const loc = useLocation();
   if (loading) return <div className="p-10 text-sm text-moss">Settling in…</div>;
   if (!user) return <Navigate to="/login" replace state={{ from: loc.pathname }} />;
   if (needDetails && !user.details_completed) return <Navigate to="/details" replace />;
   if (needConsent && !user.consent) return <Navigate to="/consent" replace />;
+  if (roles && !roles.includes(String(user.role || "user").toLowerCase())) {
+    return <Navigate to={homeFor(user)} replace />;
+  }
   return children;
 }
 
@@ -79,7 +82,7 @@ export default function App() {
         <Route path="/pharmacy/:id" element={<Gate needDetails><PharmacyDetail /></Gate>} />
         <Route path="/prescription-upload" element={<Gate needDetails><Prescription /></Gate>} />
         <Route path="/journey" element={<Gate needDetails><Journey /></Gate>} />
-        <Route path="/dashboard" element={<Gate needDetails><Dashboard /></Gate>} />
+        <Route path="/dashboard" element={<Gate needDetails roles={["user"]}><Dashboard /></Gate>} />
         <Route path="/settings" element={<Gate needDetails><Settings /></Gate>} />
         <Route path="/community" element={<Gate needDetails><Community /></Gate>} />
         <Route path="/wellness" element={<Gate needDetails><ExploreWellness /></Gate>} />
@@ -92,8 +95,8 @@ export default function App() {
         <Route path="/period" element={<Gate needDetails><PeriodTracker /></Gate>} />
         <Route path="/phone-habit" element={<Gate needDetails><PhoneHabit /></Gate>} />
         <Route path="/surveillance" element={<Gate needDetails><Surveillance /></Gate>} />
-        <Route path="/b2b-demo" element={<Gate needDetails><B2BDemo /></Gate>} />
-        <Route path="/partner" element={<Gate needDetails><Partner /></Gate>} />
+        <Route path="/b2b-demo" element={<Gate needDetails roles={["b2b"]}><B2BDemo /></Gate>} />
+        <Route path="/partner" element={<Gate needDetails roles={["therapist"]}><Partner /></Gate>} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/sessions/:id" element={<AdminSession />} />
       </Route>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Input } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
+import { homeFor } from "../lib/flow";
 import { api } from "../api/client";
 
 export default function Details() {
@@ -22,7 +23,7 @@ export default function Details() {
     setErr("");
     setBusy(true);
     try {
-      await api("/api/v1/auth/details", {
+      const next = await api("/api/v1/auth/details", {
         method: "POST",
         body: {
           gender: form.gender,
@@ -33,7 +34,7 @@ export default function Details() {
         },
       });
       await refresh();
-      nav("/dashboard");
+      nav(homeFor(next));
     } catch (ex) {
       setErr(ex.message);
     } finally {

@@ -7,8 +7,8 @@ TF-IDF cosine space over therapist bio + specialty + approach.
 from __future__ import annotations
 
 from functools import lru_cache
+import json
 
-from app.config import get_settings
 from app.store import store
 
 
@@ -33,38 +33,43 @@ def _vectorizer():
     return TfidfVectorizer(ngram_range=(1, 2), min_df=1)
 
 
-async def _weaviate_query(query: str, limit: int) -> list[dict] | None:
-    settings = get_settings()
-    if not settings.weaviate_url:
-        return None
-    try:
-        import weaviate
-        from weaviate.classes.query import MetadataQuery
+def _parse_weaviate(result: object) -> list[dict]:
+    if not isinstance(result, dict):
+        return []
+    blob = result.get("result") or result.get("data") or result
+    if not isinstance(blob, dict):
+        return []
+    data = blob.get("data") or blob
+    rows = (((data.get("Get") or {}).get("Therapist")) if isinstance(data, dict) else None) or []
+    out = []
+    for row in rows:
+        extra = row.get("_additional") or {}
+        dist = extra.get("distance")
+        item = {k: v for k, v in row.items() if k != "_additional"}
+        item["similarity"] = round(1 - float(dist), 3) if dist is not None else None
+        item["match_reason"] = "matched via Swytchcode Weaviate near-text"
+        out.append(item)
+    return out
 
-        client = weaviate.connect_to_custom(
-            http_host=settings.weaviate_url.replace("https://", "").replace("http://", "").split(":")[0],
-            http_port=443 if settings.weaviate_url.startswith("https") else 80,
-            http_secure=settings.weaviate_url.startswith("https"),
-            grpc_host=settings.weaviate_url.replace("https://", "").replace("http://", "").split(":")[0],
-            grpc_port=50051,
-            grpc_secure=settings.weaviate_url.startswith("https"),
-        )
-        try:
-            coll = client.collections.get("Therapist")
-            res = coll.query.near_text(query=query, limit=limit, return_metadata=MetadataQuery(distance=True))
-            out = []
-            for obj in res.objects:
-                props = obj.properties or {}
-                dist = getattr(obj.metadata, "distance", None)
-                sim = round(1 - float(dist), 3) if dist is not None else None
-                props["similarity"] = sim
-                props["match_reason"] = props.get("match_reason") or "weaviate near-text"
-                out.append(props)
-            return out
-        finally:
-            client.close()
-    except Exception:  # noqa: BLE001
-        return None
+
+async def _weaviate_query(query: str, limit: int) -> list[dict] | None:
+    """Vector search via Swytchcode Weaviate GraphQL. Local rank is the fallback."""
+    from app.services.swytchcode_exec import exec_tool
+
+    gql = (
+        "{ Get { Therapist(nearText: {concepts: [%s]} limit: %s) "
+        "{ name title city tags bio approach price_inr rating "
+        "_additional { distance } } } }"
+        % (json.dumps(query or "mental health support"), int(limit))
+    )
+    swy = await exec_tool("weaviate_graphql", body={"query": gql})
+    if swy.get("ok") and not swy.get("demo"):
+        parsed = _parse_weaviate(swy.get("result"))
+        if parsed:
+            for item in parsed:
+                item["match_backend"] = "swytchcode:weaviate.graphql.create"
+            return parsed
+    return None
 
 
 async def rank_therapists(query: str, tags: list[str] | None = None, limit: int = 3) -> list[dict]:
@@ -92,7 +97,7 @@ async def rank_therapists(query: str, tags: list[str] | None = None, limit: int 
             overlap = [x for x in (t.get("tags") or []) if x.lower() in blob.lower()]
             why = overlap[:3] if overlap else (t.get("tags") or [])[:2]
             item["match_reason"] = "matched on: " + (", ".join(why) if why else "profile similarity")
-            item["match_backend"] = "local_tfidf"
+            item["match_backend"] = "swytchcode_weaviate_fallback_tfidf"
             out.append(item)
         return out
     except Exception:  # noqa: BLE001

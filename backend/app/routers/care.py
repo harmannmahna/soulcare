@@ -97,6 +97,20 @@ async def create_booking(body: BookingBody, user: dict = Depends(require_user)):
     )
     out = _clean(booking)
     out["calendar_url"] = _gcal_url(booking, therapist)
+    from app.services.swytchcode_exec import exec_tool
+
+    swy = await exec_tool(
+        "gcal_event",
+        params={"calendarId": "primary"},
+        body={
+            "summary": f"SoulCare · {therapist.get('name')}",
+            "description": f"Booking {booking['id']} (no clinical notes).",
+            "start": {"dateTime": booking.get("starts_at")},
+            "end": {"dateTime": booking.get("starts_at")},
+        },
+    )
+    out["calendar_via"] = "swytchcode:calendar.event.create"
+    out["calendar_demo"] = bool(swy.get("demo"))
     return out
 
 

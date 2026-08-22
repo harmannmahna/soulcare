@@ -1,0 +1,815 @@
+VERSION: 2.0.2
+DEFAULTS:
+  basic_auth: Basic <BASE64>
+  w_base_url: https://api.cloudinary.com
+METHODS:
+  cloudinary.upload.create:
+    SUMMARY: "Upload API: upload"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/upload
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.upload.create
+  cloudinary.explicit.create:
+    SUMMARY: "Upload API: explicit"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/explicit
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.explicit.create
+  cloudinary.rename.get:
+    SUMMARY: "Admin API: rename"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/rename
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.rename.get
+  cloudinary.destroy.create:
+    SUMMARY: "Upload API: destroy"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/destroy
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.destroy.create
+  cloudinary.destroy_by_asset_id.create:
+    SUMMARY: "Upload API: destroy_by_asset_id"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/destroy_by_asset_id
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.destroy_by_asset_id.create
+  cloudinary.download_backup.create:
+    SUMMARY: "Upload API: download_backup"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/download_backup
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.download_backup.create
+  cloudinary.context.create:
+    SUMMARY: "Upload API: context"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/context
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.context.create
+  cloudinary.metadata.create:
+    SUMMARY: "Upload API: metadata"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/metadata
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.metadata.create
+  cloudinary.tag.get:
+    SUMMARY: "Admin API: tags"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/tags
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.tag.get
+  cloudinary.explode.create:
+    SUMMARY: "Upload API: explode"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/explode
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.explode.create
+  cloudinary.generate_archive.create:
+    SUMMARY: "Upload API: generate_archive"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/generate_archive
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.generate_archive.create
+  cloudinary.multi.create:
+    SUMMARY: "Upload API: multi"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/multi
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.multi.create
+  cloudinary.text.create:
+    SUMMARY: "Upload API: text"
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v1_1/{cloud_name}/text
+      HEADERS:
+        Content-Type: application/json
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.text.create
+  cloudinary.resource.get1:
+    SUMMARY: "Admin API: resources"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resources
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resource.get1
+  cloudinary.resources_by_asset_id.get:
+    SUMMARY: "Admin API: resources_by_asset_ids"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resources_by_asset_ids
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resources_by_asset_id.get
+  cloudinary.resources_by_tag.get:
+    SUMMARY: "Admin API: resources_by_tag"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resources_by_tag
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resources_by_tag.get
+  cloudinary.resources_by_context.get:
+    SUMMARY: "Admin API: resources_by_context"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resources_by_context
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resources_by_context.get
+  cloudinary.resources_by_id.get:
+    SUMMARY: "Admin API: resources_by_ids"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resources_by_ids
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resources_by_id.get
+  cloudinary.resource_type.get:
+    SUMMARY: "Admin API: resource_types"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resource_types
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resource_type.get
+  cloudinary.resource.get:
+    SUMMARY: "Admin API: resource"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/resource
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.resource.get
+  cloudinary.restore.get:
+    SUMMARY: "Admin API: restore"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/restore
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.restore.get
+  cloudinary.delete_resource.get:
+    SUMMARY: "Admin API: delete_resources"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/delete_resources
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.delete_resource.get
+  cloudinary.delete_derived_resource.get:
+    SUMMARY: "Admin API: delete_derived_resources"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/delete_derived_resources
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.delete_derived_resource.get
+  cloudinary.update.get:
+    SUMMARY: "Admin API: update"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/update
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.update.get
+  cloudinary.related_asset.get:
+    SUMMARY: "Admin API: related_assets"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/related_assets
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.related_asset.get
+  cloudinary.subfolder.get:
+    SUMMARY: "Admin API: subfolders"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/subfolders
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.subfolder.get
+  cloudinary.root_folder.get:
+    SUMMARY: "Admin API: root_folders"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/root_folders
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.root_folder.get
+  cloudinary.folder.get:
+    SUMMARY: "Admin API: folders"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/folders
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.folder.get
+  cloudinary.create_folder.get:
+    SUMMARY: "Admin API: create_folder"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/create_folder
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.create_folder.get
+  cloudinary.delete_folder.get:
+    SUMMARY: "Admin API: delete_folder"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/delete_folder
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.delete_folder.get
+  cloudinary.update_folder.get:
+    SUMMARY: "Admin API: update_folder"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/update_folder
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.update_folder.get
+  cloudinary.metadata_field.get1:
+    SUMMARY: "Admin API: metadata_fields"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/metadata_fields
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.metadata_field.get1
+  cloudinary.metadata_field.get:
+    SUMMARY: "Admin API: metadata_field"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/metadata_field
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.metadata_field.get
+  cloudinary.metadata_rule.get:
+    SUMMARY: "Admin API: metadata_rules"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/metadata_rules
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.metadata_rule.get
+  cloudinary.people.get:
+    SUMMARY: "Admin API: people"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/people
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.people.get
+  cloudinary.ping.get:
+    SUMMARY: "Admin API: ping"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/ping
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.ping.get
+  cloudinary.usage.get:
+    SUMMARY: "Admin API: usage"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/usage
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.usage.get
+  cloudinary.streaming_profile.get1:
+    SUMMARY: "Admin API: streaming_profiles"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/streaming_profiles
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.streaming_profile.get1
+  cloudinary.streaming_profile.get:
+    SUMMARY: "Admin API: streaming_profile"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/streaming_profile
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.streaming_profile.get
+  cloudinary.transformation.get1:
+    SUMMARY: "Admin API: transformations"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/transformations
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.transformation.get1
+  cloudinary.transformation.get:
+    SUMMARY: "Admin API: transformation"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/transformation
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.transformation.get
+  cloudinary.upload_preset.get1:
+    SUMMARY: "Admin API: upload_presets"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/upload_presets
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.upload_preset.get1
+  cloudinary.upload_preset.get:
+    SUMMARY: "Admin API: upload_preset"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/upload_preset
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.upload_preset.get
+  cloudinary.upload_mapping.get:
+    SUMMARY: "Admin API: upload_mappings"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/upload_mappings
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.upload_mapping.get
+  cloudinary.webhook.get:
+    SUMMARY: "Admin API: webhooks"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/webhooks
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.webhook.get
+  cloudinary.trigger.get:
+    SUMMARY: "Admin API: triggers"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/triggers
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.trigger.get
+  cloudinary.search.get:
+    SUMMARY: "Admin API: search"
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v1_1/{cloud_name}/search
+      HEADERS: {}
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - cloud_name:
+          TYPE: STRING
+          REQUIRED: true
+          LOCATION: path
+    CANONICAL_ID: cloudinary.search.get

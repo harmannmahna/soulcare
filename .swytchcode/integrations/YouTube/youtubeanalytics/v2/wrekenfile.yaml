@@ -1,0 +1,810 @@
+VERSION: 2.0.2
+DEFAULTS:
+  bearer_token: BEARER <ACCESS_TOKEN>
+  w_base_url: https://youtubeanalytics.googleapis.com
+METHODS:
+  youtubeanalytics.groupitem.delete:
+    SUMMARY: Removes an item from a group.
+    DESC: Removes an item from a group.
+    HTTP:
+      METHOD: DELETE
+      ENDPOINT: /v2/groupItems
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - id:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(EmptyResponse)
+        RETURNVAR: youtubeanalytics_groupitem_delete
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.groupitem.delete
+  youtubeanalytics.groupitem.list:
+    SUMMARY: Returns a collection of group items that match the API request parameters.
+    DESC: Returns a collection of group items that match the API request parameters.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v2/groupItems
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - groupId:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(ListGroupItemsResponse)
+        RETURNVAR: youtubeanalytics_groupitem_list
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.groupitem.list
+  youtubeanalytics.groupitem.create:
+    SUMMARY: Creates a group item.
+    DESC: Creates a group item.
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v2/groupItems
+      HEADERS:
+        Content-Type: application/json
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+      BODY:
+        TYPE: STRUCT(GroupItem)
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - body:
+          TYPE: STRUCT(GroupItem)
+          REQUIRED: false
+          LOCATION: body
+    RETURNS:
+      - RETURNTYPE: STRUCT(GroupItem)
+        RETURNVAR: youtubeanalytics_groupitem_create
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.groupitem.create
+  youtubeanalytics.group.delete:
+    SUMMARY: Deletes a group.
+    DESC: Deletes a group.
+    HTTP:
+      METHOD: DELETE
+      ENDPOINT: /v2/groups
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - id:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(EmptyResponse)
+        RETURNVAR: youtubeanalytics_group_delete
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.group.delete
+  youtubeanalytics.group.list:
+    SUMMARY: Returns a collection of groups that match the API request parameters
+    DESC: Returns a collection of groups that match the API request parameters. For example, you can retrieve all groups that the authenticated user owns, or you can retrieve one or more groups by their unique IDs.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v2/groups
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - id:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - mine:
+          TYPE: BOOL
+          REQUIRED: false
+          LOCATION: query
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - pageToken:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(ListGroupsResponse)
+        RETURNVAR: youtubeanalytics_group_list
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.group.list
+  youtubeanalytics.group.create:
+    SUMMARY: Creates a group.
+    DESC: Creates a group.
+    HTTP:
+      METHOD: POST
+      ENDPOINT: /v2/groups
+      HEADERS:
+        Content-Type: application/json
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+      BODY:
+        TYPE: STRUCT(Group)
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - body:
+          TYPE: STRUCT(Group)
+          REQUIRED: false
+          LOCATION: body
+    RETURNS:
+      - RETURNTYPE: STRUCT(Group)
+        RETURNVAR: youtubeanalytics_group_create
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.group.create
+  youtubeanalytics.group.update:
+    SUMMARY: Modifies a group
+    DESC: Modifies a group. For example, you could change a group's title.
+    HTTP:
+      METHOD: PUT
+      ENDPOINT: /v2/groups
+      HEADERS:
+        Content-Type: application/json
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+      BODY:
+        TYPE: STRUCT(Group)
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - onBehalfOfContentOwner:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - body:
+          TYPE: STRUCT(Group)
+          REQUIRED: false
+          LOCATION: body
+    RETURNS:
+      - RETURNTYPE: STRUCT(Group)
+        RETURNVAR: youtubeanalytics_group_update
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.group.update
+  youtubeanalytics.report.list:
+    SUMMARY: Retrieve your YouTube Analytics reports.
+    DESC: Retrieve your YouTube Analytics reports.
+    HTTP:
+      METHOD: GET
+      ENDPOINT: /v2/reports
+      HEADERS:
+        Authorization: bearer_token
+      CONTENT_TYPE: application/json
+      ACCEPT: application/json
+    SECURITY:
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtube.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/youtubepartner
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+      - Oauth2:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+        Oauth2c:
+          type: oauth2
+          scopes:
+            - https://www.googleapis.com/auth/yt-analytics.readonly
+    EXECUTION:
+      KIND: http
+      MODE: sync
+    INPUTS:
+      - currency:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - dimensions:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - endDate:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - filters:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - ids:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - includeHistoricalChannelData:
+          TYPE: BOOL
+          REQUIRED: false
+          LOCATION: query
+      - maxResults:
+          TYPE: INT
+          REQUIRED: false
+          LOCATION: query
+      - metrics:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - sort:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - startDate:
+          TYPE: STRING
+          REQUIRED: false
+          LOCATION: query
+      - startIndex:
+          TYPE: INT
+          REQUIRED: false
+          LOCATION: query
+    RETURNS:
+      - RETURNTYPE: STRUCT(QueryResponse)
+        RETURNVAR: youtubeanalytics_report_list
+        STATUS: 200
+    CANONICAL_ID: youtubeanalytics.report.list
+STRUCTS:
+  EmptyResponse:
+    - name: errors
+      TYPE: STRUCT(Errors)
+      REQUIRED: false
+      comment: Apiary error details
+  ErrorProto:
+    - name: argument
+      TYPE: "[]STRING"
+      REQUIRED: false
+      comment: Error arguments, to be used when building user-friendly error messages given the error domain and code. Different error codes require different arguments.
+    - name: code
+      TYPE: STRING
+      REQUIRED: false
+      comment: Error code in the error domain. This should correspond to a value of the enum type whose name is in domain. See the core error domain in error_domain.proto.
+    - name: debugInfo
+      TYPE: STRING
+      REQUIRED: false
+      comment: Debugging information, which should not be shared externally.
+    - name: domain
+      TYPE: STRING
+      REQUIRED: false
+      comment: "Error domain. RoSy services can define their own domain and error codes. This should normally be the name of an enum type, such as: gdata.CoreErrorDomain"
+    - name: externalErrorMessage
+      TYPE: STRING
+      REQUIRED: false
+      comment: A short explanation for the error, which can be shared outside Google. Please set domain, code and arguments whenever possible instead of this error message so that external APIs can build safe error messages themselves. External messages built in a RoSy interface will most likely refer to information and concepts that are not available externally and should not be exposed. It is safer if external APIs can understand the errors and decide what the error message should look like.
+    - name: location
+      TYPE: STRING
+      REQUIRED: false
+      comment: "Location of the error, as specified by the location type. If location_type is PATH, this should be a path to a field that's relative to the request, using FieldPath notation (net/proto2/util/public/field_path.h). Examples: authenticated_user.gaia_id resource.address[2].country"
+    - name: locationType
+      TYPE: STRING
+      REQUIRED: false
+      ENUM:
+        - PATH
+        - OTHER
+        - PARAMETER
+  Errors:
+    - name: code
+      TYPE: STRING
+      REQUIRED: false
+      ENUM:
+        - BAD_REQUEST
+        - FORBIDDEN
+        - NOT_FOUND
+        - CONFLICT
+        - GONE
+        - PRECONDITION_FAILED
+        - INTERNAL_ERROR
+        - SERVICE_UNAVAILABLE
+      DEPRECATED: true
+      comment: Global error code. Deprecated and ignored. Set custom error codes in ErrorProto.domain and ErrorProto.code instead.
+    - name: error
+      TYPE: "[]STRUCT(ErrorProto)"
+      REQUIRED: false
+      comment: Specific error description and codes
+    - name: requestId
+      TYPE: STRING
+      REQUIRED: false
+      comment: Request identifier generated by the service, which can be used to identify the error in the logs
+  Group:
+    - name: contentDetails
+      TYPE: STRUCT(GroupContentDetails)
+      REQUIRED: false
+      comment: The `contentDetails` object contains additional information about the group, such as the number and type of items that it contains.
+    - name: errors
+      TYPE: STRUCT(Errors)
+      REQUIRED: false
+      comment: Apiary error details
+    - name: etag
+      TYPE: STRING
+      REQUIRED: false
+      comment: The Etag of this resource.
+    - name: id
+      TYPE: STRING
+      REQUIRED: false
+      comment: The ID that YouTube uses to uniquely identify the group.
+    - name: kind
+      TYPE: STRING
+      REQUIRED: false
+      comment: Identifies the API resource's type. The value will be `youtube#group`.
+    - name: snippet
+      TYPE: STRUCT(GroupSnippet)
+      REQUIRED: false
+      comment: The `snippet` object contains basic information about the group, including its creation date and name.
+  GroupContentDetails:
+    - name: itemCount
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: uint64
+      comment: The number of items in the group.
+    - name: itemType
+      TYPE: STRING
+      REQUIRED: false
+      comment: "The type of resources that the group contains. Valid values for this property are: * `youtube#channel` * `youtube#playlist` * `youtube#video` * `youtubePartner#asset`"
+  GroupItem:
+    - name: errors
+      TYPE: STRUCT(Errors)
+      REQUIRED: false
+      comment: Apiary error details
+    - name: etag
+      TYPE: STRING
+      REQUIRED: false
+      comment: The Etag of this resource.
+    - name: groupId
+      TYPE: STRING
+      REQUIRED: false
+      comment: The ID that YouTube uses to uniquely identify the group that contains the item.
+    - name: id
+      TYPE: STRING
+      REQUIRED: false
+      comment: The ID that YouTube uses to uniquely identify the `channel`, `video`, `playlist`, or `asset` resource that is included in the group. Note that this ID refers specifically to the inclusion of that resource in a particular group and is different than the channel ID, video ID, playlist ID, or asset ID that uniquely identifies the resource itself. The `resource.id` property's value specifies the unique channel, video, playlist, or asset ID.
+    - name: kind
+      TYPE: STRING
+      REQUIRED: false
+      comment: Identifies the API resource's type. The value will be `youtube#groupItem`.
+    - name: resource
+      TYPE: STRUCT(GroupItemResource)
+      REQUIRED: false
+      comment: The `resource` object contains information that identifies the item being added to the group.
+  GroupItemResource:
+    - name: id
+      TYPE: STRING
+      REQUIRED: false
+      comment: The channel, video, playlist, or asset ID that YouTube uses to uniquely identify the item that is being added to the group.
+    - name: kind
+      TYPE: STRING
+      REQUIRED: false
+      comment: "Identifies the type of resource being added to the group. Valid values for this property are: * `youtube#channel` * `youtube#playlist` * `youtube#video` * `youtubePartner#asset`"
+  GroupSnippet:
+    - name: publishedAt
+      TYPE: STRING
+      REQUIRED: false
+      FORMAT: google-datetime
+      comment: The date and time that the group was created. The value is specified in ISO 8601 (YYYY-MM-DDThh:mm:ss.sZ) format.
+    - name: title
+      TYPE: STRING
+      REQUIRED: false
+      comment: The group name. The value must be a non-empty string.
+  ListGroupItemsResponse:
+    - name: errors
+      TYPE: STRUCT(Errors)
+      REQUIRED: false
+      comment: Apiary error details
+    - name: etag
+      TYPE: STRING
+      REQUIRED: false
+      comment: The Etag of this resource.
+    - name: items
+      TYPE: "[]STRUCT(GroupItem)"
+      REQUIRED: false
+      comment: A list of groups that match the API request parameters. Each item in the list represents a `groupItem` resource.
+    - name: kind
+      TYPE: STRING
+      REQUIRED: false
+      comment: Identifies the API resource's type. The value will be `youtube#groupItemListResponse`.
+  ListGroupsResponse:
+    - name: errors
+      TYPE: STRUCT(Errors)
+      REQUIRED: false
+      comment: Apiary error details
+    - name: etag
+      TYPE: STRING
+      REQUIRED: false
+      comment: The Etag of this resource.
+    - name: items
+      TYPE: "[]STRUCT(Group)"
+      REQUIRED: false
+      comment: A list of groups that match the API request parameters. Each item in the list represents a `group` resource.
+    - name: kind
+      TYPE: STRING
+      REQUIRED: false
+      comment: Identifies the API resource's type. The value will be `youtube#groupListResponse`.
+    - name: nextPageToken
+      TYPE: STRING
+      REQUIRED: false
+      comment: The token that can be used as the value of the `pageToken` parameter to retrieve the next page in the result set.
+  QueryResponse:
+    - name: columnHeaders
+      TYPE: "[]STRUCT(ResultTableColumnHeader)"
+      REQUIRED: false
+      comment: "This value specifies information about the data returned in the `rows` fields. Each item in the `columnHeaders` list identifies a field returned in the `rows` value, which contains a list of comma-delimited data. The `columnHeaders` list will begin with the dimensions specified in the API request, which will be followed by the metrics specified in the API request. The order of both dimensions and metrics will match the ordering in the API request. For example, if the API request contains the parameters `dimensions=ageGroup,gender&metrics=viewerPercentage`, the API response will return columns in this order: `ageGroup`, `gender`, `viewerPercentage`."
+    - name: errors
+      TYPE: STRUCT(Errors)
+      REQUIRED: false
+      comment: When set, indicates that the operation failed.
+    - name: kind
+      TYPE: STRING
+      REQUIRED: false
+      comment: This value specifies the type of data included in the API response. For the query method, the kind property value will be `youtubeAnalytics#resultTable`.
+    - name: rows
+      TYPE: "[]ANY"
+      REQUIRED: false
+      comment: The list contains all rows of the result table. Each item in the list is an array that contains comma-delimited data corresponding to a single row of data. The order of the comma-delimited data fields will match the order of the columns listed in the `columnHeaders` field. If no data is available for the given query, the `rows` element will be omitted from the response. The response for a query with the `day` dimension will not contain rows for the most recent days.
+  ResultTableColumnHeader:
+    - name: columnType
+      TYPE: STRING
+      REQUIRED: false
+      comment: The type of the column (`DIMENSION` or `METRIC`).
+    - name: dataType
+      TYPE: STRING
+      REQUIRED: false
+      comment: The type of the data in the column (`STRING`, `INTEGER`, `FLOAT`, etc.).
+    - name: name
+      TYPE: STRING
+      REQUIRED: false
+      comment: The name of the dimension or metric.
