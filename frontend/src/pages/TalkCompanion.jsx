@@ -13,22 +13,43 @@ function pickMime() {
   return "";
 }
 
-function englishVoice() {
+function pickVoice(preferHinglish) {
   const voices = window.speechSynthesis?.getVoices?.() || [];
-  return voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /US|GB|IN|AU/i.test(v.lang)) || voices.find((v) => /^en/i.test(v.lang));
+  if (preferHinglish) {
+    return (
+      voices.find((v) => /^hi(-|_|$)/i.test(v.lang)) ||
+      voices.find((v) => /^en(-|_)IN/i.test(v.lang)) ||
+      voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /IN/i.test(v.lang)) ||
+      voices.find((v) => /^en(-|_|$)/i.test(v.lang))
+    );
+  }
+  return (
+    voices.find((v) => /^en(-|_)IN/i.test(v.lang)) ||
+    voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /US|GB|IN|AU/i.test(v.lang)) ||
+    voices.find((v) => /^en/i.test(v.lang))
+  );
 }
 
-function speakEnglish(text, { onBoundary, onEnd }) {
+function looksHinglish(text) {
+  const raw = text || "";
+  if (/[\u0900-\u097f]/.test(raw)) return true;
+  const tokens = new Set((raw.toLowerCase().match(/[a-z']+/g) || []));
+  const markers = ["hai", "hoon", "hain", "nahi", "yaar", "bahut", "kya", "mera", "tum", "theek", "padhai", "tension", "dil", "abhi", "kaise"];
+  return markers.filter((m) => tokens.has(m)).length >= 2;
+}
+
+function speakReply(text, { onBoundary, onEnd }) {
   if (!window.speechSynthesis || !text) {
     onEnd?.();
     return;
   }
   window.speechSynthesis.cancel();
+  const hinglish = looksHinglish(text);
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "en-US";
+  utter.lang = hinglish ? "hi-IN" : "en-IN";
   utter.rate = 0.96;
   utter.pitch = 1;
-  const voice = englishVoice();
+  const voice = pickVoice(hinglish);
   if (voice) utter.voice = voice;
   utter.onboundary = () => onBoundary?.();
   utter.onend = () => onEnd?.();
@@ -204,7 +225,7 @@ export default function TalkCompanion() {
           setSpeaking(true);
           speakingRef.current = true;
           startAmplitudeGraph();
-          speakEnglish(data.reply, {
+          speakReply(data.reply, {
             onBoundary: bumpSpeech,
             onEnd: () => {
               setSpeaking(false);
@@ -233,7 +254,7 @@ export default function TalkCompanion() {
     }
 
     const speech = new SR();
-    speech.lang = "en-US";
+    speech.lang = "en-IN";
     speech.interimResults = true;
     speech.continuous = false;
     speech.onresult = (e) => {

@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 
 from app.services.alerts import hub
-from app.services.ai import get_ai_provider, provider_label
+from app.services.ai import get_ai_provider, looks_hinglish, provider_label
 from app.services.avatar_risk import combine_tiers, vocal_tier_from_score
 from app.services.hume import analyze_audio
 from app.services.ngo_notify import notify_red, safety_copy
@@ -15,6 +16,22 @@ from app.store import store
 
 _AVATAR_MEMORY: dict[str, list[dict]] = {}
 
+_PROBLEM_SITUATION = {
+    "anxiety": "anxious / racing thoughts",
+    "depression": "low mood / heaviness",
+    "relationship": "relationship strain",
+    "academic": "exams / study pressure",
+    "grief": "grief or loss",
+    "work_stress": "work / burnout pressure",
+    "family": "family stress",
+    "loneliness": "loneliness / isolation",
+    "trauma": "something traumatic resurfacing",
+    "sleep": "sleep trouble",
+    "addiction": "habit / craving struggle",
+    "identity": "identity / belonging questions",
+    "general": "general stress",
+}
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -22,6 +39,78 @@ def _now() -> str:
 
 def _eid() -> str:
     return f"av_{uuid.uuid4().hex[:10]}"
+
+
+def _emotion_phrase(emotions: list[dict] | None) -> str:
+    rows: list[str] = []
+    for item in emotions or []:
+        name = str(item.get("name") or "").strip()
+        if not name:
+            continue
+        try:
+            score = float(item.get("score") or 0)
+        except (TypeError, ValueError):
+            score = 0.0
+        if score < 0.12:
+            continue
+        rows.append(f"{name} ({score:.2f})")
+        if len(rows) >= 4:
+            break
+    return ", ".join(rows)
+
+
+def build_voice_situation_context(
+    *,
+    transcript: str,
+    effective: Any,
+    vocal_score: float | None,
+    vocal_tier: RiskTier | None,
+    emotions: list[dict] | None,
+) -> str:
+    """Ground the spoken reply in triage + vocal tone so it fits the moment."""
+    lines = [
+        "Voice-call situation notes (use these; do not recite them verbatim):",
+    ]
+    problem = getattr(getattr(effective, "problem_type", None), "value", None) or "general"
+    situation = _PROBLEM_SITUATION.get(problem, problem.replace("_", " "))
+    lines.append(f"- Likely situation from their words: {situation}.")
+    tags = [t for t in (getattr(effective, "tags", None) or []) if t]
+    if tags:
+        lines.append(f"- Relevant themes: {', '.join(tags[:5])}.")
+    matched = getattr(effective, "matched_phrase", None)
+    if matched:
+        lines.append(f"- They touched on: “{str(matched)[:80]}”.")
+
+    emotion_bit = _emotion_phrase(emotions)
+    if emotion_bit:
+        lines.append(f"- Voice tone (prosody): {emotion_bit}.")
+    if vocal_score is not None:
+        lines.append(f"- Vocal distress score: {float(vocal_score):.2f} (0 calm → 1 distressed).")
+    if vocal_tier is not None:
+        lines.append(f"- Vocal risk read: {vocal_tier.value}.")
+
+    text_calm = (getattr(effective, "tier", None) == RiskTier.GREEN) and not matched
+    voice_hot = vocal_tier in (RiskTier.YELLOW, RiskTier.RED) or (
+        vocal_score is not None and float(vocal_score) >= 0.40
+    )
+    if text_calm and voice_hot:
+        lines.append(
+            "- Words sound composed but the voice carries distress — gently notice that gap "
+            "and invite one honest line about what is underneath."
+        )
+    elif voice_hot:
+        lines.append(
+            "- Their voice sounds strained — acknowledge the feeling in the body/voice before advice."
+        )
+
+    snippet = " ".join((transcript or "").split())[:160]
+    if snippet:
+        lines.append(f'- They said: “{snippet}”.')
+    lines.append(
+        "Reply as if you understood this exact situation. Lead with reflection, then one "
+        "specific next step or question tied to it — never a generic wellness script."
+    )
+    return "\n".join(lines)
 
 
 async def run_avatar_turn(
@@ -208,11 +297,20 @@ async def run_avatar_turn(
     )
 
     history = _AVATAR_MEMORY.setdefault(session["id"], [])
+    situation = build_voice_situation_context(
+        transcript=transcript,
+        effective=effective,
+        vocal_score=float(vocal_score) if vocal_score is not None else None,
+        vocal_tier=vocal_tier,
+        emotions=hume.get("emotions") if isinstance(hume.get("emotions"), list) else None,
+    )
     reply = await get_ai_provider().generate(
         transcript,
         yellow=effective.tier == RiskTier.YELLOW,
-        hinglish=False,
+        hinglish=looks_hinglish(transcript),
         history=history,
+        extra_context=situation,
+        spoken=True,
     )
     history.append({"role": "user", "text": transcript[:500]})
     history.append({"role": "assistant", "text": reply[:800]})
