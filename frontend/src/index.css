@@ -39,7 +39,7 @@ body {
 }
 
 .field {
-  @apply w-full rounded-2xl border border-white/10 bg-mist px-4 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink/35 focus:border-sage/40 focus:ring-2 focus:ring-sage/25;
+  @apply w-full min-h-[44px] rounded-2xl border border-white/10 bg-mist px-4 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink/35 focus:border-sage/40 focus:ring-2 focus:ring-sage/25;
 }
 
 /* Companion feature — dark mint glass */
@@ -105,6 +105,7 @@ body {
   width: 220px;
   height: 220px;
   margin: 0 auto;
+  cursor: pointer;
 }
 
 .companion-orb__core {

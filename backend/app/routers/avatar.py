@@ -39,13 +39,15 @@ async def avatar_turn(
 ):
     if not user.get("consent"):
         raise HTTPException(status_code=403, detail="Consent is required before a voice session.")
-    if audio is None:
-        raise HTTPException(status_code=400, detail="Audio is required.")
-    blob = await audio.read()
+    if audio is None and not (transcript_hint or "").strip():
+        raise HTTPException(status_code=400, detail="Audio or a typed line is required.")
+    blob = await audio.read() if audio is not None else b"\x00"
     if len(blob) > 6_000_000:
         raise HTTPException(status_code=413, detail="Audio clip is too long. Try a shorter turn.")
-    if not blob:
+    if not blob and not (transcript_hint or "").strip():
         raise HTTPException(status_code=400, detail="Empty audio.")
+    if not blob:
+        blob = b"\x00"
     return await run_avatar_turn(
         user=user,
         audio=blob,

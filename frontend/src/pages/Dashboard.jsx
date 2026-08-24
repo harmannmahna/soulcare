@@ -71,8 +71,7 @@ export default function Dashboard() {
             {greeting()}, {first}.
           </h1>
           <p className="mt-2 max-w-xl text-sm text-ink/60">
-            Soft tools for mind and body. Nothing here replaces a human in a crisis — 112 and Tele-MANAS 14416 are always
-            one tap away.
+            Talk, rest, or find a person. If you are in crisis, 112 and Tele-MANAS 14416 sit at the top of every page.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             {pills.map((p) => (
@@ -104,7 +103,7 @@ export default function Dashboard() {
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-sage">AI Companion</p>
             <p className="mt-1 font-display text-2xl font-semibold">Ready to listen and guide.</p>
-            <p className="mt-1 text-sm text-ink/55">Tap to start a live voice loop — no video, just a calm orb.</p>
+            <p className="mt-1 text-sm text-ink/55">Tap to talk out loud — or type if that’s easier.</p>
           </div>
         </button>
       </motion.div>

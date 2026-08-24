@@ -31,16 +31,15 @@ export default function Home() {
             A companion that listens — and knows when to stop talking.
           </h1>
           <p className="mt-5 max-w-md text-lg text-ink/70">
-            SoulCare merges mental support, daily habits, and crisis escalation. Every message is risk-classified
-            before an AI replies. Red-tier language never reaches a model.
+            A quiet place to talk. If things stay light, we listen. If they get heavy, we help you reach a person.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button onClick={startGuest}>Talk now (guest)</Button>
-            <Link to="/therapists">
-              <Button variant="outline">Find a therapist</Button>
+            <Button onClick={startGuest}>Start as guest</Button>
+            <Link to="/login">
+              <Button variant="outline">Sign in</Button>
             </Link>
-            <Link to="/resources">
-              <Button variant="ghost">Browse resources</Button>
+            <Link to="/therapists">
+              <Button variant="ghost">Find a therapist</Button>
             </Link>
           </div>
           <p className="mt-6 text-sm text-moss/70">

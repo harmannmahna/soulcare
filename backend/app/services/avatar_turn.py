@@ -107,8 +107,8 @@ def build_voice_situation_context(
     if snippet:
         lines.append(f'- They said: “{snippet}”.')
     lines.append(
-        "Reply as if you understood this exact situation. Lead with reflection, then one "
-        "specific next step or question tied to it — never a generic wellness script."
+        "Reply like a friend who understood this moment. Ordinary words. Do not quote them. "
+        "Do not recite these notes or name scores."
     )
     return "\n".join(lines)
 
@@ -130,7 +130,17 @@ async def run_avatar_turn(
         session_id=session_id,
     )
 
-    hume = await analyze_audio(audio, filename=filename, content_type=content_type)
+    # Typed / hint-only turns skip Hume so the UI stays snappy.
+    if transcript_hint and (not audio or len(audio) < 400):
+        hume = {
+            "ok": False,
+            "transcript": (transcript_hint or "").strip(),
+            "vocal_score": None,
+            "emotions": [],
+            "error": "text-only turn",
+        }
+    else:
+        hume = await analyze_audio(audio, filename=filename, content_type=content_type)
     transcript = (hume.get("transcript") or "").strip() or (transcript_hint or "").strip()
     vocal_score = hume.get("vocal_score")
     vocal_tier = vocal_tier_from_score(float(vocal_score)) if vocal_score is not None else None

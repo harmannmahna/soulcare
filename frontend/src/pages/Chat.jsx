@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BreathingOrb, Particles } from "../components/visuals";
@@ -30,13 +30,18 @@ export default function Chat() {
     openSession,
     sessionId,
     historyNote,
-    aiBackend,
   } = useChat();
   const [text, setText] = useState("");
+  const logRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     refreshSessions();
   }, []);
+
+  useEffect(() => {
+    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, busy]);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -85,21 +90,14 @@ export default function Chat() {
           <div>
             <h1 className="font-display text-3xl font-semibold">Talk now</h1>
             <p className="mt-1 text-sm text-ink/60">
-              If things stay light, we talk. If they get serious, we suggest a therapist. If they are critical, we stop
-              the AI, alert a partner NGO, and show helplines.
+              Type what’s on your mind. If it stays light, we talk. If it gets heavy, we can suggest a person.
             </p>
-            {aiBackend === "mock" && (
-              <p className="mt-2 text-xs text-ink/45">
-                Demo companion is on (no Gemini key). Replies follow what you typed — for a full LLM, set{" "}
-                <code>GEMINI_API_KEY</code> in <code>backend/.env</code>, then restart uvicorn.
-              </p>
-            )}
           </div>
           <BreathingOrb active={busy} risk={risk?.tier || "green"} className="h-24 w-24 shrink-0" />
         </div>
 
         <div className="mt-4">
-          <RiskBanner tier={risk?.tier || "green"} />
+          <RiskBanner tier={risk?.tier || "green"} compact={(risk?.tier || "green") === "green"} />
         </div>
 
         {historyNote && messages.length === 0 && (
@@ -116,26 +114,26 @@ export default function Chat() {
           </div>
         )}
 
-        <div className="mt-5 max-h-[46vh] space-y-3 overflow-y-auto pr-1">
+        <div ref={logRef} className="mt-5 max-h-[46vh] space-y-3 overflow-y-auto pr-1">
           {messages.length === 0 && !historyNote && (
             <div className="space-y-2">
-              <p className="text-sm text-ink/55">
-                Use the <strong>User</strong> login. Therapist cards appear only on <strong>yellow</strong> — a green
-                “hi” will not recommend anyone.
-              </p>
+              <p className="text-sm text-ink/55">Not sure where to start? Try one of these.</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  ["Green", "I want to start meditating after work"],
-                  ["Yellow · match", "JEE exam stress is crushing me"],
-                  ["Red · stop AI", "I want to kill myself"],
-                ].map(([label, sample]) => (
+                  "I want to start meditating after work",
+                  "Exam stress is crushing me",
+                  "I feel lonely tonight",
+                ].map((sample) => (
                   <button
-                    key={label}
+                    key={sample}
                     type="button"
-                    className="rounded-full bg-mist px-3 py-1 text-xs text-sage"
-                    onClick={() => setText(sample)}
+                    className="rounded-full bg-mist px-3 py-1.5 text-xs text-sage hover:bg-moss hover:text-sand"
+                    onClick={() => {
+                      setText(sample);
+                      inputRef.current?.focus();
+                    }}
                   >
-                    {label}
+                    {sample}
                   </button>
                 ))}
               </div>
@@ -154,6 +152,11 @@ export default function Chat() {
               {m.text}
             </motion.div>
           ))}
+          {busy && (
+            <p className="text-sm text-ink/45" aria-live="polite">
+              Companion is writing…
+            </p>
+          )}
         </div>
 
         {risk?.tier === "red" && (
@@ -177,14 +180,17 @@ export default function Chat() {
 
         <form className="mt-5 flex gap-2" onSubmit={onSubmit}>
           <input
+            ref={inputRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Share what’s here…"
+            placeholder="Type a message…"
             className="field flex-1"
             disabled={busy}
+            autoComplete="off"
+            enterKeyHint="send"
           />
-          <Button type="submit" disabled={busy}>
-            {busy ? "…" : "Send"}
+          <Button type="submit" disabled={busy || !text.trim()}>
+            {busy ? "Sending…" : "Send"}
           </Button>
         </form>
         {error && <p className="mt-2 text-sm text-rose">{error}</p>}

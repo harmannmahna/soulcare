@@ -45,7 +45,13 @@ import B2BDemo from "./pages/B2BDemo";
 function Gate({ children, needConsent = false, needDetails = false, roles }) {
   const { user, loading } = useAuth();
   const loc = useLocation();
-  if (loading) return <div className="p-10 text-sm text-moss">Settling in…</div>;
+  if (loading) {
+    return (
+      <div className="grid min-h-[40vh] place-items-center p-10 text-sm text-sage" aria-live="polite">
+        Loading your space…
+      </div>
+    );
+  }
   if (!user) return <Navigate to="/login" replace state={{ from: loc.pathname }} />;
   if (needDetails && !user.details_completed) return <Navigate to="/details" replace />;
   if (needConsent && !user.consent) return <Navigate to="/consent" replace />;

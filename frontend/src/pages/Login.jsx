@@ -50,7 +50,7 @@ export default function Login() {
     <div className="mx-auto max-w-2xl px-5 py-10">
       <h1 className="font-display text-4xl font-semibold">Sign in</h1>
       <p className="mt-2 text-sm text-ink/60">
-        Three demo desks for three laptops. Same password <strong>Demo@123</strong>. Each role opens a different home.
+        Pick a desk to jump in, or type your email. Same demo password: <strong>Demo@123</strong>.
       </p>
       <div className="mt-6 grid gap-3 md:grid-cols-3">
         {DEMO_ACCOUNTS.map((a) => (
@@ -75,9 +75,10 @@ export default function Login() {
             {busy === "form" ? "…" : "Sign in"}
           </Button>
         </form>
-        <div className="mt-4 flex justify-between text-sm">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
           <button
-            className="text-sage"
+            type="button"
+            className="rounded-full bg-mist px-4 py-2 font-semibold text-sage hover:bg-moss hover:text-sand"
             onClick={async () => {
               await guest("hinglish");
               nav("/details");
@@ -85,7 +86,7 @@ export default function Login() {
           >
             Continue as guest
           </button>
-          <Link className="text-sage" to="/signup">
+          <Link className="text-sage underline decoration-sage/30" to="/signup">
             Create account
           </Link>
         </div>

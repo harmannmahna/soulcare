@@ -36,13 +36,16 @@ How you work:
 - Never repeat your previous reply. Vary wording every turn.
 """
 
-VOICE_PREAMBLE = """VOICE CALL MODE (spoken aloud by TTS):
-- Write only speakable sentences. No markdown, bullets, emoji, or stage directions.
-- Prefer 2–3 short sentences (about 40–70 words). One question max.
-- First reflect the situation they described and how their voice sounds (if tone notes are given).
-- Then respond to that specific situation — not a generic “take a breath / drink water” script.
-- If tone and words disagree (calm words, distressed tone), gently name the tension and invite one honest line.
-- Stay with the thread: exams, sleep, family, work, loneliness — use their details.
+VOICE_PREAMBLE = """VOICE CALL MODE (this will be read aloud on a phone-like call):
+
+Sound like a close, calm friend — not a chatbot, coach, or intake form.
+- Everyday speech. Contractions. One thought, then the next. A small “mm” or “yeah” is fine.
+- Two or three short sentences. Under 50 words. At most one question, and only if it feels natural.
+- Do not quote them back. Do not say “you said”, “I hear you”, “that sounds heavy”, or “in one honest line”.
+- Do not name diagnoses or scores (anxiety 0.6, yellow risk, vocal distress). Just respond to the moment.
+- Do not follow a template of reflect-then-advice. Sometimes just sit with what they shared.
+- No markdown, bullets, emoji, or stage directions. No lists of options.
+- Stay with their actual details (exam, sleep, family, work) using ordinary words.
 """
 
 
@@ -85,7 +88,11 @@ def _intent(user_text: str, history: list[dict] | None) -> str:
     return "open"
 
 
-def _yellow_tail(*, hinglish: bool) -> str:
+def _yellow_tail(*, hinglish: bool, spoken: bool = False) -> str:
+    if spoken:
+        if hinglish:
+            return " Agar dil kare to koi insaan saath baith sakta hai — koi jaldi nahi."
+        return " If you want, a real person can sit with this too — no rush."
     if hinglish:
         return (
             " Agar yeh bhaari lag raha hai, ek therapist jo isi tension ko samajhta ho "
@@ -171,6 +178,12 @@ def _task_nudge(extra_context: str, hinglish: bool) -> str:
     return f" You had '{title}' due today — how did that go?"
 
 
+def _pick_line(seed: str, options: list[str]) -> str:
+    if not options:
+        return ""
+    return options[sum(ord(c) for c in (seed or "x")) % len(options)]
+
+
 def _spoken_situation_reply(
     user_text: str,
     *,
@@ -179,134 +192,144 @@ def _spoken_situation_reply(
     extra_context: str,
     history: list[dict] | None,
 ) -> str | None:
-    """When MockAI is used on voice, answer from situation notes + transcript."""
+    """When MockAI is used on voice, answer from situation notes without sounding scripted."""
     blob = (extra_context or "").lower()
     if "voice-call situation" not in blob and "likely situation" not in blob:
         return None
 
-    snippet = " ".join((user_text or "").split())[:70]
-    preview = f"“{snippet}”" if snippet else "what you shared"
+    seed = " ".join((user_text or "").split())
     tone_gap = "words sound composed but the voice carries distress" in blob
     voice_hot = "voice sounds strained" in blob or "vocal risk read: yellow" in blob or "vocal risk read: red" in blob
+    turns = len([h for h in (history or []) if h.get("role") == "user"])
+
+    hi = {
+        "exam": [
+            "Arre, exam ki tension aise hi baith jaati hai. Poora syllabus chhodo — aaj ek chhota tukda, kaun sa?",
+            "Padhai ruk jaaye to dimaag aur tez ghoomta hai. Chalo sirf agla chhota tukda sochte hain, poora paper nahi.",
+            "Exam wala darr common hai. Aaj kitna karna hai, utna nahi — ek page bhi kaafi hai.",
+        ],
+        "sleep": [
+            "Neend ud jaaye to din bhi tight lagta hai. Raat ko dimaag late on rehta hai kya?",
+            "Thakaan aur soch ek dusre ko badhate hain. Kal subah ke liye bas ek chhoti si wind-down try karein?",
+        ],
+        "work": [
+            "Kaam ka bojh chupke aa jaata hai. Hours hain, log, ya woh Sunday wali ghabrahat?",
+            "Office wala stress body mein baith jaata hai. Aaj kaun sa hissa sabse zyada kheench raha hai?",
+        ],
+        "family": [
+            "Ghar wali baat dil pe jaldi baith jaati hai. Abhi kya sabse zyada chubh raha hai?",
+            "Family ke saath mushkil ho to akela feel hota hai, even ghar mein. Kya hua tha aaj?",
+        ],
+        "lonely": [
+            "Akelapan bhi dard hai, chhoti baat nahi. Aaj kis pal mein yeh aaya?",
+            "Kabhi-kabhi room bhari ho, phir bhi khaali lage. Main yahin hoon — kya chal raha tha?",
+        ],
+        "grief": [
+            "Yeh gum halka nahi hota. Abhi sirf saath chahiye, ya kuch yaad kehni hai?",
+            "Loss ke baad alfaz kam padte hain. Main sun raha hoon — jitna mann kare, utna bolo.",
+        ],
+        "anxiety": [
+            "Yeh ghabrahat body mein bhi chalti hai. Abhi kaun sa khayal bar bar aa raha hai?",
+            "Dil tez, soch tez — main yahin hoon. Thoda ruk ke, kya sabse upar ghoom raha hai?",
+        ],
+        "low": [
+            "Haan, yeh wazan asl hai. Aaj kaun sa pal thoda bhaari tha?",
+            "Kabhi din aise hi dheela pad jaata hai. Main saath hoon — kya hua tha?",
+        ],
+        "gap": [
+            "Alfaz theek hain, lekin awaaz thodi tight hai. Andar kya chal raha hai?",
+            "Bolne mein theek, feel mein nahi — aisa hota hai. Kya daba ke rakha hai?",
+        ],
+        "hot": [
+            "Awaaz mein thakaan sunai de rahi hai. Pehle yeh — abhi kya tight hai?",
+            "Lagta hai andar se kheench raha hai. Bina solve kiye, kya feel ho raha hai?",
+        ],
+        "open": [
+            "Haan, sun raha hoon. Thoda aur bolo — kya chal raha tha?",
+            "Okay. Main yahin hoon. Jo mann kare, wahan se shuru karo.",
+        ],
+    }
+    en = {
+        "exam": [
+            "Yeah, exam season really does sit in the chest like that. Forget the whole syllabus — what's one small chunk you could actually start?",
+            "That exam pressure is a lot. We don't have to win the paper today. What would one tiny study tukda look like?",
+            "Mm. Studying when the mind is already loud is brutal. Want to pick just one page and ignore the rest for now?",
+        ],
+        "sleep": [
+            "Sleep going missing makes everything feel sharper. Has your mind been staying on late, or are you waking already tired?",
+            "Yeah, broken sleep is exhausting on its own. What does the hour before bed usually look like?",
+        ],
+        "work": [
+            "Work stress creeps in quietly. Is it the hours, the people, or that Sunday-night dread?",
+            "Sounds like the job is taking more than hours. What part of the day is the worst right now?",
+        ],
+        "family": [
+            "Home stuff hits differently. What's been sitting heaviest — expectations, a fight, or that lonely feeling even at home?",
+            "Family can fill a room and still leave you on your own. What happened today?",
+        ],
+        "lonely": [
+            "That lonely stretch is real. When did it show up most today?",
+            "Being around people and still feeling apart is a particular kind of tired. I'm here — what was the moment?",
+        ],
+        "grief": [
+            "Grief doesn't ask for tidy words. Do you want quiet company, or to say one memory out loud?",
+            "Yeah. Loss just sits there. I'm with you — say as little or as much as you want.",
+        ],
+        "anxiety": [
+            "That restless feeling lives in the body too. Which thought keeps looping?",
+            "Heart racing, mind racing — we can slow the talking even if the feeling doesn't. What's on top?",
+        ],
+        "low": [
+            "Yeah. That heaviness is allowed to be here. What part of today felt the most like that?",
+            "Some days just sit heavy. I'm not going to rush you — what happened?",
+        ],
+        "gap": [
+            "You sound okay in the words, a bit tight in the voice. What's underneath, if you feel like saying?",
+            "The sentence is calm; the voice isn't quite. You don't have to perform fine — what's going on?",
+        ],
+        "hot": [
+            "I'm hearing some strain in your voice. Before any fix — what's feeling tight?",
+            "You sound worn. We can skip the advice for a second. What's going on in there?",
+        ],
+        "open": [
+            "Yeah, I'm here. Tell me a bit more about what was going on.",
+            "Okay. No rush — start wherever it feels easiest.",
+        ],
+    }
+    table = hi if hinglish else en
 
     if "exam" in blob or "academic" in blob or "study" in blob:
-        if hinglish:
-            base = (
-                f"Exam wala pressure asl mein bhaari lag raha hai — tumne {preview} kaha. "
-                "Syllabus nahi, agla ek chhota tukda kaun sa hai jo aaj khatam kar sakte ho?"
-            )
-        else:
-            base = (
-                f"Exam pressure is sitting on you — you said {preview}. "
-                "Forget the whole syllabus for a minute: what’s the next small chunk you could finish today?"
-            )
+        key = "exam"
     elif "sleep" in blob:
-        if hinglish:
-            base = (
-                f"Neend kharab hone se sab tight lagta hai — {preview}. "
-                "Raat mein dimaag late band hota hai, ya subah thakaan pehle se hai?"
-            )
-        else:
-            base = (
-                f"Broken sleep makes everything louder — {preview}. "
-                "Is your mind staying on late, or are you waking already tired?"
-            )
+        key = "sleep"
     elif "work" in blob or "burnout" in blob:
-        if hinglish:
-            base = (
-                f"Kaam ka bojh saaf sunai de raha hai — {preview}. "
-                "Hours zyada hain, log, ya woh Sunday-night wali ghabrahat?"
-            )
-        else:
-            base = (
-                f"Work stress is coming through clearly — {preview}. "
-                "Is it the hours, the people, or that Sunday-night dread?"
-            )
+        key = "work"
     elif "family" in blob:
-        if hinglish:
-            base = (
-                f"Ghar wali tension dil pe baith jaati hai — {preview}. "
-                "Abhi sabse zyada kya chubh raha hai — expectation, ladai, ya akelapan ghar mein?"
-            )
-        else:
-            base = (
-                f"Family stress lands in the body fast — {preview}. "
-                "What is biting hardest right now — expectations, conflict, or feeling alone at home?"
-            )
+        key = "family"
     elif "loneliness" in blob or "lonely" in blob:
-        if hinglish:
-            base = (
-                f"Akelapan bhi ek real dard hai — {preview}. "
-                "Aaj kis pal mein yeh sabse zyada mehsoos hua?"
-            )
-        else:
-            base = (
-                f"Loneliness is a real weight — {preview}. "
-                "When did it hit hardest today?"
-            )
+        key = "lonely"
     elif "grief" in blob or "loss" in blob:
-        if hinglish:
-            base = (
-                f"Yeh gum halka nahi hota — {preview}. "
-                "Abhi sirf sunne ki zarurat hai, ya kisi yaad ke baare mein bolna hai?"
-            )
-        else:
-            base = (
-                f"Grief doesn’t ask for tidy answers — {preview}. "
-                "Do you need quiet company right now, or to name one memory out loud?"
-            )
+        key = "grief"
     elif "anxiety" in blob or "anxious" in blob:
-        if hinglish:
-            base = (
-                f"Anxiety body mein bhi chalti hai — {preview}. "
-                "Abhi sabse tez kaun sa khayal ghoom raha hai?"
-            )
-        else:
-            base = (
-                f"Anxiety shows up in the body too — {preview}. "
-                "Which thought is looping the loudest right now?"
-            )
+        key = "anxiety"
     elif "depression" in blob or "low mood" in blob or "heaviness" in blob:
-        if hinglish:
-            base = (
-                f"Yeh wazan asl hai — {preview}. "
-                "Aaj kaun sa pal thoda bhaari tha, ek seedhi si line mein?"
-            )
-        else:
-            base = (
-                f"That heaviness is real — {preview}. "
-                "What part of today felt heaviest, in one honest line?"
-            )
+        key = "low"
     elif tone_gap:
-        if hinglish:
-            base = (
-                f"Alfaz theek lag rahe hain, lekin awaaz mein tension sunai de rahi hai — {preview}. "
-                "Andar kya chal raha hai, ek seedhi si baat?"
-            )
-        else:
-            base = (
-                f"Your words sound composed, but your voice carries strain — {preview}. "
-                "What’s sitting underneath, in one honest line?"
-            )
+        key = "gap"
     elif voice_hot:
-        if hinglish:
-            base = (
-                f"Awaaz mein strain sunai de raha hai — {preview}. "
-                "Pehle yeh feel acknowledge karte hain: abhi kya sabse tight hai?"
-            )
-        else:
-            base = (
-                f"I’m hearing strain in your voice — {preview}. "
-                "Before fixes: what feels tightest in this moment?"
-            )
+        key = "hot"
     else:
-        return None
+        key = "open"
 
+    base = _pick_line(seed + str(turns), table[key])
     if yellow:
-        base += _yellow_tail(hinglish=hinglish)
-    turns = len([h for h in (history or []) if h.get("role") == "user"])
+        base += _yellow_tail(hinglish=hinglish, spoken=True)
     if turns == 0:
-        base = base.rstrip() + _memory_nudge(extra_context, hinglish)
+        nudge = _memory_nudge(extra_context, hinglish)
+        if nudge:
+            base = base.rstrip() + nudge.replace("Last time we talked about", "Last time we were on").replace(
+                "Last time we touched on", "Last time tha"
+            )
     return base
 
 
@@ -438,11 +461,15 @@ class GeminiAI(AIProvider):
         character: dict | None = None,
         spoken: bool = False,
     ) -> str:
-        tone = "Reply in warm Hinglish." if hinglish else "Reply in clear, gentle English."
+        tone = (
+            "Talk like a close friend on a phone call in warm Hinglish. Contractions. Everyday words."
+            if hinglish
+            else "Talk like a close friend on a phone call in everyday English. Contractions. Not a worksheet."
+        )
         risk = (
-            "Risk context: yellow — keep supportive and mention human help lightly at the end."
+            "They sound a bit overwhelmed — stay warm. Mention a human only in one short clause if it fits."
             if yellow
-            else "Risk context: green — normal supportive conversation."
+            else "Keep it light and human."
         )
         persona = ""
         if character:
@@ -481,9 +508,9 @@ class GeminiAI(AIProvider):
                             "systemInstruction": {"parts": [{"text": system}]},
                             "contents": contents,
                             "generationConfig": {
-                                "temperature": 0.7 if spoken else 0.85,
+                                "temperature": 0.92 if spoken else 0.85,
                                 "topP": 0.95,
-                                "maxOutputTokens": 280 if spoken else 512,
+                                "maxOutputTokens": 220 if spoken else 512,
                             },
                             "safetySettings": [
                                 {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
