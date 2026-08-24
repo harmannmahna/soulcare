@@ -5,7 +5,7 @@ export default function TalkCompanionCard({ onClick }) {
     <DashCard
       icon="🎙️"
       title="Talk to Companion"
-      description="Speak out loud. A simple voice orb answers — tone-aware, no video."
+      description="Speak or type. A calm orb answers — no video."
       onClick={onClick}
       accent="from-mist to-moss/15"
     />

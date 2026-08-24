@@ -21,7 +21,9 @@ export function useTalkCompanion() {
     try {
       const sid = await ensureSession();
       const form = new FormData();
-      form.append("audio", blob, blob.type?.includes("wav") ? "turn.wav" : "turn.webm");
+      if (blob && blob.size > 0) {
+        form.append("audio", blob, blob.type?.includes("wav") ? "turn.wav" : "turn.webm");
+      }
       if (sid) form.append("session_id", sid);
       if (transcriptHint) form.append("transcript_hint", transcriptHint);
       const data = await apiForm("/api/v1/avatar/turn", form);

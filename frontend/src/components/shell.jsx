@@ -8,15 +8,15 @@ import PhonePickupWatcher from "./PhonePickupWatcher";
 const APP_LINKS = [
   { to: "/dashboard", label: "Home" },
   { to: "/chat", label: "Talk" },
-  { to: "/habits", label: "Habits" },
-  { to: "/community", label: "Circle" },
+  { to: "/talk-companion", label: "Voice" },
+  { to: "/therapists", label: "Care" },
   { to: "/settings", label: "You" },
 ];
 
 const PUBLIC_LINKS = [
   { to: "/", label: "Home" },
-  { to: "/chat", label: "AI Companion" },
-  { to: "/wellness", label: "Wellness Hub" },
+  { to: "/chat", label: "Talk" },
+  { to: "/faq", label: "Help" },
 ];
 
 export function EmergencyStrip() {
@@ -33,12 +33,15 @@ export function EmergencyStrip() {
   );
 }
 
-export function RiskBanner({ tier = "green" }) {
+export function RiskBanner({ tier = "green", compact = false }) {
+  if (tier === "green" && compact) {
+    return <p className="text-center text-xs text-ink/45">A calm space — say whatever’s here.</p>;
+  }
   const copy = {
-    green: { title: "Steady space", body: "Things sound manageable. We can talk about how you are feeling." },
-    yellow: { title: "Care suggested", body: "This sounds heavier. A specialist match is available if you want company." },
-    red: { title: "Safety first", body: "Crisis language detected. No AI reply — please call 112 or Tele-MANAS 14416." },
-  }[tier] || { title: "Steady space", body: "" };
+    green: { title: "I'm here", body: "Whenever you’re ready. No pressure to have the right words." },
+    yellow: { title: "This sounds heavier", body: "We can keep talking. A specialist is nearby if you’d like company." },
+    red: { title: "Please reach a person now", body: "I’m not going to keep chatting. Call 112 or Tele-MANAS 14416." },
+  }[tier] || { title: "I'm here", body: "" };
   return (
     <div
       className={`rounded-2xl px-4 py-3 text-sm ${
@@ -46,7 +49,7 @@ export function RiskBanner({ tier = "green" }) {
       }`}
     >
       <div className="flex items-center gap-2">
-        <Badge tone={tier}>{tier}</Badge>
+        {tier !== "green" && <Badge tone={tier}>{tier === "yellow" ? "care" : "urgent"}</Badge>}
         <strong>{copy.title}</strong>
       </div>
       <p className="mt-1 opacity-80">{copy.body}</p>
@@ -121,13 +124,13 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
-      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-white/5 bg-foam/95 px-2 py-2 text-[11px] text-ink/70 backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-white/5 bg-foam/95 px-1 py-1.5 text-[11px] text-ink/70 backdrop-blur md:hidden">
         {APP_LINKS.map((l) => (
           <NavLink
             key={l.to}
             to={l.to}
             className={({ isActive }) =>
-              `rounded-xl px-1 py-2 text-center ${isActive ? "bg-mist font-semibold text-sage" : ""}`
+              `min-h-[48px] rounded-xl px-1 py-2 text-center leading-tight ${isActive ? "bg-mist font-semibold text-sage" : ""}`
             }
           >
             {l.label}

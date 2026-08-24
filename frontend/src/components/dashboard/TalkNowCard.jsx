@@ -5,7 +5,7 @@ export default function TalkNowCard({ onClick }) {
     <DashCard
       icon="💬"
       title="Talk now"
-      description="A calm companion. If things get heavy, we suggest care — or a helpline."
+      description="Type what’s on your mind. If it gets heavy, we suggest care."
       onClick={onClick}
       accent="from-mist to-sage/20"
     />

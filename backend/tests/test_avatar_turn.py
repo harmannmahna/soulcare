@@ -162,3 +162,32 @@ async def test_mock_spoken_exam_reply_uses_situation():
     )
     assert "exam" in reply.lower() or "syllabus" in reply.lower() or "tukda" in reply.lower()
     assert "#" not in reply and "*" not in reply
+    assert "you said" not in reply.lower()
+
+
+@pytest.mark.asyncio
+async def test_avatar_text_only_skips_hume(monkeypatch):
+    await store.connect()
+
+    async def boom_hume(*_a, **_k):
+        raise AssertionError("Hume must not run on typed turns")
+
+    class Friendly:
+        async def generate(self, *args, **kwargs):
+            assert kwargs.get("spoken") is True
+            return "Yeah, I'm here. What was the long part of the day?"
+
+    monkeypatch.setattr(avatar_turn, "analyze_audio", boom_hume)
+    monkeypatch.setattr(avatar_turn, "get_ai_provider", lambda: Friendly())
+
+    result = await avatar_turn.run_avatar_turn(
+        user={"id": "usr_av_type", "guest": False, "consent": True, "language": "en"},
+        audio=b"\x00",
+        filename="t.webm",
+        content_type="audio/webm",
+        session_id=None,
+        transcript_hint="I had a long day",
+    )
+    assert result["llm_used"] is True
+    assert result["speak"] is True
+    assert result["transcript"] == "I had a long day"

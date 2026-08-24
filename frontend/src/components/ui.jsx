@@ -8,7 +8,7 @@ export function Button({ children, variant = "primary", className = "", ...props
   };
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition ${styles[variant]} disabled:opacity-50 ${className}`}
+      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition ${styles[variant]} disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     >
       {children}

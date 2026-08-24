@@ -4,23 +4,43 @@ import { useAuth } from "../hooks/useAuth";
 import { genderLabel, initials, roleOf } from "../lib/flow";
 import ProfileEditForm from "./ProfileEditForm";
 
-const LINKS = [
-  { to: "/dashboard", label: "Dashboard", roles: ["user"] },
-  { to: "/chat", label: "Talk now", roles: ["user"] },
-  { to: "/talk-companion", label: "Talk to Companion", roles: ["user"] },
-  { to: "/therapists", label: "Find a therapist", roles: ["user"] },
-  { to: "/help", label: "Help nearby", roles: ["user"] },
-  { to: "/wellness", label: "Explore wellness", roles: ["user"] },
-  { to: "/pharmacy", label: "Pharmacy", roles: ["user"] },
-  { to: "/focus", label: "Focus time", roles: ["user"] },
-  { to: "/phone-habit", label: "Phone habit", roles: ["user"] },
-  { to: "/habits", label: "Habits", roles: ["user"] },
-  { to: "/community", label: "Community", roles: ["user"] },
-  { to: "/admin", label: "Admin ops", roles: ["user", "b2b"] },
-  { to: "/b2b-demo", label: "B2B reports", roles: ["b2b"] },
-  { to: "/surveillance", label: "Campus insight", roles: ["b2b"] },
-  { to: "/partner", label: "Partner desk", roles: ["therapist"] },
-  { to: "/settings", label: "Settings", roles: ["user", "therapist", "b2b"] },
+const NAV = [
+  {
+    heading: "Talk",
+    items: [
+      { to: "/dashboard", label: "Home", roles: ["user"] },
+      { to: "/chat", label: "Talk now", roles: ["user"] },
+      { to: "/talk-companion", label: "Voice companion", roles: ["user"] },
+    ],
+  },
+  {
+    heading: "Care",
+    items: [
+      { to: "/therapists", label: "Find a therapist", roles: ["user"] },
+      { to: "/help", label: "Help nearby", roles: ["user"] },
+      { to: "/pharmacy", label: "Pharmacy", roles: ["user"] },
+    ],
+  },
+  {
+    heading: "Daily",
+    items: [
+      { to: "/wellness", label: "Wellness", roles: ["user"] },
+      { to: "/habits", label: "Habits", roles: ["user"] },
+      { to: "/focus", label: "Focus time", roles: ["user"] },
+      { to: "/phone-habit", label: "Phone habit", roles: ["user"] },
+      { to: "/community", label: "Community", roles: ["user"] },
+    ],
+  },
+  {
+    heading: "More",
+    items: [
+      { to: "/admin", label: "Admin ops", roles: ["user", "b2b"] },
+      { to: "/b2b-demo", label: "B2B reports", roles: ["b2b"] },
+      { to: "/surveillance", label: "Campus insight", roles: ["b2b"] },
+      { to: "/partner", label: "Partner desk", roles: ["therapist"] },
+      { to: "/settings", label: "Settings", roles: ["user", "therapist", "b2b"] },
+    ],
+  },
 ];
 
 export default function Sidebar({ user }) {
@@ -30,7 +50,11 @@ export default function Sidebar({ user }) {
   const [editing, setEditing] = useState(false);
   const female = String(user?.gender || "").toLowerCase() === "female";
   const role = roleOf(user);
-  const links = LINKS.filter((l) => !l.roles || l.roles.includes(role));
+  const extra = female && role === "user" ? [{ to: "/period", label: "Period tracker" }] : [];
+  const groups = NAV.map((g) => ({
+    ...g,
+    items: g.items.filter((l) => !l.roles || l.roles.includes(role)).concat(g.heading === "Daily" ? extra : []),
+  })).filter((g) => g.items.length);
 
   return (
     <aside className="sticky top-0 hidden h-[calc(100vh-40px)] w-72 shrink-0 flex-col border-r border-white/5 bg-foam/80 px-5 py-6 backdrop-blur md:flex">
@@ -72,24 +96,29 @@ export default function Sidebar({ user }) {
         )}
       </div>
 
-      <nav className="mt-5 flex-1 space-y-0.5 overflow-y-auto text-sm">
-        {links
-          .concat(female && role === "user" ? [{ to: "/period", label: "Period tracker" }] : [])
-          .map((l) => {
-            const active = loc.pathname === l.to || loc.pathname.startsWith(`${l.to}/`);
-            return (
-              <button
-                key={l.to}
-                type="button"
-                onClick={() => nav(l.to)}
-                className={`block w-full rounded-full px-3 py-2 text-left transition ${
-                  active ? "bg-moss font-semibold text-sand" : "text-ink/70 hover:bg-mist hover:text-ink"
-                }`}
-              >
-                {l.label}
-              </button>
-            );
-          })}
+      <nav className="mt-5 flex-1 space-y-4 overflow-y-auto text-sm">
+        {groups.map((g) => (
+          <div key={g.heading}>
+            <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink/35">{g.heading}</p>
+            <div className="space-y-0.5">
+              {g.items.map((l) => {
+                const active = loc.pathname === l.to || loc.pathname.startsWith(`${l.to}/`);
+                return (
+                  <button
+                    key={l.to}
+                    type="button"
+                    onClick={() => nav(l.to)}
+                    className={`block w-full rounded-full px-3 py-2 text-left transition ${
+                      active ? "bg-moss font-semibold text-sand" : "text-ink/70 hover:bg-mist hover:text-ink"
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <button

@@ -15,16 +15,20 @@ function pickMime() {
 
 function pickVoice(preferHinglish) {
   const voices = window.speechSynthesis?.getVoices?.() || [];
+  const natural = (v) => /google|natural|neural|premium/i.test(v.name || "");
   if (preferHinglish) {
     return (
+      voices.find((v) => /^hi(-|_|$)/i.test(v.lang) && natural(v)) ||
       voices.find((v) => /^hi(-|_|$)/i.test(v.lang)) ||
+      voices.find((v) => /^en(-|_)IN/i.test(v.lang) && natural(v)) ||
       voices.find((v) => /^en(-|_)IN/i.test(v.lang)) ||
-      voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /IN/i.test(v.lang)) ||
-      voices.find((v) => /^en(-|_|$)/i.test(v.lang))
+      voices.find((v) => /^en/i.test(v.lang))
     );
   }
   return (
+    voices.find((v) => /^en(-|_)IN/i.test(v.lang) && natural(v)) ||
     voices.find((v) => /^en(-|_)IN/i.test(v.lang)) ||
+    voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /GB|IN|US|AU/i.test(v.lang) && natural(v)) ||
     voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /US|GB|IN|AU/i.test(v.lang)) ||
     voices.find((v) => /^en/i.test(v.lang))
   );
@@ -38,23 +42,12 @@ function looksHinglish(text) {
   return markers.filter((m) => tokens.has(m)).length >= 2;
 }
 
-function speakReply(text, { onBoundary, onEnd }) {
-  if (!window.speechSynthesis || !text) {
-    onEnd?.();
-    return;
-  }
-  window.speechSynthesis.cancel();
-  const hinglish = looksHinglish(text);
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = hinglish ? "hi-IN" : "en-IN";
-  utter.rate = 0.96;
-  utter.pitch = 1;
-  const voice = pickVoice(hinglish);
-  if (voice) utter.voice = voice;
-  utter.onboundary = () => onBoundary?.();
-  utter.onend = () => onEnd?.();
-  utter.onerror = () => onEnd?.();
-  window.speechSynthesis.speak(utter);
+function splitSpoken(text) {
+  const parts = String(text || "")
+    .split(/(?<=[.!?…])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parts.length ? parts : [text];
 }
 
 export default function TalkCompanion() {
@@ -63,8 +56,9 @@ export default function TalkCompanion() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [amplitude, setAmplitude] = useState(0);
-  const [status, setStatus] = useState("Tap start, then just talk");
+  const [status, setStatus] = useState("Tap the orb when you’re ready");
   const [interim, setInterim] = useState("");
+  const [typed, setTyped] = useState("");
   const liveRef = useRef(false);
   const busyRef = useRef(false);
   const speakingRef = useRef(false);
@@ -74,9 +68,18 @@ export default function TalkCompanion() {
   const streamRef = useRef(null);
   const hintRef = useRef("");
   const audioRef = useRef(null);
+  const genRef = useRef(0);
+  const speakGenRef = useRef(0);
+  const silenceRef = useRef(0);
+  const logRef = useRef(null);
+  const finishRef = useRef(null);
 
   busyRef.current = busy;
   speakingRef.current = speaking;
+
+  useEffect(() => {
+    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, interim]);
 
   function stopAudioGraph() {
     const graph = audioRef.current;
@@ -128,6 +131,7 @@ export default function TalkCompanion() {
   }
 
   function stopListenHardware() {
+    window.clearTimeout(silenceRef.current);
     try {
       speechRef.current?.stop();
     } catch {
@@ -145,28 +149,107 @@ export default function TalkCompanion() {
     setListening(false);
   }
 
+  function cancelSpeak() {
+    speakGenRef.current += 1;
+    window.speechSynthesis?.cancel();
+    setSpeaking(false);
+    speakingRef.current = false;
+    stopAudioGraph();
+  }
+
   function endCall() {
+    genRef.current += 1;
     liveRef.current = false;
     setLive(false);
     stopListenHardware();
-    window.speechSynthesis?.cancel();
-    setSpeaking(false);
-    stopAudioGraph();
+    cancelSpeak();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setInterim("");
-    setStatus("Call ended");
+    setStatus("Call ended — tap the orb to start again");
+  }
+
+  function speakReply(text, { onBoundary, onEnd }) {
+    if (!window.speechSynthesis || !text) {
+      onEnd?.();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const token = ++speakGenRef.current;
+    const hinglish = looksHinglish(text);
+    const voice = pickVoice(hinglish);
+    const parts = splitSpoken(text);
+    let i = 0;
+
+    const speakNext = () => {
+      if (token !== speakGenRef.current) return;
+      if (i >= parts.length) {
+        onEnd?.();
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(parts[i]);
+      utter.lang = hinglish ? "hi-IN" : "en-IN";
+      utter.rate = 0.9;
+      utter.pitch = 0.98;
+      if (voice) utter.voice = voice;
+      utter.onboundary = () => onBoundary?.();
+      utter.onerror = () => {
+        if (token === speakGenRef.current) onEnd?.();
+      };
+      utter.onend = () => {
+        if (token !== speakGenRef.current) return;
+        i += 1;
+        if (i < parts.length) window.setTimeout(speakNext, 140);
+        else onEnd?.();
+      };
+      window.speechSynthesis.speak(utter);
+    };
+    speakNext();
+  }
+
+  async function handleReply(data, gen) {
+    if (gen !== genRef.current || !liveRef.current) return;
+    if (data?.risk?.tier === "red") {
+      setStatus("Safety first — no spoken reply");
+      liveRef.current = false;
+      setLive(false);
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      return;
+    }
+    if (data?.reply) {
+      setStatus("Tap to skip");
+      setSpeaking(true);
+      speakingRef.current = true;
+      startAmplitudeGraph();
+      speakReply(data.reply, {
+        onBoundary: bumpSpeech,
+        onEnd: () => {
+          if (gen !== genRef.current) return;
+          setSpeaking(false);
+          speakingRef.current = false;
+          stopAudioGraph();
+          if (liveRef.current) {
+            setStatus("I'm listening");
+            listenCycle();
+          }
+        },
+      });
+    } else if (liveRef.current) {
+      listenCycle();
+    }
   }
 
   async function listenCycle() {
     if (!liveRef.current || busyRef.current || speakingRef.current) return;
+    const gen = genRef.current;
     let stream = streamRef.current;
     if (!stream || stream.getTracks().some((t) => t.readyState === "ended")) {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
       } catch {
-        setStatus("Microphone permission is needed to talk.");
+        setStatus("Allow the microphone, or type a line below.");
         return;
       }
     }
@@ -182,13 +265,19 @@ export default function TalkCompanion() {
     recRef.current = rec;
     rec.start();
     setListening(true);
-    setStatus("Listening…");
+    setStatus("I'm listening — pause, or tap Send");
 
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     let closed = false;
     const finishUtterance = async () => {
-      if (closed) return;
+      if (closed || gen !== genRef.current) return;
       closed = true;
+      window.clearTimeout(silenceRef.current);
+      try {
+        speechRef.current?.stop();
+      } catch {
+        /* ignore */
+      }
+      speechRef.current = null;
       if (rec.state !== "inactive") {
         await new Promise((resolve) => {
           rec.onstop = () => resolve();
@@ -201,100 +290,151 @@ export default function TalkCompanion() {
       }
       recRef.current = null;
       setListening(false);
-      if (!liveRef.current) return;
+      if (!liveRef.current || gen !== genRef.current) return;
       const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
       const hint = hintRef.current.trim();
       if (blob.size < 800 && !hint) {
         listenCycle();
         return;
       }
-      setStatus("Thinking…");
+      setStatus("One moment…");
       try {
         const data = await sendTurn(blob, hint);
-        if (!liveRef.current) return;
-        if (data?.risk?.tier === "red") {
-          setStatus("Safety first — no spoken reply");
-          liveRef.current = false;
-          setLive(false);
-          streamRef.current?.getTracks().forEach((t) => t.stop());
-          streamRef.current = null;
-          return;
-        }
-        if (data?.reply) {
-          setStatus("Speaking…");
-          setSpeaking(true);
-          speakingRef.current = true;
-          startAmplitudeGraph();
-          speakReply(data.reply, {
-            onBoundary: bumpSpeech,
-            onEnd: () => {
-              setSpeaking(false);
-              speakingRef.current = false;
-              stopAudioGraph();
-              if (liveRef.current) {
-                setStatus("Listening…");
-                listenCycle();
-              }
-            },
-          });
-        } else if (liveRef.current) {
-          listenCycle();
-        }
+        await handleReply(data, gen);
       } catch {
-        if (liveRef.current) listenCycle();
+        setStatus("That didn’t go through — try again, or type a line.");
+        if (liveRef.current && gen === genRef.current) listenCycle();
       }
     };
+    finishRef.current = finishUtterance;
 
+    const armSilence = () => {
+      window.clearTimeout(silenceRef.current);
+      if (!hintRef.current.trim()) return;
+      silenceRef.current = window.setTimeout(() => finishUtterance(), 1400);
+    };
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
-      setStatus("This browser has no speech recognition. Speak, then tap End when you want to stop — wait, tap Start again after a pause.");
-      window.setTimeout(() => {
-        if (liveRef.current) finishUtterance();
-      }, 5000);
+      setStatus("Tap Send when you’re done talking.");
       return;
     }
 
-    const speech = new SR();
-    speech.lang = "en-IN";
-    speech.interimResults = true;
-    speech.continuous = false;
-    speech.onresult = (e) => {
-      let finalText = "";
-      let liveText = "";
-      for (let i = e.resultIndex; i < e.results.length; i += 1) {
-        const piece = e.results[i][0].transcript;
-        if (e.results[i].isFinal) finalText += `${piece} `;
-        else liveText += piece;
+    const attachSpeech = () => {
+      if (!liveRef.current || closed || gen !== genRef.current) return;
+      const speech = new SR();
+      speech.lang = "en-IN";
+      speech.interimResults = true;
+      speech.continuous = true;
+      speech.onresult = (e) => {
+        let finalText = "";
+        let liveText = "";
+        for (let i = e.resultIndex; i < e.results.length; i += 1) {
+          const piece = e.results[i][0].transcript;
+          if (e.results[i].isFinal) finalText += `${piece} `;
+          else liveText += piece;
+        }
+        if (finalText.trim()) hintRef.current = `${hintRef.current} ${finalText}`.trim();
+        setInterim((hintRef.current ? `${hintRef.current} ` : "") + liveText);
+        armSilence();
+      };
+      speech.onerror = () => {};
+      speech.onend = () => {
+        speechRef.current = null;
+        if (!closed && liveRef.current && gen === genRef.current) {
+          window.setTimeout(attachSpeech, 120);
+        }
+      };
+      speechRef.current = speech;
+      try {
+        speech.start();
+      } catch {
+        window.setTimeout(() => finishUtterance(), 1800);
       }
-      if (finalText.trim()) hintRef.current = `${hintRef.current} ${finalText}`.trim();
-      setInterim((hintRef.current ? `${hintRef.current} ` : "") + liveText);
     };
-    speech.onerror = () => {};
-    speech.onend = () => {
-      speechRef.current = null;
+    attachSpeech();
+    silenceRef.current = window.setTimeout(() => {
+      if (!hintRef.current.trim()) return;
       finishUtterance();
-    };
-    speechRef.current = speech;
-    try {
-      speech.start();
-    } catch {
-      window.setTimeout(() => finishUtterance(), 1600);
+    }, 22000);
+  }
+
+  function sendNow() {
+    if (finishRef.current) finishRef.current();
+    else {
+      window.clearTimeout(silenceRef.current);
+      try {
+        speechRef.current?.stop();
+      } catch {
+        /* ignore */
+      }
+      if (recRef.current && recRef.current.state !== "inactive") {
+        try {
+          recRef.current.stop();
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  }
+
+  function skipSpeaking() {
+    if (!speakingRef.current) return;
+    cancelSpeak();
+    if (liveRef.current) {
+      setStatus("I'm listening");
+      listenCycle();
     }
   }
 
   async function startCall() {
     resetConversation();
+    genRef.current += 1;
     liveRef.current = true;
     setLive(true);
-    setStatus("Listening…");
+    setStatus("I'm listening");
     try {
       streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch {
-      liveRef.current = false;
-      setLive(false);
-      setStatus("Microphone permission is needed to talk.");
+      liveRef.current = true;
+      setLive(true);
+      setStatus("No mic yet — type a line below, or allow the microphone.");
       return;
     }
     listenCycle();
+  }
+
+  function onOrbTap() {
+    if (speaking) {
+      skipSpeaking();
+      return;
+    }
+    if (!live) {
+      startCall();
+      return;
+    }
+    if (listening) sendNow();
+  }
+
+  async function sendTypedLine(e) {
+    e.preventDefault();
+    const line = typed.trim();
+    if (!line || busy) return;
+    setTyped("");
+    if (!live) {
+      liveRef.current = true;
+      setLive(true);
+    }
+    stopListenHardware();
+    cancelSpeak();
+    const gen = ++genRef.current;
+    setStatus("One moment…");
+    try {
+      const data = await sendTurn(null, line);
+      await handleReply(data, gen);
+    } catch {
+      setStatus("That didn’t go through — try again.");
+    }
   }
 
   useEffect(() => {
@@ -303,6 +443,7 @@ export default function TalkCompanion() {
     window.speechSynthesis?.addEventListener?.("voiceschanged", loadVoices);
     return () => {
       liveRef.current = false;
+      genRef.current += 1;
       stopListenHardware();
       stopAudioGraph();
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -313,27 +454,39 @@ export default function TalkCompanion() {
 
   const risk = last?.risk || { tier: "green" };
   const mode = !live ? "idle" : listening ? "listening" : busy ? "thinking" : speaking ? "speaking" : "idle";
+  const modeLabel = !live ? "Ready" : listening ? "Listening" : busy ? "Thinking" : speaking ? "Speaking" : "Ready";
 
   return (
     <div className="mx-auto max-w-xl space-y-5">
       <div className="text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-sage">Live companion</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-sage">Voice companion</p>
         <h1 className="font-display text-4xl font-semibold">Talk to Companion</h1>
         <p className="mx-auto mt-2 max-w-md text-sm text-ink/60">
-          One tap to start. Keep talking — it listens, answers, and listens again. English only. End when you want to
-          stop.
+          Tap the orb, speak, and pause — it answers, then listens again. Prefer typing? Use the box below.
         </p>
       </div>
 
-      <Card className="flex flex-col items-center gap-5 py-8">
-        <CompanionOrb mode={mode} amplitude={amplitude} />
-        <RiskBanner tier={risk.tier} />
-        <p className="text-center text-sm text-ink/60">{busy ? "Thinking…" : status}</p>
+      <Card className="flex flex-col items-center gap-4 py-7">
+        <button
+          type="button"
+          onClick={onOrbTap}
+          className="rounded-full outline-none ring-sage/0 transition focus-visible:ring-4"
+          aria-label={live ? (speaking ? "Skip reply" : listening ? "Send what I said" : "Companion") : "Start talking"}
+        >
+          <CompanionOrb mode={mode} amplitude={amplitude} />
+        </button>
+        <span className="rounded-full bg-mist px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-sage">
+          {modeLabel}
+        </span>
+        <RiskBanner tier={risk.tier} compact={risk.tier === "green"} />
+        <p className="min-h-[1.25rem] text-center text-sm text-ink/65" aria-live="polite">
+          {busy ? "One moment…" : status}
+        </p>
         {error && <p className="text-center text-sm text-rose">{error}</p>}
 
-        <div className="max-h-64 w-full space-y-2 overflow-y-auto px-1">
+        <div ref={logRef} className="max-h-56 w-full space-y-2 overflow-y-auto px-1">
           {messages.length === 0 && !interim && (
-            <p className="text-center text-xs text-ink/40">What you say and what I say will appear here.</p>
+            <p className="text-center text-xs text-ink/40">Your words will show up here as you talk.</p>
           )}
           {messages.map((m, i) => (
             <div
@@ -367,26 +520,46 @@ export default function TalkCompanion() {
 
         <div className="flex flex-wrap justify-center gap-2">
           {!live ? (
-            <Button onClick={startCall}>Start conversation</Button>
+            <Button onClick={startCall}>Start talking</Button>
           ) : (
-            <Button variant="danger" onClick={endCall}>
-              End
-            </Button>
+            <>
+              {listening && (
+                <Button onClick={sendNow} disabled={busy}>
+                  Send
+                </Button>
+              )}
+              {speaking && (
+                <Button variant="outline" onClick={skipSpeaking}>
+                  Skip
+                </Button>
+              )}
+              <Button variant="danger" onClick={endCall}>
+                End call
+              </Button>
+            </>
           )}
         </div>
-        {last?.hume_ok === false && last?.ok && (
-          <p className="text-center text-[11px] text-ink/45">
-            Tone analysis was unavailable that turn — we still used the spoken words and the existing safety rail.
-          </p>
-        )}
+
+        <form className="flex w-full gap-2" onSubmit={sendTypedLine}>
+          <input
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            placeholder="Or type a line…"
+            className="field flex-1"
+            disabled={busy || risk.tier === "red"}
+            aria-label="Type a message to the companion"
+          />
+          <Button type="submit" disabled={busy || !typed.trim() || risk.tier === "red"}>
+            Send
+          </Button>
+        </form>
       </Card>
 
       <p className="text-center text-xs text-ink/45">
-        Text chat is unchanged —{" "}
-        <Link className="underline" to="/chat">
-          Talk now
-        </Link>{" "}
-        is still there.
+        Prefer typing the whole way?{" "}
+        <Link className="underline decoration-sage/40 underline-offset-2" to="/chat">
+          Open Talk now
+        </Link>
       </p>
     </div>
   );
