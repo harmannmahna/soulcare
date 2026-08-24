@@ -141,6 +141,13 @@ cd backend && pytest
 
 - **API (Render):** Blueprint in `render.yaml`. Binds `0.0.0.0:$PORT`, health check `/health`.
 - **Web (Vercel):** Root directory `frontend` (or repo root — `vercel.json` builds `frontend/dist`). SPA rewrites send every path to `index.html` so reloads on `/dashboard` or `/talk-companion` do not 404. Set `VITE_API_URL` to the Render URL. Use the Vercel site, not the Render API host.
+- **Glowinn landing (optional Vercel project):** Root directory `glowinn`. See `glowinn/README.md`. Local video at `glowinn/public/hero.mp4`.
+
+## Standalone landings
+
+| Folder | What | Run |
+| --- | --- | --- |
+| `glowinn/` | Glowinn beauty video-hero landing | `cd glowinn && npm install && npm run dev` |
 
 ## Route map
 
