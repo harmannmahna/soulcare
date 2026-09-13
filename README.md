@@ -1,3 +1,7 @@
+## Deploy
+
+- **Render:** https://soulcare-ejtx.onrender.com
+
 # SoulCare
 
 A safety-first holistic health platform: mental support, physical/lifestyle tracking, and crisis escalation in one app.
@@ -137,11 +141,6 @@ Frontend: `VITE_API_URL` for the Render origin. Local Vite proxies `/api` and `/
 cd backend && pytest
 ```
 
-## Deploy
-
-- **API (Render):** Blueprint in `render.yaml`. Binds `0.0.0.0:$PORT`, health check `/health`.
-- **Web (Vercel):** Root directory `frontend` (or repo root — `vercel.json` builds `frontend/dist`). SPA rewrites send every path to `index.html` so reloads on `/dashboard` or `/talk-companion` do not 404. Set `VITE_API_URL` to the Render URL. Use the Vercel site, not the Render API host.
-- **Glowinn landing (optional Vercel project):** Root directory `glowinn`. See `glowinn/README.md`. Local video at `glowinn/public/hero.mp4`.
 
 ## Standalone landings
 
